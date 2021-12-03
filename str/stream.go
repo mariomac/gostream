@@ -7,6 +7,7 @@ type Stream[T any] interface {
 	attach() Stream[T]
 	Map(fn func(T) T) Stream[T]
 	ForEach(fn func(T))
+	Filter(pred func(T) bool) Stream[T]
 	AsSlice() []T
 }
 
@@ -16,14 +17,6 @@ type iterator[T any] interface {
 
 type abstractStream[T any] struct {
 	implementor Stream[T]
-}
-
-func (bs *abstractStream[T]) Map(fn func(T) T) Stream[T] {
-	return Map[T, T](bs.implementor, fn)
-}
-
-func (bs *abstractStream[T]) ForEach(fn func(T)) {
-	ForEach[T](bs.implementor, fn)
 }
 
 type sliceStream[T any] struct {
@@ -84,4 +77,40 @@ func (c *connectedIterator[IN, OUT]) next() (OUT, bool) {
 		return zeroVal, ok
 	}
 	return c.appliedFn(n), true
+}
+
+type filterStream[T any] struct {
+	abstractStream[T]
+	predicate func(T) bool
+	Input     Stream[T]
+}
+
+func (si *filterStream[T]) attach() Stream[T] {
+	si.abstractStream.implementor = si
+	return si
+}
+
+func (si *filterStream[T]) iterator() iterator[T] {
+	return &filterIterator[T]{
+		Input:     si.Input.iterator(),
+		predicate: si.predicate,
+	}
+}
+
+type filterIterator[T any] struct {
+	predicate func(T) bool
+	Input     iterator[T]
+}
+
+func (c *filterIterator[T]) next() (T, bool) {
+	for {
+		n, ok := c.Input.next()
+		if !ok {
+			var zeroVal T
+			return zeroVal, ok
+		}
+		if c.predicate(n) {
+			return n, true
+		}
+	}
 }

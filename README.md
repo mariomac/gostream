@@ -4,6 +4,7 @@ Stream processing stuff for Go
 ## ROADMAP
 
 * Stream instantiation functions
+  - [ ] Empty
   - [ ] Generate
   - [ ] Iterate
   - [X] Of
@@ -12,7 +13,7 @@ Stream processing stuff for Go
 * Stream-to-Stream functions
   - [ ] Concat
   - [ ] Distinct
-  - [ ] Filter
+  - [X] Filter
   - [ ] FlatMap
   - [ ] Limit
   - [X] Map
@@ -27,6 +28,7 @@ Stream processing stuff for Go
   - [ ] Count
   - [ ] FindAny
   - [ ] FindFirst
+  - [X] ForEach
   - [ ] Max
   - [ ] Min
   - [ ] NoneMatch
@@ -39,5 +41,4 @@ Stream processing stuff for Go
   - [ ] Mul (for numbers)
   - [ ] Neg (for numbers or bools)
 * Other
-  - [X] ForEach
   - [ ] Parallel streams 

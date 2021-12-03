@@ -25,3 +25,20 @@ func TestForEach(t *testing.T) {
 	})
 	assert.Equal(t, []int{1, 2, 3, 4, 5}, copy)
 }
+
+func TestFilter(t *testing.T) {
+	in := Of[int](1, 2, 3, 4, 5)
+	odds := Filter(in, func(n int) bool {
+		return n%2 == 1
+	})
+	assert.Equal(t, []int{1, 3, 5}, odds.AsSlice())
+	empty := Filter(in, func(_ int) bool {
+		return false
+	})
+	assert.Empty(t, empty.AsSlice())
+	all := in.Filter(func(_ int) bool {
+		return true
+	})
+	assert.Equal(t, []int{1, 2, 3, 4, 5}, all.AsSlice())
+
+}
