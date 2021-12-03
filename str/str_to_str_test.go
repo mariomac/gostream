@@ -19,6 +19,9 @@ func TestMap(t *testing.T) {
 }
 
 func TestForEach(t *testing.T) {
-	in := Of[int](1, 2, 3, 4, 5)
-
+	var copy []int
+	Of[int](1, 2, 3, 4, 5).ForEach(func(i int) {
+		copy = append(copy, i)
+	})
+	assert.Equal(t, []int{1, 2, 3, 4, 5}, copy)
 }

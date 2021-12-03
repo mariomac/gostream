@@ -6,38 +6,38 @@ Stream processing stuff for Go
 * Stream instantiation functions
   - [ ] Generate
   - [ ] Iterate
-  - [x] OfSlice
-  - [ ] OfMap
   - [X] Of
+  - [ ] OfMap
+  - [x] OfSlice
 * Stream-to-Stream functions
-  - [X] Map
-  - [ ] FlatMap
-  - [ ] Filter
+  - [ ] Concat
   - [ ] Distinct
+  - [ ] Filter
+  - [ ] FlatMap
   - [ ] Limit
+  - [X] Map
   - [ ] Peek
   - [ ] Skip
   - [ ] Sorted
-  - [ ] Concat
-* Collectors
+* Collectors/Terminals
+  - [ ] AsMap
+  - [X] AsSlice
+  - [ ] AllMatch
+  - [ ] AnyMatch
   - [ ] Count
   - [ ] FindAny
   - [ ] FindFirst
-  - [ ] AllMatch
-  - [ ] AnyMatch
   - [ ] Max
   - [ ] Min
   - [ ] NoneMatch
-  - [ ] AsSlice
-  - [ ] AsMap
   - [ ] Reduce
 * Auxiliary Functions
   - [ ] Add (for numbers)
-  - [ ] Neg (for numbers or bools)
-  - [ ] Mul (for numbers)
-  - [ ] Join (for strings)
   - [ ] IsNil
   - [ ] IsZeroValue (superset of IsNil)
+  - [ ] Join (for strings)
+  - [ ] Mul (for numbers)
+  - [ ] Neg (for numbers or bools)
 * Other
   - [X] ForEach
   - [ ] Parallel streams 
