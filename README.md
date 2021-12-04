@@ -2,7 +2,25 @@
 
 Type safe Stream processing library inspired in the [Java Streams API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html).
 
-Example of usage:
+## Requirements
+
+* Go 1.18.
+
+This library makes intensive usage of [Type Parameters (generics)](https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md) so it is not compatible with any version lower to Go 1.18.
+
+Until Go 1.18 stable is officially released, you can download the development version of Go 1.18 using [Gotip](https://pkg.go.dev/golang.org/dl/gotip):
+
+```
+go install golang.org/dl/gotip@latest
+gotip download
+alias go=gotip
+```
+
+## Usage examples
+
+1. Creates a literal stream containing all the integers from 1 to 11.
+2. From the Stream, selects all the integers that are prime
+3. For each filtered int, prints a message.
 
 ```go
 import (
@@ -19,7 +37,7 @@ func main() {
 }
 
 func isPrime(n int) bool {
-	for i := 2; i < n; i++ {
+	for i := 2; i < n/2; i++ {
 		if n%i == 0 {
 			return false
 		}
@@ -37,14 +55,6 @@ Output:
 7 is a prime number
 11 is a prime number
 ```
-
-
-
-
-## How to use
-go install golang.org/dl/gotip@latest
-
-Stream processing stuff for Go
 
 ## ROADMAP
 
