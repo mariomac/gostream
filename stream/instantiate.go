@@ -19,3 +19,18 @@ func Generate[T any](supplier func() T) Stream[T] {
 		}
 	})
 }
+
+// Iterate returns an infinite sequential ordered Stream produced by iterative application of a function
+// f to an initial element seed, producing a Stream consisting of seed, f(seed), f(f(seed)), etc.
+// The first element (position 0) in the Stream will be the provided seed. For n > 0, the element at
+// position n, will be the result of applying the function f to the element at position n - 1.
+func Iterate[T any](seed T, f func(T) T) Stream[T] {
+	return newIterableStream(func() iterator[T] {
+		lastElement := seed
+		return func() (T, bool) {
+			i := lastElement
+			lastElement = f(lastElement)
+			return i, true
+		}
+	})
+}

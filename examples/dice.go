@@ -8,7 +8,7 @@ import (
 	"github.com/mariomac/gostream/stream"
 )
 
-func main() {
+func main_dice() {
 	rand.Seed(time.Now().UnixMilli())
 	fmt.Println("let me throw 5 times a dice for you")
 

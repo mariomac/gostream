@@ -6,7 +6,7 @@ Type safe Stream processing library inspired in the [Java Streams API](https://d
 
 * Go 1.18.
 
-This library makes intensive usage of [Type Parameters (generics)](https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md) so it is not compatible with any version lower to Go 1.18.
+This library makes intensive usage of [Type Parameters (generics)](https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md) so it is not compatible with any Go version lower than 1.18.
 
 Until Go 1.18 stable is officially released, you can download the development version of Go 1.18 using [Gotip](https://pkg.go.dev/golang.org/dl/gotip):
 
@@ -56,6 +56,8 @@ Output:
 11 is a prime number
 ```
 
+Next:
+
 1. Creates an **infinite** stream of random integers (no problem, streams are evaluated lazily!)
 2. Divides the random integer to get a number between 1 and 6
 3. Limits the infinite stream to 5 elements.
@@ -83,6 +85,43 @@ let me throw 5 times a dice for you
 results: [3 5 2 1 3]
 ```
 
+Next: 
+
+1. Generates an infinite stream composed by `1`, `double(1)`, `double(double(1))`, etc...
+   and cut it to 6 elements.
+2. Maps the numbers' stream to a strings' stream. Because, at the moment,
+   [go does not allow type parameters in methods](https://github.com/golang/go/issues/49085),
+   we need to invoke the `stream.Map` function instead of the `numbers.Map` method
+   because the contained type of the output stream (`string`) is different than the type of
+   the input stream (`int`).
+3. Converts the words stream to a slice and prints it.
+
+
+```go
+func main() {
+    numbers := stream.Iterate(1, double).Limit(6)
+    words := stream.Map(numbers, asWord).ToSlice()
+    fmt.Println(words)
+}
+
+func double(n int) int {
+    return 2 * n
+}
+
+func asWord(n int) string {
+    if n < 10 {
+        return []string{"zero", "one", "two", "three", "four", "five",
+            "six", "seven", "eight", "nine"}[n]
+    } else {
+        return "many"
+    }
+}
+```
+
+Output:
+```
+[one two four eight many many]
+```
 ## Performance
 
 Streams are slow. They are aimed for complex workflows where performance
@@ -107,7 +146,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
 * Stream instantiation functions
   - [ ] Empty
   - [X] Generate
-  - [ ] Iterate
+  - [X] Iterate
   - [X] Of
   - [ ] OfMap
   - [x] OfSlice
