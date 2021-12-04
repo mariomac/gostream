@@ -1,8 +1,8 @@
 package stream
 
 func (bs *abstractStream[T]) ForEach(fn func(T)) {
-	it := bs.implementor.iterator()
-	for in, ok := it.next(); ok; in, ok = it.next() {
+	next := bs.implementor.iterator()
+	for in, ok := next(); ok; in, ok = next() {
 		fn(in)
 	}
 }
@@ -10,8 +10,8 @@ func (bs *abstractStream[T]) ForEach(fn func(T)) {
 func (st *abstractStream[T]) ToSlice() []T {
 	// TODO: use "count" for better performance
 	var res []T
-	it := st.implementor.iterator()
-	for r, ok := it.next(); ok; r, ok = it.next() {
+	next := st.implementor.iterator()
+	for r, ok := next(); ok; r, ok = next() {
 		res = append(res, r)
 	}
 	return res

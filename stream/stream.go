@@ -42,11 +42,11 @@ type Stream[T any] interface {
 	ToSlice() []T
 }
 
-type iterator[T any] interface {
-	// it there are more items to iterate, returns the next item and true.
-	// if the iterator has iterated all the stream items, returns the zero value and false.
-	next() (T, bool)
-}
+// if there are more items to iterate, returns the next item and true.
+// if the iterator has iterated all the stream items, returns the zero value and false.
+// this function will usually depend on an external status (e.g. can be a struct method or
+// a function literal that rely on outer variables)
+type iterator[T any] func() (T, bool)
 
 // abstractStream provides generic implementations of the Stream methods so implementors don't
 // need to reimplement all of them. However, implementors could override the default methods
@@ -69,61 +69,18 @@ func (si *sliceStream[T]) attach() Stream[T] {
 }
 
 func (si *sliceStream[T]) iterator() iterator[T] {
-	return &sliceIterator[T]{items: si.items}
-}
-
-// iterator for sliceStreams
-type sliceIterator[T any] struct {
-	items []T
-}
-
-func (si *sliceIterator[T]) next() (T, bool) {
-	if len(si.items) == 0 {
-		var zeroValue T
-		return zeroValue, false
-	}
-	n := si.items[0]
-	si.items = si.items[1:]
-	return n, true
-}
-
-// mapperIterator takes the items from an input stream and
-// transforms them according to a mapper function.
-type mapperIterator[IN, OUT any] struct {
-	mapper func(IN) OUT
-	input  iterator[IN]
-}
-
-func (c *mapperIterator[IN, OUT]) next() (OUT, bool) {
-	n, ok := c.input.next()
-	if !ok {
-		var zeroVal OUT
-		return zeroVal, ok
-	}
-	return c.mapper(n), true
-}
-
-// filterIterator takes the items from an input stream and only forwards them to the next
-// stage of the pipeline if they fulfill a given predicate.
-type filterIterator[T any] struct {
-	predicate func(T) bool
-	input     iterator[T]
-}
-
-func (c *filterIterator[T]) next() (T, bool) {
-	for {
-		n, ok := c.input.next()
-		if !ok {
-			var zeroVal T
-			return zeroVal, ok
+	items := si.items
+	return func() (T, bool) {
+		if len(items) == 0 {
+			var zeroValue T
+			return zeroValue, false
 		}
-		if c.predicate(n) {
-			return n, true
-		}
+		n := items[0]
+		items = items[1:]
+		return n, true
 	}
 }
 
-// TODO: probably mapperStream and filterStream can be removed and only use this
 type iteratorSupplier[T any] func() iterator[T]
 
 // iterableStream is a generic stream that is iterated by the iterator returned by the
