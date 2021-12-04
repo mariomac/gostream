@@ -83,6 +83,25 @@ let me throw 5 times a dice for you
 results: [3 5 2 1 3]
 ```
 
+## Performance
+
+Streams are slow. They are aimed for complex workflows where performance
+is not critical but code expressiveness is a clear advantage.
+
+The following results show the difference in performance for a random set of operations
+in an imperative form versus the functional form using streams (see
+[stream/benchs_test.go file](stream/benchs_test.go)):
+
+```
+$ gotip test -bench=. -benchmem  ./...
+goos: darwin
+goarch: amd64
+pkg: github.com/mariomac/gostream/stream
+cpu: Intel(R) Core(TM) i5-5257U CPU @ 2.70GHz
+BenchmarkImperative-4            2098518               550.6 ns/op          1016 B/op          7 allocs/op
+BenchmarkFunctional-4             293095              3653 ns/op            2440 B/op         23 allocs/op
+```
+
 ## Completion status
 
 * Stream instantiation functions
