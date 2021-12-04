@@ -10,6 +10,7 @@ Stream processing stuff for Go
   - [X] Of
   - [ ] OfMap
   - [x] OfSlice
+  - [ ] OfChannel
 * Stream-to-Stream functions
   - [ ] Concat
   - [ ] Distinct
@@ -21,8 +22,8 @@ Stream processing stuff for Go
   - [ ] Skip
   - [ ] Sorted
 * Collectors/Terminals
-  - [ ] AsMap
-  - [X] AsSlice
+  - [ ] ToMap
+  - [X] ToSlice
   - [ ] AllMatch
   - [ ] AnyMatch
   - [ ] Count
@@ -42,3 +43,14 @@ Stream processing stuff for Go
   - [ ] Neg (for numbers or bools)
 * Other
   - [ ] Parallel streams 
+
+
+## Extra credits
+
+The Stream processing and aggregation functions are heavily inspired in the
+[Java Stream Specification](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html).
+
+Stream code documentation also used 
+[Stream Javadoc](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html) as an
+essential reference and might contain citations from it.
+

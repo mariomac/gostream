@@ -11,7 +11,7 @@ import (
 func TestLazyOperation(t *testing.T) {
 	var actions []string
 	in := Of("hello", "my", "friend")
-	filtered := Filter(in, func(s string) bool {
+	filtered := in.Filter(func(s string) bool {
 		actions = append(actions, "filter("+s+")")
 		return strings.Contains(s, "e")
 	})
@@ -19,7 +19,7 @@ func TestLazyOperation(t *testing.T) {
 		actions = append(actions, "map("+s+")")
 		return len(s)
 	})
-	ForEach(mapped, func(i int) {
+	mapped.ForEach(func(i int) {
 		actions = append(actions, fmt.Sprintf("foreach(%v)", i))
 	})
 

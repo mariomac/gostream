@@ -8,10 +8,14 @@ import (
 	_ "github.com/stretchr/testify/require"
 )
 
-func TestAsSlice(t *testing.T) {
-	// Testing AsSlice of concrete streams
+func TestToSlice(t *testing.T) {
+	// Testing ToSlice of concrete streams
 	slice := OfSlice([]int{1, 2, 3, 4, 5, 6})
-	assert.Equal(t, []int{1, 2, 3, 4, 5, 6}, slice.AsSlice())
+	assert.Equal(t, []int{1, 2, 3, 4, 5, 6}, slice.ToSlice())
 
-	// Testing AsSlice of connectedStreams
+	// Testing ToSlice of connectedStreams
+	assert.Equal(t, []int{1, 2, 3},
+		slice.Filter(func(n int) bool {
+			return n <= 3
+		}).ToSlice())
 }
