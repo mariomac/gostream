@@ -18,6 +18,7 @@ type Stream[T any] interface {
 	// and invoke it after each stream instantiation.
 	// This allows to automatically implement all the abstract stream operations
 	// through the abstractStream
+	// For fluent invocation, it returns the target stream
 	attach() Stream[T]
 
 	// stream operations
@@ -71,7 +72,7 @@ func (si *sliceStream[T]) iterator() iterator[T] {
 	return &sliceIterator[T]{items: si.items}
 }
 
-// iterator for slices
+// iterator for sliceStreams
 type sliceIterator[T any] struct {
 	items []T
 }
@@ -86,27 +87,8 @@ func (si *sliceIterator[T]) next() (T, bool) {
 	return n, true
 }
 
-// mapperStream takes the items from an input stream and
+// mapperIterator takes the items from an input stream and
 // transforms them according to a mapper function.
-type mapperStream[IN, OUT any] struct {
-	abstractStream[OUT]
-	mapper func(IN) OUT
-	input  Stream[IN]
-}
-
-func (si *mapperStream[IN, OUT]) attach() Stream[OUT] {
-	si.abstractStream.implementor = si
-	return si
-}
-
-func (si *mapperStream[IN, OUT]) iterator() iterator[OUT] {
-	return &mapperIterator[IN, OUT]{
-		input:  si.input.iterator(),
-		mapper: si.mapper,
-	}
-}
-
-// iterator for a mapperStream
 type mapperIterator[IN, OUT any] struct {
 	mapper func(IN) OUT
 	input  iterator[IN]
@@ -121,27 +103,8 @@ func (c *mapperIterator[IN, OUT]) next() (OUT, bool) {
 	return c.mapper(n), true
 }
 
-// filterStream takes the items from an input stream and only forwards them to the next
+// filterIterator takes the items from an input stream and only forwards them to the next
 // stage of the pipeline if they fulfill a given predicate.
-type filterStream[T any] struct {
-	abstractStream[T]
-	predicate func(T) bool
-	input     Stream[T]
-}
-
-func (si *filterStream[T]) attach() Stream[T] {
-	si.abstractStream.implementor = si
-	return si
-}
-
-func (si *filterStream[T]) iterator() iterator[T] {
-	return &filterIterator[T]{
-		input:     si.input.iterator(),
-		predicate: si.predicate,
-	}
-}
-
-// iterator for a filterStream
 type filterIterator[T any] struct {
 	predicate func(T) bool
 	input     iterator[T]
@@ -158,4 +121,29 @@ func (c *filterIterator[T]) next() (T, bool) {
 			return n, true
 		}
 	}
+}
+
+// TODO: probably mapperStream and filterStream can be removed and only use this
+type iteratorSupplier[T any] func() iterator[T]
+
+// iterableStream is a generic stream that is iterated by the iterator returned by the
+// supplier function
+type iterableStream[T any] struct {
+	abstractStream[T]
+	supply iteratorSupplier[T]
+}
+
+func newIterableStream[T any](supplier iteratorSupplier[T]) *iterableStream[T] {
+	is := &iterableStream[T]{supply: supplier}
+	is.attach()
+	return is
+}
+
+func (is *iterableStream[T]) attach() Stream[T] {
+	is.abstractStream.implementor = is
+	return is
+}
+
+func (is *iterableStream[T]) iterator() iterator[T] {
+	return is.supply()
 }
