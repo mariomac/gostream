@@ -40,5 +40,14 @@ func TestFilter(t *testing.T) {
 		return true
 	})
 	assert.Equal(t, []int{1, 2, 3, 4, 5}, all.ToSlice())
+}
 
+func TestLimit(t *testing.T) {
+	count := 0
+	items := Generate(func() int {
+		count++
+		return count
+	}).Limit(7).ToSlice()
+
+	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7}, items)
 }

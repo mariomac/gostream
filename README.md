@@ -56,22 +56,49 @@ Output:
 11 is a prime number
 ```
 
-## ROADMAP
+1. Creates an **infinite** stream of random integers (no problem, streams are evaluated lazily!)
+2. Divides the random integer to get a number between 1 and 6
+3. Limits the infinite stream to 5 elements.
+4. Collects the stream items as a slice.
+
+```go
+func main() {
+    rand.Seed(time.Now().UnixMilli())
+    fmt.Println("let me throw 5 times a dice for you")
+
+    results := stream.Generate(rand.Int).
+        Map(func(n int) int {
+            return n%6 + 1
+        }).
+        Limit(5).
+        ToSlice()
+
+    fmt.Printf("results: %v\n", results)
+}
+```
+
+Output:
+```
+let me throw 5 times a dice for you
+results: [3 5 2 1 3]
+```
+
+## Completion status
 
 * Stream instantiation functions
   - [ ] Empty
-  - [ ] Generate
+  - [X] Generate
   - [ ] Iterate
   - [X] Of
   - [ ] OfMap
   - [x] OfSlice
   - [ ] OfChannel
-* Stream-to-Stream functions
+* Stream transformers
   - [ ] Concat
   - [ ] Distinct
   - [X] Filter
   - [ ] FlatMap
-  - [ ] Limit
+  - [X] Limit
   - [X] Map
   - [ ] Peek
   - [ ] Skip

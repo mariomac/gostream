@@ -9,7 +9,7 @@ func Map[IT, OT any](input Stream[IT], mapper func(IT) OT) Stream[OT] {
 			n, ok := next()
 			if !ok {
 				var zeroVal OT
-				return zeroVal, ok
+				return zeroVal, false
 			}
 			return mapper(n), true
 		}
@@ -28,12 +28,33 @@ func (as *abstractStream[T]) Filter(predicate func(T) bool) Stream[T] {
 				n, ok := next()
 				if !ok {
 					var zeroVal T
-					return zeroVal, ok
+					return zeroVal, false
 				}
 				if predicate(n) {
 					return n, true
 				}
 			}
+		}
+	})
+}
+
+func (as *abstractStream[T]) Limit(maxSize int) Stream[T] {
+	return newIterableStream(func() iterator[T] {
+		next := as.implementor.iterator()
+		count := 0
+		return func() (T, bool) {
+			if count == maxSize {
+				var zeroVal T
+				return zeroVal, false
+			}
+			n, ok := next()
+			if !ok {
+				count = maxSize
+				var zeroVal T
+				return zeroVal, false
+			}
+			count++
+			return n, true
 		}
 	})
 }

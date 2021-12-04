@@ -26,6 +26,9 @@ type Stream[T any] interface {
 	// Filter seturns a Stream consisting of the items of this stream that match the given
 	// predicate (this is, applying the predicate function over the item returns true)
 	Filter(predicate func(T) bool) Stream[T]
+	// Limit returns a stream consisting of the elements of this stream, truncated to
+	// be no longer than maxSize in length.
+	Limit(maxSize int) Stream[T]
 	// Map returns a Stream consisting of the results of individually applying
 	// the mapper function to each element of this Stream. The argument and return
 	// value of the mapper function must belong to the same type. If you need that
