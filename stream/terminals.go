@@ -1,4 +1,4 @@
-package str
+package stream
 
 func (bs *abstractStream[T]) ForEach(fn func(T)) {
 	it := bs.implementor.iterator()

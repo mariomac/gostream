@@ -1,6 +1,6 @@
-// Package str provides type-safe streams, functional helper tools and processing
+// package stream provides type-safe streams, functional helper tools and processing
 // operations
-package str
+package stream
 
 // Stream is a sequence of elements supporting different processing and aggregation functionalities.
 // To perform a computation, Stream operations are composed into a stream pipeline. A stream pipeline

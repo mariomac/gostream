@@ -1,4 +1,4 @@
-package str
+package stream
 
 // Of creates an Stream from a variable number of elements that are passed as
 // arguments.

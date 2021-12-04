@@ -1,4 +1,4 @@
-package str
+package stream
 
 // Map returns a Stream consisting of the results of individually applying
 // the mapper function to each elements of the input Stream.
