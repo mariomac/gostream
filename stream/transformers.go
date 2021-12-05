@@ -3,7 +3,7 @@ package stream
 // Map returns a Stream consisting of the results of individually applying
 // the mapper function to each elements of the input Stream.
 func Map[IT, OT any](input Stream[IT], mapper func(IT) OT) Stream[OT] {
-	return newIterableStream[OT](func() iterator[OT] {
+	return &iterableStream[OT]{supply: func() iterator[OT] {
 		next := input.iterator()
 		return func() (OT, bool) {
 			n, ok := next()
@@ -13,16 +13,16 @@ func Map[IT, OT any](input Stream[IT], mapper func(IT) OT) Stream[OT] {
 			}
 			return mapper(n), true
 		}
-	})
+	}}
 }
 
-func (bs *abstractStream[T]) Map(mapper func(T) T) Stream[T] {
-	return Map[T, T](bs.implementor, mapper)
+func (bs *iterableStream[T]) Map(mapper func(T) T) Stream[T] {
+	return Map[T, T](bs, mapper)
 }
 
-func (as *abstractStream[T]) Filter(predicate func(T) bool) Stream[T] {
-	return newIterableStream(func() iterator[T] {
-		next := as.implementor.iterator()
+func (as *iterableStream[T]) Filter(predicate func(T) bool) Stream[T] {
+	return &iterableStream[T]{supply: func() iterator[T] {
+		next := as.iterator()
 		return func() (T, bool) {
 			for {
 				n, ok := next()
@@ -35,12 +35,12 @@ func (as *abstractStream[T]) Filter(predicate func(T) bool) Stream[T] {
 				}
 			}
 		}
-	})
+	}}
 }
 
-func (as *abstractStream[T]) Limit(maxSize int) Stream[T] {
-	return newIterableStream(func() iterator[T] {
-		next := as.implementor.iterator()
+func (as *iterableStream[T]) Limit(maxSize int) Stream[T] {
+	return &iterableStream[T]{supply: func() iterator[T] {
+		next := as.iterator()
 		count := 0
 		return func() (T, bool) {
 			if count == maxSize {
@@ -56,5 +56,5 @@ func (as *abstractStream[T]) Limit(maxSize int) Stream[T] {
 			count++
 			return n, true
 		}
-	})
+	}}
 }

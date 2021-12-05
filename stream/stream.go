@@ -14,13 +14,6 @@ type Stream[T any] interface {
 	// returns a new iterator to the stream
 	iterator() iterator[T]
 
-	// connects an abstract stream with its implementor. Stream implementers should implement this
-	// and invoke it after each stream instantiation.
-	// This allows to automatically implement all the abstract stream operations
-	// through the abstractStream
-	// For fluent invocation, it returns the target stream
-	attach() Stream[T]
-
 	// stream operations
 
 	// Filter seturns a Stream consisting of the items of this stream that match the given
@@ -51,57 +44,12 @@ type Stream[T any] interface {
 // a function literal that rely on outer variables)
 type iterator[T any] func() (T, bool)
 
-// abstractStream provides generic implementations of the Stream methods so implementors don't
-// need to reimplement all of them. However, implementors could override the default methods
-// for optimizing them according their own nature.
-type abstractStream[T any] struct {
-	implementor Stream[T]
-}
-
-// sliceStream is a stream whose items are stored in a slice
-type sliceStream[T any] struct {
-	abstractStream[T]
-	items []T
-}
-
-// sets itself as an implementor of the stream so the abstractStream will
-// invoke the implementor methods instead of its own methods.
-func (si *sliceStream[T]) attach() Stream[T] {
-	si.abstractStream.implementor = si
-	return si
-}
-
-func (si *sliceStream[T]) iterator() iterator[T] {
-	items := si.items
-	return func() (T, bool) {
-		if len(items) == 0 {
-			var zeroValue T
-			return zeroValue, false
-		}
-		n := items[0]
-		items = items[1:]
-		return n, true
-	}
-}
-
 type iteratorSupplier[T any] func() iterator[T]
 
 // iterableStream is a generic stream that is iterated by the iterator returned by the
 // supplier function
 type iterableStream[T any] struct {
-	abstractStream[T]
 	supply iteratorSupplier[T]
-}
-
-func newIterableStream[T any](supplier iteratorSupplier[T]) *iterableStream[T] {
-	is := &iterableStream[T]{supply: supplier}
-	is.attach()
-	return is
-}
-
-func (is *iterableStream[T]) attach() Stream[T] {
-	is.abstractStream.implementor = is
-	return is
 }
 
 func (is *iterableStream[T]) iterator() iterator[T] {

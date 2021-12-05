@@ -124,10 +124,11 @@ Output:
 ```
 ## Performance
 
-Streams are slow. They are aimed for complex workflows where performance
-is not critical but code expressiveness is a clear advantage.
+Streams aren't the fastest options. They are aimed for complex workflows where you can
+sacrifice few microseconds for the sake of code organization and readability. Also disclaimer:
+functional streams aren't always the most readable option.
 
-The following results show the difference in performance for a random set of operations
+The following results show the difference in performance for an arbitrary set of operations
 in an imperative form versus the functional form using streams (see
 [stream/benchs_test.go file](stream/benchs_test.go)):
 

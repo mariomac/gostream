@@ -1,22 +1,18 @@
 package stream
 
-func (bs *abstractStream[T]) ForEach(fn func(T)) {
-	next := bs.implementor.iterator()
+func (bs *iterableStream[T]) ForEach(fn func(T)) {
+	next := bs.iterator()
 	for in, ok := next(); ok; in, ok = next() {
 		fn(in)
 	}
 }
 
-func (st *abstractStream[T]) ToSlice() []T {
+func (st *iterableStream[T]) ToSlice() []T {
 	// TODO: use "count" for better performance
 	var res []T
-	next := st.implementor.iterator()
+	next := st.iterator()
 	for r, ok := next(); ok; r, ok = next() {
 		res = append(res, r)
 	}
 	return res
-}
-
-func (st *sliceStream[T]) ToSlice() []T {
-	return st.items
 }
