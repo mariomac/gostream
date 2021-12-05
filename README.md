@@ -122,6 +122,25 @@ Output:
 ```
 [one two four eight many many]
 ```
+
+Next example requires to compare the elements of the Stream, so the Stream needs to be
+converted to a `ComparableStream[T]`, where T must be `comparable` (this is, defining)
+the `==` and `!=` operators:
+
+1. Instantiate a `Stream` and make sure it is `comparable` by passing it to the
+   `stream.Comparing` function.
+2. Invoke the `Distinct` method, that will return a copy of the original Stream without
+   duplicates (this method is only available in the `ComparableStream` interface).
+3. Operating as any other stream.
+
+```go
+words := stream.Comparing(
+  stream.Of("hello", "hello", "!", "ho", "ho", "ho", "!"),
+).Distinct().ToSlice()
+
+fmt.Printf("Deduplicated words: %v\n", words)
+```
+
 ## Performance
 
 Streams aren't the fastest options. They are aimed for complex workflows where you can
@@ -145,6 +164,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
 ## Completion status
 
 * Stream instantiation functions
+  - [X] Comparable
   - [ ] Empty
   - [X] Generate
   - [X] Iterate
@@ -154,7 +174,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [ ] OfChannel
 * Stream transformers
   - [X] Concat
-  - [ ] Distinct
+  - [X] Distinct
   - [X] Filter
   - [ ] FlatMap
   - [X] Limit

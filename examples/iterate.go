@@ -6,7 +6,7 @@ import (
 	"github.com/mariomac/gostream/stream"
 )
 
-func main() {
+func main_iterate() {
 	numbers := stream.Iterate(1, double).Limit(6)
 
 	words := stream.Map(numbers, asWord).ToSlice()

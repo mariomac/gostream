@@ -1,5 +1,7 @@
 package stream
 
+import "fmt"
+
 // Of creates an Stream from a variable number of elements that are passed as
 // arguments.
 func Of[T any](elems ...T) Stream[T] {
@@ -69,4 +71,19 @@ func Concat[T any](a, b Stream[T]) Stream[T] {
 			return next()
 		}
 	}}
+}
+
+// Comparing returns a ComparableStream version of the input type. This requires
+// that the element type is comparable.
+func Comparing[T comparable](input Stream[T]) ComparableStream[T] {
+	switch str := input.(type) {
+	case *comparableStream[T]:
+		return str
+	case *iterableStream[T]:
+		return &comparableStream[T]{
+			iterableStream: *str,
+		}
+	default:
+		panic(fmt.Sprintf("unsupported stream type: %T", str))
+	}
 }

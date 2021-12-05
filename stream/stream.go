@@ -19,9 +19,11 @@ type Stream[T any] interface {
 	// Filter seturns a Stream consisting of the items of this stream that match the given
 	// predicate (this is, applying the predicate function over the item returns true)
 	Filter(predicate func(T) bool) Stream[T]
+
 	// Limit returns a stream consisting of the elements of this stream, truncated to
 	// be no longer than maxSize in length.
 	Limit(maxSize int) Stream[T]
+
 	// Map returns a Stream consisting of the results of individually applying
 	// the mapper function to each element of this Stream. The argument and return
 	// value of the mapper function must belong to the same type. If you need that
@@ -36,6 +38,16 @@ type Stream[T any] interface {
 
 	// ToSlice returns a Slice Containing all the elements of this Stream.
 	ToSlice() []T
+}
+
+// ComparableStream adds functionalities to a Stream that would require comparing the
+// items of the stream between them, so the elements type must fulfill the 'comparable'
+// constraint (e.g. define the == and != operators)
+type ComparableStream[T comparable] interface {
+	Stream[T]
+	// Distinct returns a stream consisting of the distinct elements (according to equality operator)
+	// of the input stream.
+	Distinct() ComparableStream[T]
 }
 
 // if there are more items to iterate, returns the next item and true.
@@ -59,4 +71,8 @@ type iterableStream[T any] struct {
 
 func (is *iterableStream[T]) iterator() iterator[T] {
 	return is.supply()
+}
+
+type comparableStream[T comparable] struct {
+	iterableStream[T]
 }

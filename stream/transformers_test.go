@@ -51,3 +51,11 @@ func TestLimit(t *testing.T) {
 
 	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7}, items)
 }
+
+func TestDistinct(t *testing.T) {
+	assert.Equal(t,
+		[]int{1, 2, 3, 4, 5},
+		Comparing(Of(1, 1, 2, 3, 3, 3, 4, 5, 1, 2, 3, 4, 5)).
+			Distinct().ToSlice(),
+	)
+}

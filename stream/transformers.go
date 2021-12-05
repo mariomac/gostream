@@ -58,3 +58,23 @@ func (as *iterableStream[T]) Limit(maxSize int) Stream[T] {
 		}
 	}}
 }
+
+func (cs *comparableStream[T]) Distinct() ComparableStream[T] {
+	return &comparableStream[T]{iterableStream[T]{supply: func() iterator[T] {
+		next := cs.iterator()
+		elems := map[T]struct{}{}
+		return func() (T, bool) {
+			for {
+				n, ok := next()
+				if !ok {
+					var zeroVal T
+					return zeroVal, false
+				}
+				if _, ok := elems[n]; !ok {
+					elems[n] = struct{}{}
+					return n, true
+				}
+			}
+		}
+	}}}
+}
