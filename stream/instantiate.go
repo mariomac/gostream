@@ -12,8 +12,7 @@ func OfSlice[T any](elems []T) Stream[T] {
 		items := elems
 		return func() (T, bool) {
 			if len(items) == 0 {
-				var zeroValue T
-				return zeroValue, false
+				return finishedIterator[T]()
 			}
 			n := items[0]
 			items = items[1:]
@@ -46,6 +45,28 @@ func Iterate[T any](seed T, f func(T) T) Stream[T] {
 			i := lastElement
 			lastElement = f(lastElement)
 			return i, true
+		}
+	}}
+}
+
+// Concat creates a lazily concatenated stream whose elements are all the elements of the first stream
+// followed by all the elements of the second stream.
+func Concat[T any](a, b Stream[T]) Stream[T] {
+	return &iterableStream[T]{supply: func() iterator[T] {
+		first := true
+		next := a.iterator()
+		return func() (T, bool) {
+			n, ok := next()
+			if ok {
+				return n, true
+			}
+			if first {
+				first = false
+				next = b.iterator()
+			} else {
+				next = finishedIterator[T]
+			}
+			return next()
 		}
 	}}
 }

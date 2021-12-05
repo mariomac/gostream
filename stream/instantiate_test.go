@@ -29,3 +29,13 @@ func TestGenerate(t *testing.T) {
 		[]int{1, 2, 3, 4, 5},
 		gen.Limit(5).ToSlice())
 }
+
+func TestConcat(t *testing.T) {
+	concat := Concat[int](
+		Of(1, 2, 3, 4, 5, 6),
+		Of(7, 8, 9, 10),
+	)
+	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
+	// test that iterating for the second time produces the same results
+	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
+}

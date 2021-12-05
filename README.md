@@ -126,7 +126,7 @@ Output:
 
 Streams aren't the fastest options. They are aimed for complex workflows where you can
 sacrifice few microseconds for the sake of code organization and readability. Also disclaimer:
-functional streams aren't always the most readable option.
+functional streams don't have to always be the most readable option.
 
 The following results show the difference in performance for an arbitrary set of operations
 in an imperative form versus the functional form using streams (see
@@ -153,7 +153,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [x] OfSlice
   - [ ] OfChannel
 * Stream transformers
-  - [ ] Concat
+  - [X] Concat
   - [ ] Distinct
   - [X] Filter
   - [ ] FlatMap

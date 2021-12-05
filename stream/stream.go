@@ -44,6 +44,11 @@ type Stream[T any] interface {
 // a function literal that rely on outer variables)
 type iterator[T any] func() (T, bool)
 
+func finishedIterator[T any]() (T, bool) {
+	var zeroVal T
+	return zeroVal, false
+}
+
 type iteratorSupplier[T any] func() iterator[T]
 
 // iterableStream is a generic stream that is iterated by the iterator returned by the
