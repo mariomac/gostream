@@ -2,6 +2,7 @@ package stream
 
 import (
 	"fmt"
+	"github.com/mariomac/gostream/kv"
 )
 
 // Of creates an Stream from a variable number of elements that are passed as
@@ -102,6 +103,29 @@ func Empty[T any]() Stream[T] {
 	return &iterableStream[T]{
 		supply: func() iterator[T] {
 			return finishedIterator[T]
+		},
+	}
+}
+
+// OfMap creates a Stream of kv.Pair elements. Each kv.Pair corresponds to
+// a key/value entry of the source map.
+func OfMap[K comparable, V any](source map[K]V) Stream[kv.Pair[K, V]] {
+	return &iterableStream[kv.Pair[K, V]]{
+		supply: func() iterator[kv.Pair[K, V]] {
+			// the map slice is instantiated lazily
+			// TODO: use low-level code to directly iterate Map?
+			items := make([]kv.Pair[K, V], 0, len(source))
+			for k, v := range source {
+				items = append(items, kv.Pair[K, V]{Key: k, Val: v})
+			}
+			return func() (kv.Pair[K, V], bool) {
+				if len(items) == 0 {
+					return finishedIterator[kv.Pair[K, V]]()
+				}
+				n := items[0]
+				items = items[1:]
+				return n, true
+			}
 		},
 	}
 }

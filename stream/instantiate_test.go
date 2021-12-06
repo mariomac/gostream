@@ -1,6 +1,8 @@
 package stream
 
 import (
+	"github.com/mariomac/gostream/kv"
+	"github.com/mariomac/gostream/order"
 	"math/rand"
 	"testing"
 
@@ -43,4 +45,38 @@ func TestConcat(t *testing.T) {
 
 func TestEmpty(t *testing.T) {
 	assert.Empty(t, Empty[int]().Map(rand.Intn).ToSlice())
+}
+
+func TestOfMap_SortedByKey(t *testing.T) {
+	months := OfMap(map[int]string{
+		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
+		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
+	}).Sorted(order.ByKey[int, string](order.Natural[int]))
+
+	monthNames := Map(months, func(p kv.Pair[int, string]) string {
+		return p.Val
+	}).ToSlice()
+
+	assert.Equal(t,
+		[]string{"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"},
+		monthNames,
+	)
+}
+
+func TestOfMap_SortedByVal(t *testing.T) {
+	months := OfMap(map[int]string{
+		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
+		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
+	}).Sorted(order.ByVal[int, string](order.Natural[string]))
+
+	monthNames := Map(months, func(p kv.Pair[int, string]) string {
+		return p.Val
+	}).ToSlice()
+
+	assert.Equal(t,
+		[]string{"Apr", "Aug", "Dec", "Feb", "Jan", "Jul",
+			"Jun", "Mar", "May", "Nov", "Oct", "Sep"},
+		monthNames,
+	)
 }

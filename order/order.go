@@ -3,6 +3,7 @@
 package order
 
 import (
+	"github.com/mariomac/gostream/kv"
 	"sort"
 	"strings"
 )
@@ -36,6 +37,20 @@ func IgnoreCase(a, b string) bool {
 func Inverse[T any](less Comparator[T]) Comparator[T] {
 	return func(a, b T) bool {
 		return !less(a, b)
+	}
+}
+
+// ByKey uses the source comparator to compare the key of two kv.Pair entries
+func ByKey[K comparable, V any](less Comparator[K]) Comparator[kv.Pair[K, V]] {
+	return func(a, b kv.Pair[K, V]) bool {
+		return less(a.Key, b.Key)
+	}
+}
+
+// ByVal uses the source comparator to compare the value of two kv.Pair entries
+func ByVal[K, V comparable](less Comparator[V]) Comparator[kv.Pair[K, V]] {
+	return func(a, b kv.Pair[K, V]) bool {
+		return less(a.Val, b.Val)
 	}
 }
 
