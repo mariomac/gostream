@@ -15,6 +15,8 @@ import "github.com/mariomac/gostream/order"
 type Stream[T any] interface {
 	// returns a new iterator to the stream
 	iterator() iterator[T]
+	// returns whether the stream is infinite or not
+	isInfinite() bool
 
 	// transformation operations
 
@@ -72,11 +74,16 @@ type iteratorSupplier[T any] func() iterator[T]
 // iterableStream is a generic stream that is iterated by the iterator returned by the
 // supplier function
 type iterableStream[T any] struct {
-	supply iteratorSupplier[T]
+	infinite bool
+	supply   iteratorSupplier[T]
 }
 
 func (is *iterableStream[T]) iterator() iterator[T] {
 	return is.supply()
+}
+
+func (is *iterableStream[T]) isInfinite() bool {
+	return is.infinite
 }
 
 type comparableStream[T comparable] struct {
