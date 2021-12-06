@@ -2,6 +2,8 @@
 // operations
 package stream
 
+import "github.com/mariomac/gostream/order"
+
 // Stream is a sequence of elements supporting different processing and aggregation functionalities.
 // To perform a computation, Stream operations are composed into a stream pipeline. A stream pipeline
 // consists of a source (which might be an array, a collection, a generator function, an I/O channel,
@@ -14,7 +16,7 @@ type Stream[T any] interface {
 	// returns a new iterator to the stream
 	iterator() iterator[T]
 
-	// stream operations
+	// transformation operations
 
 	// Filter seturns a Stream consisting of the items of this stream that match the given
 	// predicate (this is, applying the predicate function over the item returns true)
@@ -31,23 +33,27 @@ type Stream[T any] interface {
 	// to invoke the standalone function Map[IN,OUT](Stream[IN], func(IN)OUT) Stream[OUT].
 	Map(mapper func(T) T) Stream[T]
 
+	// Sorted returns a stream consisting of the elements of this stream, sorted according
+	// to the provided order.Comparator.
+	Sorted(comparator order.Comparator[T]) Stream[T]
+
 	// terminal operations
 
-	// Foreach invokes the consumer function for each item of the Stream.
+	// ForEach invokes the consumer function for each item of the Stream.
 	ForEach(consumer func(T))
 
 	// ToSlice returns a Slice Containing all the elements of this Stream.
 	ToSlice() []T
 }
 
-// ComparableStream adds functionalities to a Stream that would require comparing the
+// Comparable adds functionalities to a Stream that would require comparing the
 // items of the stream between them, so the elements type must fulfill the 'comparable'
 // constraint (e.g. define the == and != operators)
-type ComparableStream[T comparable] interface {
+type Comparable[T comparable] interface {
 	Stream[T]
 	// Distinct returns a stream consisting of the distinct elements (according to equality operator)
 	// of the input stream.
-	Distinct() ComparableStream[T]
+	Distinct() Comparable[T]
 }
 
 // if there are more items to iterate, returns the next item and true.

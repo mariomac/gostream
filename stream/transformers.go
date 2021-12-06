@@ -1,5 +1,9 @@
 package stream
 
+import (
+	"github.com/mariomac/gostream/order"
+)
+
 // Map returns a Stream consisting of the results of individually applying
 // the mapper function to each elements of the input Stream.
 func Map[IT, OT any](input Stream[IT], mapper func(IT) OT) Stream[OT] {
@@ -59,7 +63,7 @@ func (as *iterableStream[T]) Limit(maxSize int) Stream[T] {
 	}}
 }
 
-func (cs *comparableStream[T]) Distinct() ComparableStream[T] {
+func (cs *comparableStream[T]) Distinct() Comparable[T] {
 	return &comparableStream[T]{iterableStream[T]{supply: func() iterator[T] {
 		next := cs.iterator()
 		elems := map[T]struct{}{}
@@ -77,4 +81,20 @@ func (cs *comparableStream[T]) Distinct() ComparableStream[T] {
 			}
 		}
 	}}}
+}
+
+// TODO: panic if trying to sort an infinite stream
+func (is *iterableStream[T]) Sorted(comparator order.Comparator[T]) Stream[T] {
+	return &iterableStream[T]{supply: func() iterator[T] {
+		items := is.ToSlice()
+		order.SortSlice(items, comparator)
+		return func() (T, bool) {
+			if len(items) == 0 {
+				return finishedIterator[T]()
+			}
+			n := items[0]
+			items = items[1:]
+			return n, true
+		}
+	}}
 }

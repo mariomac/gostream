@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"github.com/mariomac/gostream/order"
 	"strconv"
 	"testing"
 
@@ -58,4 +59,11 @@ func TestDistinct(t *testing.T) {
 		Comparing(Of(1, 1, 2, 3, 3, 3, 4, 5, 1, 2, 3, 4, 5)).
 			Distinct().ToSlice(),
 	)
+}
+
+func TestSort(t *testing.T) {
+	assert.Equal(t,
+		[]int{1, 1, 2, 3, 5, 6, 7, 8, 8},
+		Of(1, 7, 8, 3, 2, 1, 5, 8, 6).
+			Sorted(order.Natural[int]).ToSlice())
 }

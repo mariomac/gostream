@@ -25,7 +25,7 @@ alias go=gotip
 ```go
 import (
   "fmt"
-  "github.com/mariomac/gostream/str"
+  "github.com/mariomac/gostream/stream"
 )
 
 func main() {
@@ -64,19 +64,17 @@ Next:
 4. Collects the stream items as a slice.
 
 ```go
-func main() {
-    rand.Seed(time.Now().UnixMilli())
-    fmt.Println("let me throw 5 times a dice for you")
+rand.Seed(time.Now().UnixMilli())
+fmt.Println("let me throw 5 times a dice for you")
 
-    results := stream.Generate(rand.Int).
-        Map(func(n int) int {
-            return n%6 + 1
-        }).
-        Limit(5).
-        ToSlice()
+results := stream.Generate(rand.Int).
+    Map(func(n int) int {
+        return n%6 + 1
+    }).
+    Limit(5).
+    ToSlice()
 
-    fmt.Printf("results: %v\n", results)
-}
+fmt.Printf("results: %v\n", results)
 ```
 
 Output:
@@ -141,9 +139,45 @@ words := stream.Comparing(
 fmt.Printf("Deduplicated words: %v\n", words)
 ```
 
+Output:
+
+```
+Deduplicated words: [hello ! ho]
+```
+
+Sorting a slice from higher to lower:
+
+1. Generate a stream of uint32 numbers.
+2. Picking up 5 elements.
+3. Sorting them by the inverse natural order (from higher to lower)
+   - It's **important** to limit the number of elements, avoiding invoking
+     `Sorted` over an infinite stream (it would panic).
+
+```go
+fmt.Println("picking up 5 random numbers from higher to lower")
+stream.Generate(rand.Uint32).
+    Limit(5).
+    Sorted(order.Inverse(order.Natural[uint32])).
+    ForEach(func(n uint32) {
+        fmt.Println(n)
+    })
+```
+
+Output:
+
+```
+picking up 5 random numbers from higher to lower
+4039455774
+2854263694
+2596996162
+1879968118
+1823804162
+```
+
+
 ## Performance
 
-Streams aren't the fastest options. They are aimed for complex workflows where you can
+Streams aren't the fastest option. They are aimed for complex workflows where you can
 sacrifice few microseconds for the sake of code organization and readability. Also disclaimer:
 functional streams don't have to always be the most readable option.
 
@@ -181,7 +215,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [X] Map
   - [ ] Peek
   - [ ] Skip
-  - [ ] Sorted
+  - [X] Sorted
 * Collectors/Terminals
   - [ ] ToMap
   - [X] ToSlice

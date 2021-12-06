@@ -6,7 +6,7 @@ import (
 	"github.com/mariomac/gostream/stream"
 )
 
-func main() {
+func main_comparable() {
 	words := stream.Comparing(
 		stream.Of("hello", "hello", "!", "ho", "ho", "ho", "!"),
 	).Distinct().ToSlice()

@@ -73,9 +73,9 @@ func Concat[T any](a, b Stream[T]) Stream[T] {
 	}}
 }
 
-// Comparing returns a ComparableStream version of the input type. This requires
+// Comparing returns a Comparable version of the input type. This requires
 // that the element type is comparable.
-func Comparing[T comparable](input Stream[T]) ComparableStream[T] {
+func Comparing[T comparable](input Stream[T]) Comparable[T] {
 	switch str := input.(type) {
 	case *comparableStream[T]:
 		return str
