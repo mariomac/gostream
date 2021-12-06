@@ -18,6 +18,8 @@ alias go=gotip
 
 ## Usage examples
 
+### Example 1: basic creation, transformation and iteration
+
 1. Creates a literal stream containing all the integers from 1 to 11.
 2. From the Stream, selects all the integers that are prime
 3. For each filtered int, prints a message.
@@ -56,7 +58,7 @@ Output:
 11 is a prime number
 ```
 
-Next:
+### Example 2: generation, map, limit and slice conversion
 
 1. Creates an **infinite** stream of random integers (no problem, streams are evaluated lazily!)
 2. Divides the random integer to get a number between 1 and 6
@@ -83,7 +85,7 @@ let me throw 5 times a dice for you
 results: [3 5 2 1 3]
 ```
 
-Next: 
+### Example 3: Generation from an iterator, Map to a different type
 
 1. Generates an infinite stream composed by `1`, `double(1)`, `double(double(1))`, etc...
    and cut it to 6 elements.
@@ -121,6 +123,8 @@ Output:
 [one two four eight many many]
 ```
 
+### Example 4: deduplication of elements
+
 Next example requires to compare the elements of the Stream, so the Stream needs to be
 converted to a `ComparableStream[T]`, where T must be `comparable` (this is, defining)
 the `==` and `!=` operators:
@@ -145,13 +149,13 @@ Output:
 Deduplicated words: [hello ! ho]
 ```
 
-Sorting a slice from higher to lower:
+### Example 5: sorting from higher to lower
 
 1. Generate a stream of uint32 numbers.
 2. Picking up 5 elements.
 3. Sorting them by the inverse natural order (from higher to lower)
    - It's **important** to limit the number of elements, avoiding invoking
-     `Sorted` over an infinite stream (it would panic).
+     `Sorted` over an infinite stream (otherwise it would panic).
 
 ```go
 fmt.Println("picking up 5 random numbers from higher to lower")
