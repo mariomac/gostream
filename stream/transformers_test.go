@@ -97,7 +97,7 @@ func TestSort_InfiniteStream(t *testing.T) {
 func TestSort_LimitInfiniteStream(t *testing.T) {
 	finished := make(chan struct{})
 	go func() {
-		// You can sort a limited infinite stream
+		// You must limit an infinite stream before trying to sort it
 		Comparing(Generate(rand.Int)).
 			Map(rand.Intn).
 			Limit(10).

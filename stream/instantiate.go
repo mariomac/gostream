@@ -1,6 +1,8 @@
 package stream
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Of creates an Stream from a variable number of elements that are passed as
 // arguments.
@@ -92,5 +94,14 @@ func Comparing[T comparable](input Stream[T]) Comparable[T] {
 		}
 	default:
 		panic(fmt.Sprintf("unsupported stream type: %T", str))
+	}
+}
+
+// Empty returns an empty stream
+func Empty[T any]() Stream[T] {
+	return &iterableStream[T]{
+		supply: func() iterator[T] {
+			return finishedIterator[T]
+		},
 	}
 }

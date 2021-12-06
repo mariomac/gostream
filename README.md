@@ -203,7 +203,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
 
 * Stream instantiation functions
   - [X] Comparable
-  - [ ] Empty
+  - [X] Empty
   - [X] Generate
   - [X] Iterate
   - [X] Of

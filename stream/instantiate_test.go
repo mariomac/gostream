@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -38,4 +39,8 @@ func TestConcat(t *testing.T) {
 	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
 	// test that iterating for the second time produces the same results
 	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
+}
+
+func TestEmpty(t *testing.T) {
+	assert.Empty(t, Empty[int]().Map(rand.Intn).ToSlice())
 }
