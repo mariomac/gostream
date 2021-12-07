@@ -1,8 +1,10 @@
-// package stream provides type-safe streams, functional helper tools and processing
+// Package stream provides type-safe streams, functional helper tools and processing
 // operations
 package stream
 
-import "github.com/mariomac/gostream/order"
+import (
+	"github.com/mariomac/gostream/order"
+)
 
 // Stream is a sequence of elements supporting different processing and aggregation functionalities.
 // To perform a computation, Stream operations are composed into a stream pipeline. A stream pipeline
@@ -48,16 +50,6 @@ type Stream[T any] interface {
 	ToSlice() []T
 }
 
-// Comparable adds functionalities to a Stream that would require comparing the
-// items of the stream between them, so the elements type must fulfill the 'comparable'
-// constraint (e.g. define the == and != operators)
-type Comparable[T comparable] interface {
-	Stream[T]
-	// Distinct returns a stream consisting of the distinct elements (according to equality operator)
-	// of the input stream.
-	Distinct() Comparable[T]
-}
-
 // if there are more items to iterate, returns the next item and true.
 // if the iterator has iterated all the stream items, returns the zero value and false.
 // this function will usually depend on an external status (e.g. can be a struct method or
@@ -84,8 +76,4 @@ func (is *iterableStream[T]) iterator() iterator[T] {
 
 func (is *iterableStream[T]) isInfinite() bool {
 	return is.infinite
-}
-
-type comparableStream[T comparable] struct {
-	iterableStream[T]
 }

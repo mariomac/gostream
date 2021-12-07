@@ -59,8 +59,8 @@ func TestLimit(t *testing.T) {
 func TestDistinct(t *testing.T) {
 	assert.Equal(t,
 		[]int{1, 2, 3, 4, 5},
-		Comparing(Of(1, 1, 2, 3, 3, 3, 4, 5, 1, 2, 3, 4, 5)).
-			Distinct().ToSlice(),
+		Distinct(Of(1, 1, 2, 3, 3, 3, 4, 5, 1, 2, 3, 4, 5)).
+			ToSlice(),
 	)
 }
 
@@ -80,7 +80,7 @@ func TestSort_InfiniteStream(t *testing.T) {
 			}
 		}()
 		// Try to sort in an infinite stream must throw a panic
-		Comparing(Generate(rand.Int)).
+		Generate(rand.Int).
 			Map(rand.Intn).
 			Filter(func(t int) bool {
 				return true
@@ -98,7 +98,7 @@ func TestSort_LimitInfiniteStream(t *testing.T) {
 	finished := make(chan struct{})
 	go func() {
 		// You must limit an infinite stream before trying to sort it
-		Comparing(Generate(rand.Int)).
+		Generate(rand.Int).
 			Map(rand.Intn).
 			Limit(10).
 			Sorted(order.Natural[int])

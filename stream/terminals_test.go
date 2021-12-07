@@ -1,6 +1,8 @@
 package stream
 
 import (
+	"github.com/mariomac/gostream/item"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,4 +20,24 @@ func TestToSlice(t *testing.T) {
 		slice.Filter(func(n int) bool {
 			return n <= 3
 		}).ToSlice())
+}
+
+func TestToMap(t *testing.T) {
+	processed := OfMap(map[string]int{
+		"Barcelona": 1,
+		"Madrid":    2,
+		"Paris":     3,
+	}).Map(func(p item.Pair[string, int]) item.Pair[string, int] {
+		p.Key = strings.ToLower(p.Key)
+		if strings.Contains(p.Key, "i") {
+			p.Val++
+		}
+		return p
+	})
+
+	assert.Equal(t, map[string]int{
+		"barcelona": 1,
+		"madrid":    3,
+		"paris":     4,
+	}, ToMap(processed))
 }

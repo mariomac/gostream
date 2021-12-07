@@ -1,8 +1,7 @@
 package stream
 
 import (
-	"fmt"
-	"github.com/mariomac/gostream/kv"
+	"github.com/mariomac/gostream/item"
 )
 
 // Of creates an Stream from a variable number of elements that are passed as
@@ -83,21 +82,6 @@ func Concat[T any](a, b Stream[T]) Stream[T] {
 	}
 }
 
-// Comparing returns a Comparable version of the input type. This requires
-// that the element type is comparable.
-func Comparing[T comparable](input Stream[T]) Comparable[T] {
-	switch str := input.(type) {
-	case *comparableStream[T]:
-		return str
-	case *iterableStream[T]:
-		return &comparableStream[T]{
-			iterableStream: *str,
-		}
-	default:
-		panic(fmt.Sprintf("unsupported stream type: %T", str))
-	}
-}
-
 // Empty returns an empty stream
 func Empty[T any]() Stream[T] {
 	return &iterableStream[T]{
@@ -107,20 +91,20 @@ func Empty[T any]() Stream[T] {
 	}
 }
 
-// OfMap creates a Stream of kv.Pair elements. Each kv.Pair corresponds to
+// OfMap creates a Stream of item.Pair elements. Each kv.Pair corresponds to
 // a key/value entry of the source map.
-func OfMap[K comparable, V any](source map[K]V) Stream[kv.Pair[K, V]] {
-	return &iterableStream[kv.Pair[K, V]]{
-		supply: func() iterator[kv.Pair[K, V]] {
+func OfMap[K comparable, V any](source map[K]V) Stream[item.Pair[K, V]] {
+	return &iterableStream[item.Pair[K, V]]{
+		supply: func() iterator[item.Pair[K, V]] {
 			// the map slice is instantiated lazily
 			// TODO: use low-level code to directly iterate Map?
-			items := make([]kv.Pair[K, V], 0, len(source))
+			items := make([]item.Pair[K, V], 0, len(source))
 			for k, v := range source {
-				items = append(items, kv.Pair[K, V]{Key: k, Val: v})
+				items = append(items, item.Pair[K, V]{Key: k, Val: v})
 			}
-			return func() (kv.Pair[K, V], bool) {
+			return func() (item.Pair[K, V], bool) {
 				if len(items) == 0 {
-					return finishedIterator[kv.Pair[K, V]]()
+					return finishedIterator[item.Pair[K, V]]()
 				}
 				n := items[0]
 				items = items[1:]

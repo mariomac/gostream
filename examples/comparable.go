@@ -7,9 +7,9 @@ import (
 )
 
 func main_comparable() {
-	words := stream.Comparing(
+	words := stream.Distinct(
 		stream.Of("hello", "hello", "!", "ho", "ho", "ho", "!"),
-	).Distinct().ToSlice()
+	).ToSlice()
 
 	fmt.Printf("Deduplicated words: %v\n", words)
 }

@@ -129,16 +129,15 @@ Next example requires to compare the elements of the Stream, so the Stream needs
 converted to a `ComparableStream[T]`, where T must be `comparable` (this is, defining)
 the `==` and `!=` operators:
 
-1. Instantiate a `Stream` and make sure it is `comparable` by passing it to the
-   `stream.Comparing` function.
-2. Invoke the `Distinct` method, that will return a copy of the original Stream without
-   duplicates (this method is only available in the `ComparableStream` interface).
+1. Instantiate a `Stream` of `comparable` items.
+2. Pass it to the `Distinct` method, that will return a copy of the original Stream without
+   duplicates
 3. Operating as any other stream.
 
 ```go
-words := stream.Comparing(
+words := stream.Distinct(
   stream.Of("hello", "hello", "!", "ho", "ho", "ho", "!"),
-).Distinct().ToSlice()
+).ToSlice()
 
 fmt.Printf("Deduplicated words: %v\n", words)
 ```
@@ -207,7 +206,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [X] Generate
   - [X] Iterate
   - [X] Of
-  - [ ] OfMap
+  - [X] OfMap
   - [x] OfSlice
   - [ ] OfChannel
 * Stream transformers
@@ -221,7 +220,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [ ] Skip
   - [X] Sorted
 * Collectors/Terminals
-  - [ ] ToMap
+  - [X] ToMap
   - [X] ToSlice
   - [ ] AllMatch
   - [ ] AnyMatch
@@ -240,9 +239,18 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [ ] Join (for strings)
   - [ ] Mul (for numbers)
   - [ ] Neg (for numbers or bools)
-* Other
+* Future
   - [ ] Parallel streams 
+  - [ ] Allow users implement their own Comparable or Ordered types
 
+## Limitations
+
+Due to the initial limitations of Go generics, the API has the following limitations.
+We will work on overcome them as long as new features are added to the Go type parameters
+specification.
+
+* There is no `Distinct` method. There is only one function with this method.
+* There is no `ToMap` method. There is only one function with this method.
 
 ## Extra credits
 

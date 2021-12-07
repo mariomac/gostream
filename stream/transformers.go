@@ -71,9 +71,11 @@ func (as *iterableStream[T]) Limit(maxSize int) Stream[T] {
 		}}
 }
 
-func (cs *comparableStream[T]) Distinct() Comparable[T] {
-	return &comparableStream[T]{iterableStream[T]{supply: func() iterator[T] {
-		next := cs.iterator()
+// Distinct returns a stream consisting of the distinct elements (according to equality operator)
+// of the input stream.
+func Distinct[T comparable](input Stream[T]) Stream[T] {
+	return &iterableStream[T]{supply: func() iterator[T] {
+		next := input.iterator()
 		elems := map[T]struct{}{}
 		return func() (T, bool) {
 			for {
@@ -88,7 +90,7 @@ func (cs *comparableStream[T]) Distinct() Comparable[T] {
 				}
 			}
 		}
-	}}}
+	}}
 }
 
 func (is *iterableStream[T]) Sorted(comparator order.Comparator[T]) Stream[T] {

@@ -1,7 +1,7 @@
 package stream
 
 import (
-	"github.com/mariomac/gostream/kv"
+	"github.com/mariomac/gostream/item"
 	"github.com/mariomac/gostream/order"
 	"math/rand"
 	"testing"
@@ -53,7 +53,7 @@ func TestOfMap_SortedByKey(t *testing.T) {
 		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
 	}).Sorted(order.ByKey[int, string](order.Natural[int]))
 
-	monthNames := Map(months, func(p kv.Pair[int, string]) string {
+	monthNames := Map(months, func(p item.Pair[int, string]) string {
 		return p.Val
 	}).ToSlice()
 
@@ -70,7 +70,7 @@ func TestOfMap_SortedByVal(t *testing.T) {
 		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
 	}).Sorted(order.ByVal[int, string](order.Natural[string]))
 
-	monthNames := Map(months, func(p kv.Pair[int, string]) string {
+	monthNames := Map(months, func(p item.Pair[int, string]) string {
 		return p.Val
 	}).ToSlice()
 
