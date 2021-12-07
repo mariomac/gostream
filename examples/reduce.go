@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	fac8, _ := stream.Generate(item.Incremental(1)).
+	fac8, _ := stream.Iterate(1, item.Increment[int]).
 		Limit(8).
 		Reduce(item.Multiply[int])
 	fmt.Println("The factorial of 8 is", fac8)

@@ -30,13 +30,7 @@ func Multiply[T Number](a, b T) T {
 	return a * b
 }
 
-// Incremental generator (to be used in the stream.Generate function).
-// from a start value, the successive invocations of the returned function
-// will return increments of this start value
-func Incremental[T Number](start T) func() T {
-	return func() T {
-		s := start
-		start++
-		return s
-	}
+// Increment the argument
+func Increment[T Number](a T) T {
+	return a + 1
 }

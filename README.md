@@ -179,12 +179,13 @@ picking up 5 random numbers from higher to lower
 
 ### Example 6: Reduce and helper functions
 
-1. Generate an infinite Stream using the item.Incremental generator helper function
+1. Generate an infinite incremental Stream (1, 2, 3, 4...) using the `stream.Iterate`
+   instantiator and the `item.Increment` helper function.
 2. Limit the generated to 8 elements
 3. Reduce all the elements multiplying them using the item.Multiply helper function
 
 ```go
-fac8, _ := stream.Generate(item.Incremental(1)).
+fac8, _ := stream.Iterate(1, item.Increment[int]).
     Limit(8).
     Reduce(item.Multiply[int])
 fmt.Println("The factorial of 8 is", fac8)
