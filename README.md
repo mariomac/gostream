@@ -177,6 +177,25 @@ picking up 5 random numbers from higher to lower
 1823804162
 ```
 
+### Example 6: Reduce and helper functions
+
+1. Generate an infinite Stream using the item.Incremental generator helper function
+2. Limit the generated to 8 elements
+3. Reduce all the elements multiplying them using the item.Multiply helper function
+
+```go
+fac8, _ := stream.Generate(item.Incremental(1)).
+    Limit(8).
+    Reduce(item.Multiply[int])
+fmt.Println("The factorial of 8 is", fac8)
+```
+
+Output: 
+
+```
+The factorial of 8 is 40320
+```
+
 
 ## Performance
 
@@ -208,7 +227,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [X] Of
   - [X] OfMap
   - [x] OfSlice
-  - [ ] OfChannel
+  - [X] OfChannel
 * Stream transformers
   - [X] Concat
   - [X] Distinct
@@ -231,7 +250,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [ ] Max
   - [ ] Min
   - [ ] NoneMatch
-  - [ ] Reduce
+  - [X] Reduce
 * Auxiliary Functions
   - [ ] Add (for numbers)
   - [ ] IsNil

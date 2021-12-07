@@ -23,9 +23,23 @@ func (st *iterableStream[T]) ToSlice() []T {
 // ToMap returns a map Containing all the item.Pair elements of this Stream, where
 // the Key/Val fields of the item.Pair represents the key/value of the map, respectively.
 func ToMap[K comparable, V any](input Stream[item.Pair[K, V]]) map[K]V {
+	// todo: assert stream is finite
 	out := map[K]V{}
 	input.ForEach(func(i item.Pair[K, V]) {
 		out[i.Key] = i.Val
 	})
 	return out
+}
+
+func (is *iterableStream[T]) Reduce(accumulator func(a, b T) T) (T, bool) {
+	// TODO: assert stream is finite
+	next := is.iterator()
+	accum, ok := next()
+	if !ok {
+		return accum, false
+	}
+	for r, ok := next(); ok; r, ok = next() {
+		accum = accumulator(accum, r)
+	}
+	return accum, true
 }

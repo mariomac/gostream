@@ -41,3 +41,19 @@ func TestToMap(t *testing.T) {
 		"paris":     4,
 	}, ToMap(processed))
 }
+
+func TestReduce(t *testing.T) {
+	// test empty stream
+	_, ok := Empty[int]().Reduce(item.Add[int])
+	assert.False(t, ok)
+
+	// test one-element stream
+	red, ok := Of(8).Reduce(item.Add[int])
+	assert.True(t, ok)
+	assert.Equal(t, 8, red)
+
+	// test multi-element stream
+	red, ok = Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).Reduce(item.Add[int])
+	assert.True(t, ok)
+	assert.Equal(t, 55, red)
+}

@@ -8,7 +8,7 @@ import (
 	"github.com/mariomac/gostream/stream"
 )
 
-func main() {
+func main_sort() {
 	fmt.Println("picking up 5 random numbers from higher to lower")
 	stream.Generate(rand.Uint32).
 		Limit(5).

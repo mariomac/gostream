@@ -113,3 +113,17 @@ func OfMap[K comparable, V any](source map[K]V) Stream[item.Pair[K, V]] {
 		},
 	}
 }
+
+// OfChannel creates a Stream from an input channel. The Stream won't end until
+// the source channel is closed, so some operations (Distinct, Sorted, ToSlice, Count...) will
+// block the execution until the source is closed.
+func OfChannel[T any](source <-chan T) Stream[T] {
+	return &iterableStream[T]{
+		supply: func() iterator[T] {
+			return func() (T, bool) {
+				v, ok := <-source
+				return v, ok
+			}
+		},
+	}
+}

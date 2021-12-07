@@ -80,3 +80,18 @@ func TestOfMap_SortedByVal(t *testing.T) {
 		monthNames,
 	)
 }
+
+func TestOfChannel(t *testing.T) {
+	elems := make(chan string)
+	go func() {
+		elems <- "por"
+		elems <- "el"
+		elems <- "puente"
+		elems <- "de"
+		elems <- "aranda"
+		close(elems)
+	}()
+	assert.Equal(t,
+		[]string{"por", "el", "puente", "de", "aranda"},
+		OfChannel[string](elems).ToSlice())
+}

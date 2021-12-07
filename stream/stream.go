@@ -46,6 +46,12 @@ type Stream[T any] interface {
 	// ForEach invokes the consumer function for each item of the Stream.
 	ForEach(consumer func(T))
 
+	// Reduce performs a reduction on the elements of this stream, using an associative
+	// accumulation function, and returns an value describing the reduced value, if any.
+	// If no reduced value (e.g. because the stream is empty), the second returned value
+	// is false.
+	Reduce(accumulator func(a, b T) T) (T, bool)
+
 	// ToSlice returns a Slice Containing all the elements of this Stream.
 	ToSlice() []T
 }
