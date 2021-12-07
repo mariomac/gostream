@@ -253,12 +253,14 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [ ] NoneMatch
   - [X] Reduce
 * Auxiliary Functions
-  - [ ] Add (for numbers)
+  - [X] Add (for numbers)
+  - [X] Increment (for numbers)
   - [ ] IsNil
   - [ ] IsZeroValue (superset of IsNil)
   - [ ] Join (for strings)
-  - [ ] Mul (for numbers)
-  - [ ] Neg (for numbers or bools)
+  - [X] Multiply (for numbers)
+  - [ ] Neg (for numbers)
+  - [ ] Not (for bools)
 * Future
   - [ ] Parallel streams 
   - [ ] Allow users implement their own Comparable or Ordered types
