@@ -3,6 +3,7 @@
 package stream
 
 import (
+	"fmt"
 	"github.com/mariomac/gostream/order"
 )
 
@@ -82,4 +83,11 @@ func (is *iterableStream[T]) iterator() iterator[T] {
 
 func (is *iterableStream[T]) isInfinite() bool {
 	return is.infinite
+}
+
+func assertFinite[T any](is Stream[T]) {
+	if is.isInfinite() {
+		var v T
+		panic(fmt.Sprintf("operation not allowed in an infinite Stream[%T]", v))
+	}
 }

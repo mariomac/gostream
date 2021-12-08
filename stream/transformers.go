@@ -1,7 +1,6 @@
 package stream
 
 import (
-	"fmt"
 	"github.com/mariomac/gostream/order"
 )
 
@@ -94,10 +93,7 @@ func Distinct[T comparable](input Stream[T]) Stream[T] {
 }
 
 func (is *iterableStream[T]) Sorted(comparator order.Comparator[T]) Stream[T] {
-	if is.infinite {
-		var v T
-		panic(fmt.Sprintf("can't create a sorted Stream[%T] from an infinite stream", v))
-	}
+	assertFinite[T](is)
 	return &iterableStream[T]{
 		infinite: false,
 		supply: func() iterator[T] {

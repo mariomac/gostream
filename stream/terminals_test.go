@@ -2,12 +2,11 @@ package stream
 
 import (
 	"github.com/mariomac/gostream/item"
-	"strings"
-	"testing"
-
 	"github.com/stretchr/testify/assert"
 	_ "github.com/stretchr/testify/assert"
 	_ "github.com/stretchr/testify/require"
+	"strings"
+	"testing"
 )
 
 func TestToSlice(t *testing.T) {

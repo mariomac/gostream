@@ -10,8 +10,8 @@ func (bs *iterableStream[T]) ForEach(fn func(T)) {
 }
 
 func (st *iterableStream[T]) ToSlice() []T {
+	assertFinite[T](st)
 	// TODO: use "count" for better performance
-	// TODO: assert it's finite
 	var res []T
 	next := st.iterator()
 	for r, ok := next(); ok; r, ok = next() {
@@ -23,7 +23,7 @@ func (st *iterableStream[T]) ToSlice() []T {
 // ToMap returns a map Containing all the item.Pair elements of this Stream, where
 // the Key/Val fields of the item.Pair represents the key/value of the map, respectively.
 func ToMap[K comparable, V any](input Stream[item.Pair[K, V]]) map[K]V {
-	// todo: assert stream is finite
+	assertFinite(input)
 	out := map[K]V{}
 	input.ForEach(func(i item.Pair[K, V]) {
 		out[i.Key] = i.Val
@@ -32,7 +32,7 @@ func ToMap[K comparable, V any](input Stream[item.Pair[K, V]]) map[K]V {
 }
 
 func (is *iterableStream[T]) Reduce(accumulator func(a, b T) T) (T, bool) {
-	// TODO: assert stream is finite
+	assertFinite[T](is)
 	next := is.iterator()
 	accum, ok := next()
 	if !ok {

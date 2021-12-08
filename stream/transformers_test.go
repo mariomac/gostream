@@ -2,13 +2,9 @@ package stream
 
 import (
 	"github.com/mariomac/gostream/order"
-	"github.com/stretchr/testify/require"
-	"math/rand"
+	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
-	"time"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestMap(t *testing.T) {
@@ -69,45 +65,4 @@ func TestSort(t *testing.T) {
 		[]int{1, 1, 2, 3, 5, 6, 7, 8, 8},
 		Of(1, 7, 8, 3, 2, 1, 5, 8, 6).
 			Sorted(order.Natural[int]).ToSlice())
-}
-
-func TestSort_InfiniteStream(t *testing.T) {
-	finished := make(chan struct{})
-	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				close(finished)
-			}
-		}()
-		// Try to sort in an infinite stream must throw a panic
-		Generate(rand.Int).
-			Map(rand.Intn).
-			Filter(func(t int) bool {
-				return true
-			}).Sorted(order.Natural[int])
-	}()
-	select {
-	case <-finished:
-	// ok
-	case <-time.After(5 * time.Second):
-		require.Fail(t, "timeout while expecting test to finish")
-	}
-}
-
-func TestSort_LimitInfiniteStream(t *testing.T) {
-	finished := make(chan struct{})
-	go func() {
-		// You must limit an infinite stream before trying to sort it
-		Generate(rand.Int).
-			Map(rand.Intn).
-			Limit(10).
-			Sorted(order.Natural[int])
-		close(finished)
-	}()
-	select {
-	case <-finished:
-	// ok
-	case <-time.After(5 * time.Second):
-		require.Fail(t, "timeout while expecting test to finish")
-	}
 }
