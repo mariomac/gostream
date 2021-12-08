@@ -2,6 +2,15 @@
 
 Type safe Stream processing library inspired in the [Java Streams API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html).
 
+## Table of contents
+
+* [Requirements](#requirements)
+* [Usage examples](#usage-examples)
+* [Limitations](#limitations)
+* [Performance](#performance)
+* [Completion status](#completion-status)
+* [Extra credits](#extra-credits)
+
 ## Requirements
 
 * Go 1.18.
@@ -197,6 +206,16 @@ Output:
 The factorial of 8 is 40320
 ```
 
+## Limitations
+
+Due to the initial limitations of Go generics, the API has the following limitations.
+We will work on overcome them as long as new features are added to the Go type parameters
+specification.
+
+* You can use the `Map` as method as long as the output element has the same type of the input.
+  If you need to Map to a different type, you need to use the `stream.Map` function.
+* There is no `Distinct` method. There is only a `stream.Distinct` function.
+* There is no `ToMap` method. There is only a `stream.ToMap` function.
 
 ## Performance
 
@@ -262,17 +281,9 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [ ] Neg (for numbers)
   - [ ] Not (for bools)
 * Future
+  - [ ] More operations inspired in the Kafka Streams API
   - [ ] Parallel streams 
   - [ ] Allow users implement their own Comparable or Ordered types
-
-## Limitations
-
-Due to the initial limitations of Go generics, the API has the following limitations.
-We will work on overcome them as long as new features are added to the Go type parameters
-specification.
-
-* There is no `Distinct` method. There is only one function with this method.
-* There is no `ToMap` method. There is only one function with this method.
 
 ## Extra credits
 
