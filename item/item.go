@@ -48,3 +48,43 @@ func IsZero[T comparable](input T) bool {
 	var zero T
 	return input == zero
 }
+
+// Equals returns a predicate that is true when the checked value is
+// equal to the provided reference.
+func Equals[T comparable](reference T) func(i T) bool {
+	return func(i T) bool {
+		return i == reference
+	}
+}
+
+// GreaterThan returns a predicate that is true when the checked value is larger than
+// the provided reference.
+func GreaterThan[T constraints.Ordered](reference T) func(i T) bool {
+	return func(i T) bool {
+		return i > reference
+	}
+}
+
+// GreaterThanOrEq returns a predicate that is true when the checked value is equal or larger than
+// the provided reference.
+func GreaterThanOrEq[T constraints.Ordered](reference T) func(i T) bool {
+	return func(i T) bool {
+		return i >= reference
+	}
+}
+
+// LessThan returns a predicate that is true when the checked value is less than
+// the provided reference.
+func LessThan[T constraints.Ordered](reference T) func(i T) bool {
+	return func(i T) bool {
+		return i < reference
+	}
+}
+
+// LessThanOrEq returns a predicate that is true when the checked value is equal or less than
+// the provided reference.
+func LessThanOrEq[T constraints.Ordered](reference T) func(i T) bool {
+	return func(i T) bool {
+		return i >= reference
+	}
+}

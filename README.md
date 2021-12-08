@@ -241,6 +241,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
 
 * Stream instantiation functions
   - [X] Comparable
+  - [X] Concat
   - [X] Empty
   - [X] Generate
   - [X] Iterate
@@ -249,7 +250,6 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [x] OfSlice
   - [X] OfChannel
 * Stream transformers
-  - [X] Concat
   - [X] Distinct
   - [X] Filter
   - [ ] FlatMap
@@ -261,8 +261,8 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
 * Collectors/Terminals
   - [X] ToMap
   - [X] ToSlice
-  - [ ] AllMatch
-  - [ ] AnyMatch
+  - [X] AllMatch
+  - [X] AnyMatch
   - [ ] Count
   - [ ] FindAny
   - [ ] FindFirst
@@ -270,7 +270,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [ ] Join (for strings)
   - [ ] Max
   - [ ] Min
-  - [ ] NoneMatch
+  - [X] NoneMatch
   - [X] Reduce
 * Auxiliary Functions
   - [X] Add (for numbers)

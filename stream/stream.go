@@ -44,8 +44,23 @@ type Stream[T any] interface {
 
 	// terminal operations
 
+	// AllMatch returns whether all elements of this stream match the provided predicate.
+	// If this operation finds an item where the predicate is false, it stops processing
+	// the rest of the stream.
+	AllMatch(predicate func(T) bool) bool
+
+	// AnyMatch returns whether any elements of this stream match the provided predicate.
+	// If this operation finds an item where the predicate is true, it stops processing
+	// the rest of the stream.
+	AnyMatch(predicate func(T) bool) bool
+
 	// ForEach invokes the consumer function for each item of the Stream.
 	ForEach(consumer func(T))
+
+	// NoneMatch returns whether no elements of this stream match the provided predicate.
+	// If this operation finds an item where the predicate is true, it stops processing
+	// the rest of the stream.
+	NoneMatch(predicate func(T) bool) bool
 
 	// Reduce performs a reduction on the elements of this stream, using an associative
 	// accumulation function, and returns an value describing the reduced value, if any.

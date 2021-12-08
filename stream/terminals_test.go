@@ -56,3 +56,26 @@ func TestReduce(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, 55, red)
 }
+
+func TestIterableStream_AllMatch(t *testing.T) {
+	// for empty streams, following Java behavior as reference
+	assert.True(t, Empty[string]().AllMatch(item.IsZero[string]))
+	assert.True(t, Of("hello", "world").AllMatch(item.Not(item.IsZero[string])))
+	assert.False(t, Of("", "world").AllMatch(item.Not(item.IsZero[string])))
+}
+
+func TestIterableStream_AnyMatch(t *testing.T) {
+	// for empty streams, following Java behavior as reference
+	assert.False(t, Empty[string]().AnyMatch(item.IsZero[string]))
+	assert.True(t, Of("hello", "world").AnyMatch(item.Not(item.IsZero[string])))
+	assert.True(t, Of("", "world").AnyMatch(item.Not(item.IsZero[string])))
+	assert.False(t, Of("", "").AnyMatch(item.Not(item.IsZero[string])))
+}
+
+func TestIterableStream_NoneMatch(t *testing.T) {
+	// for empty streams, following Java behavior as reference
+	assert.True(t, Empty[string]().NoneMatch(item.IsZero[string]))
+	assert.False(t, Of("hello", "world").NoneMatch(item.Not(item.IsZero[string])))
+	assert.False(t, Of("", "world").NoneMatch(item.Not(item.IsZero[string])))
+	assert.True(t, Of("", "").NoneMatch(item.Not(item.IsZero[string])))
+}

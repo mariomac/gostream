@@ -43,3 +43,29 @@ func (is *iterableStream[T]) Reduce(accumulator func(a, b T) T) (T, bool) {
 	}
 	return accum, true
 }
+
+func (is *iterableStream[T]) AllMatch(predicate func(T) bool) bool {
+	assertFinite[T](is)
+	next := is.iterator()
+	for r, ok := next(); ok; r, ok = next() {
+		if !predicate(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func (is *iterableStream[T]) AnyMatch(predicate func(T) bool) bool {
+	assertFinite[T](is)
+	next := is.iterator()
+	for r, ok := next(); ok; r, ok = next() {
+		if predicate(r) {
+			return true
+		}
+	}
+	return false
+}
+
+func (is *iterableStream[T]) NoneMatch(predicate func(T) bool) bool {
+	return !is.AnyMatch(predicate)
+}

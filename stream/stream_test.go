@@ -56,6 +56,15 @@ func TestInfiniteStreamAssertion(t *testing.T) {
 		func(s Stream[int]) {
 			s.Reduce(item.Add[int])
 		},
+		func(s Stream[int]) {
+			s.AnyMatch(item.IsZero[int])
+		},
+		func(s Stream[int]) {
+			s.AllMatch(item.IsZero[int])
+		},
+		func(s Stream[int]) {
+			s.NoneMatch(item.IsZero[int])
+		},
 	}
 	for i, operation := range testCases {
 		t.Run(fmt.Sprint("testcase", i), func(t *testing.T) {
@@ -98,6 +107,15 @@ func TestLimitInfiniteStreamAssertion(t *testing.T) {
 		},
 		func(s Stream[int]) {
 			s.Reduce(item.Add[int])
+		},
+		func(s Stream[int]) {
+			s.AnyMatch(item.IsZero[int])
+		},
+		func(s Stream[int]) {
+			s.AllMatch(item.IsZero[int])
+		},
+		func(s Stream[int]) {
+			s.NoneMatch(item.IsZero[int])
 		},
 	}
 	for i, operation := range testCases {
