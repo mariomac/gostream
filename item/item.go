@@ -34,3 +34,17 @@ func Multiply[T Number](a, b T) T {
 func Increment[T Number](a T) T {
 	return a + 1
 }
+
+// Not negates the boolean result of the input condition function
+func Not[T any](condition func(i T) bool) func(i T) bool {
+	return func(i T) bool {
+		return !condition(i)
+	}
+}
+
+// IsZero returns true if the input value corresponds to the zero value of its type:
+// 0 for numeric values, empty string, false, nil pointer, etc...
+func IsZero[T comparable](input T) bool {
+	var zero T
+	return input == zero
+}

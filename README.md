@@ -267,6 +267,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [ ] FindAny
   - [ ] FindFirst
   - [X] ForEach
+  - [ ] Join (for strings)
   - [ ] Max
   - [ ] Min
   - [ ] NoneMatch
@@ -274,12 +275,10 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
 * Auxiliary Functions
   - [X] Add (for numbers)
   - [X] Increment (for numbers)
-  - [ ] IsNil
-  - [ ] IsZeroValue (superset of IsNil)
-  - [ ] Join (for strings)
+  - [X] IsZero
   - [X] Multiply (for numbers)
   - [ ] Neg (for numbers)
-  - [ ] Not (for bools)
+  - [X] Not (for bools)
 * Future
   - [ ] More operations inspired in the Kafka Streams API
   - [ ] Parallel streams 
