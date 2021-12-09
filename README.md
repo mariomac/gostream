@@ -252,7 +252,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
 * Stream transformers
   - [X] Distinct
   - [X] Filter
-  - [ ] FlatMap
+  - [X] FlatMap
   - [X] Limit
   - [X] Map
   - [ ] Peek

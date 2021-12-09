@@ -110,3 +110,44 @@ func (is *iterableStream[T]) Sorted(comparator order.Comparator[T]) Stream[T] {
 		},
 	}
 }
+
+// FlatMap returns a stream consisting of the results of replacing each element of this stream
+// with the contents of a mapped stream produced by applying the provided mapping function to
+// each element. Each mapped stream is closed after its contents have been placed into this
+// stream. (If a mapped stream is null an empty stream is used, instead.)
+//
+// Due to the lazy nature of streams, if any of the mapped streams is infinite it will remain
+// unnoticed and some operations (Count, Reduce, Sorted, AllMatch...) will not end.
+func FlatMap[IN, OUT any](input Stream[IN], mapper func(IN) Stream[OUT]) Stream[OUT] {
+	return &iterableStream[OUT]{
+		supply: func() iterator[OUT] {
+			nextFromInputStream := input.iterator()
+			var nextFromOutputStream iterator[OUT]
+			return func() (OUT, bool) {
+				for {
+					for nextFromOutputStream == nil {
+						// apply the mapper to the current input item and generate an output stream
+						// to iterate
+						nextInputElem, ok := nextFromInputStream()
+						if !ok {
+							return finishedIterator[OUT]()
+						}
+						if outStream := mapper(nextInputElem); outStream != nil {
+							nextFromOutputStream = outStream.iterator()
+						}
+					}
+					if outItem, ok := nextFromOutputStream(); ok {
+						return outItem, true
+					} else {
+						// item's resulting outputStream has been iterated. Look for next input item
+						nextFromOutputStream = nil
+					}
+				}
+			}
+		},
+	}
+}
+
+func (is *iterableStream[T]) FlatMap(input Stream[T], mapper func(T) Stream[T]) Stream[T] {
+	return FlatMap[T, T](input, mapper)
+}

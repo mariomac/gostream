@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"github.com/mariomac/gostream/item"
 	"github.com/mariomac/gostream/order"
 	"github.com/stretchr/testify/assert"
 	"strconv"
@@ -65,4 +66,37 @@ func TestSort(t *testing.T) {
 		[]int{1, 1, 2, 3, 5, 6, 7, 8, 8},
 		Of(1, 7, 8, 3, 2, 1, 5, 8, 6).
 			Sorted(order.Natural[int]).ToSlice())
+}
+
+func TestFlapMap(t *testing.T) {
+	generateCharSequence := func(in string) Stream[byte] {
+		return OfSlice([]byte(in))
+	}
+	generateNillableCharSequence := func(in string) Stream[byte] {
+		if len(in) == 0 {
+			return nil
+		}
+		return OfSlice([]byte(in))
+	}
+
+	assert.Empty(t, FlatMap(Of[string](), generateCharSequence).ToSlice())
+
+	chars := FlatMap(
+		Of[string]("", "hello", "my", "", "friends!", ""),
+		generateCharSequence).ToSlice()
+	assert.Equal(t, []byte("hellomyfriends!"), chars)
+
+	chars = FlatMap(
+		Of[string]("", "hello", "my", "", "friends!", ""),
+		generateNillableCharSequence).ToSlice()
+	assert.Equal(t, []byte("hellomyfriends!"), chars)
+}
+
+func TestFlapMap_Method(t *testing.T) {
+	incrementalStream := func(length int) Stream[int] {
+		return Iterate(1, item.Increment[int]).Limit(length)
+	}
+
+	items := FlatMap(Of[int](3, 2, 1, 0, 4), incrementalStream).ToSlice()
+	assert.Equal(t, []int{1, 2, 3, 1, 2, 1, 1, 2, 3, 4}, items)
 }

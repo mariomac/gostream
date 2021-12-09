@@ -23,9 +23,21 @@ type Stream[T any] interface {
 
 	// transformation operations
 
-	// Filter seturns a Stream consisting of the items of this stream that match the given
-	// predicate (this is, applying the predicate function over the item returns true)
+	// Filter returns a Stream consisting of the items of this stream that match the given
+	// predicate (this is, applying the predicate function over the item returns true).
 	Filter(predicate func(T) bool) Stream[T]
+
+	// FlatMap returns a stream consisting of the results of replacing each element of this stream
+	// with the contents of a mapped stream produced by applying the provided mapping function to
+	// each element. Each mapped stream is closed after its contents have been placed into this
+	// stream. (If a mapped stream is null an empty stream is used, instead.)
+	//
+	// Due to the lazy nature of streams, if any of the mapped streams is infinite it will remain
+	// unnoticed and some operations (Count, Reduce, Sorted, AllMatch...) will not end.
+	//
+	// If you need that the input and output Stream contain elements from different types, you need
+	// to invoke the standalone function FlatMap[IN,OUT](Stream[IN], func(IN)OUT) Stream[OUT].
+	FlatMap(input Stream[T], mapper func(T) Stream[T]) Stream[T]
 
 	// Limit returns a stream consisting of the elements of this stream, truncated to
 	// be no longer than maxSize in length.
