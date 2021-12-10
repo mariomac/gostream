@@ -266,8 +266,8 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [X] Count
   - [X] FindFirst
   - [X] ForEach
-  - [ ] Max
-  - [ ] Min
+  - [X] Max
+  - [X] Min
   - [X] NoneMatch
   - [X] Reduce
 * Auxiliary Functions
@@ -275,7 +275,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [X] Increment (for numbers)
   - [X] IsZero
   - [X] Multiply (for numbers)
-  - [ ] Neg (for numbers)
+  - [X] Neg (for numbers)
   - [X] Not (for bools)
 * Future
   - [ ] Collectors for future standard generic data structures

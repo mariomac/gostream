@@ -35,6 +35,11 @@ func Increment[T Number](a T) T {
 	return a + 1
 }
 
+// Neg inverts the sign of the given numeric argument
+func Neg[T Number](a T) T {
+	return -a
+}
+
 // Not negates the boolean result of the input condition function
 func Not[T any](condition func(i T) bool) func(i T) bool {
 	return func(i T) bool {

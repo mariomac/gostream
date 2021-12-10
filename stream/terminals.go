@@ -1,6 +1,9 @@
 package stream
 
-import "github.com/mariomac/gostream/item"
+import (
+	"github.com/mariomac/gostream/item"
+	"github.com/mariomac/gostream/order"
+)
 
 func (bs *iterableStream[T]) ForEach(fn func(T)) {
 	next := bs.iterator()
@@ -82,4 +85,34 @@ func (is *iterableStream[T]) Count() int {
 
 func (is *iterableStream[T]) FindFirst() (T, bool) {
 	return is.iterator()()
+}
+
+func (is *iterableStream[T]) Max(cmp order.Comparator[T]) (T, bool) {
+	assertFinite[T](is)
+	next := is.iterator()
+	max, ok := next()
+	if !ok {
+		return max, false
+	}
+	for n, ok := next(); ok; n, ok = next() {
+		if cmp(n, max) > 0 {
+			max = n
+		}
+	}
+	return max, true
+}
+
+func (is *iterableStream[T]) Min(cmp order.Comparator[T]) (T, bool) {
+	assertFinite[T](is)
+	next := is.iterator()
+	min, ok := next()
+	if !ok {
+		return min, false
+	}
+	for n, ok := next(); ok; n, ok = next() {
+		if cmp(n, min) < 0 {
+			min = n
+		}
+	}
+	return min, true
 }

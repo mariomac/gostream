@@ -85,6 +85,16 @@ type Stream[T any] interface {
 	// ForEach invokes the consumer function for each item of the Stream.
 	ForEach(consumer func(T))
 
+	// Max returns the maximum element of this stream according to the provided Comparator,
+	// along with true if the stream is not empty. If the stream is empty, returns the zero
+	// value along with false.
+	Max(cmp order.Comparator[T]) (T, bool)
+
+	// Min returns the minimum element of this stream according to the provided Comparator,
+	// along with true if the stream is not empty. If the stream is empty, returns the zero
+	// value along with false.
+	Min(cmp order.Comparator[T]) (T, bool)
+
 	// NoneMatch returns whether no elements of this stream match the provided predicate.
 	// If this operation finds an item where the predicate is true, it stops processing
 	// the rest of the stream.

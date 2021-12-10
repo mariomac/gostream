@@ -1,9 +1,10 @@
 package stream
 
 import (
+	"testing"
+
 	"github.com/mariomac/gostream/item"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestIsZero(t *testing.T) {
@@ -38,4 +39,11 @@ func TestIsZero_Structs(t *testing.T) {
 	assert.Equal(t,
 		[]foo{{A: 1}, {B: "hello"}},
 		elems)
+}
+
+func TestNeg(t *testing.T) {
+	assert.Equal(t,
+		[]int{-3, -2, -1, 0, 1, 2, 3},
+		Of(3, 2, 1, 0, -1, -2, -3).Map(item.Neg[int]).ToSlice(),
+	)
 }
