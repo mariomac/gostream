@@ -12,7 +12,7 @@ func (bs *iterableStream[T]) ForEach(fn func(T)) {
 func (st *iterableStream[T]) ToSlice() []T {
 	assertFinite[T](st)
 	// TODO: use "count" for better performance
-	var res []T
+	res := []T{}
 	next := st.iterator()
 	for r, ok := next(); ok; r, ok = next() {
 		res = append(res, r)

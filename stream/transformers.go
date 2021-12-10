@@ -169,3 +169,21 @@ func (is *iterableStream[T]) Peek(consumer func(T)) Stream[T] {
 		},
 	}
 }
+
+func (is *iterableStream[T]) Skip(n int) Stream[T] {
+	return &iterableStream[T]{
+		infinite: is.isInfinite(),
+		supply: func() iterator[T] {
+			next := is.iterator()
+			skipped := 0
+			return func() (T, bool) {
+				var it T
+				var ok bool
+				for it, ok = next(); ok && skipped < n; it, ok = next() {
+					skipped++
+				}
+				return it, ok
+			}
+		},
+	}
+}

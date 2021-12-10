@@ -255,8 +255,8 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [X] FlatMap
   - [X] Limit
   - [X] Map
-  - [ ] Peek
-  - [ ] Skip
+  - [X] Peek
+  - [X] Skip
   - [X] Sorted
 * Collectors/Terminals
   - [X] ToMap
@@ -283,6 +283,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [ ] More operations inspired in the Kafka Streams API
   - [ ] Parallel streams 
   - [ ] Allow users implement their own Comparable or Ordered types
+  - [ ] Collectors for future standard generic data structures
 
 ## Extra credits
 

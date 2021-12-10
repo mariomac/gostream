@@ -55,6 +55,10 @@ type Stream[T any] interface {
 	// the provided action on each element as elements are consumed from the resulting stream.
 	Peek(consumer func(T)) Stream[T]
 
+	// Skip returns a stream consisting of the remaining elements of this stream after discarding
+	// the first n elements of the stream.
+	Skip(n int) Stream[T]
+
 	// Sorted returns a stream consisting of the elements of this stream, sorted according
 	// to the provided order.Comparator.
 	Sorted(comparator order.Comparator[T]) Stream[T]
