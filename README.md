@@ -212,8 +212,8 @@ Due to the initial limitations of Go generics, the API has the following limitat
 We will work on overcome them as long as new features are added to the Go type parameters
 specification.
 
-* You can use the `Map` as method as long as the output element has the same type of the input.
-  If you need to Map to a different type, you need to use the `stream.Map` function.
+* You can use `Map` and `FlatMap` as method as long as the output element has the same type of the input.
+  If you need to map to a different type, you need to use `stream.Map` or `stream.FlatMap` as functions.
 * There is no `Distinct` method. There is only a `stream.Distinct` function.
 * There is no `ToMap` method. There is only a `stream.ToMap` function.
 

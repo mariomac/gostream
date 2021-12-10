@@ -6,6 +6,8 @@ import (
 
 // Map returns a Stream consisting of the results of individually applying
 // the mapper function to each elements of the input Stream.
+// When both the input and output type are the same, the operation can be
+// invoked as the method input.Map(mapper).
 func Map[IT, OT any](input Stream[IT], mapper func(IT) OT) Stream[OT] {
 	return &iterableStream[OT]{
 		infinite: input.isInfinite(),
@@ -27,6 +29,13 @@ func (bs *iterableStream[T]) Map(mapper func(T) T) Stream[T] {
 	return Map[T, T](bs, mapper)
 }
 
+// Filter returns a Stream consisting of the items of this stream that match the given
+// predicate (this is, applying the predicate function over the item returns true).
+// This function is equivalent to invoking input.Filter(predicate) as method.
+func Filter[T any](input Stream[T], predicate func(T) bool) Stream[T] {
+	return input.Filter(predicate)
+}
+
 func (as *iterableStream[T]) Filter(predicate func(T) bool) Stream[T] {
 	return &iterableStream[T]{
 		infinite: as.infinite,
@@ -45,6 +54,13 @@ func (as *iterableStream[T]) Filter(predicate func(T) bool) Stream[T] {
 				}
 			}
 		}}
+}
+
+// Limit returns a stream consisting of the elements of this stream, truncated to
+// be no longer than maxSize in length.
+// This function is equivalent to invoking input.Limit(maxSize) as method.
+func Limit[T any](input Stream[T], maxSize int) Stream[T] {
+	return input.Limit(maxSize)
 }
 
 func (as *iterableStream[T]) Limit(maxSize int) Stream[T] {
@@ -92,6 +108,12 @@ func Distinct[T comparable](input Stream[T]) Stream[T] {
 	}}
 }
 
+// Sorted returns a stream consisting of the elements of this stream, sorted according
+// to the provided order.Comparator.
+// This function is equivalent to invoking input.Sorted(comparator) as method.
+func Sorted[T any](input Stream[T], comparator order.Comparator[T]) Stream[T] {
+	return input.Sorted(comparator)
+}
 func (is *iterableStream[T]) Sorted(comparator order.Comparator[T]) Stream[T] {
 	assertFinite[T](is)
 	return &iterableStream[T]{
@@ -118,6 +140,9 @@ func (is *iterableStream[T]) Sorted(comparator order.Comparator[T]) Stream[T] {
 //
 // Due to the lazy nature of streams, if any of the mapped streams is infinite it will remain
 // unnoticed and some operations (Count, Reduce, Sorted, AllMatch...) will not end.
+//
+// When both the input and output type are the same, the operation can be
+// invoked as the method input.FlatMap(mapper).
 func FlatMap[IN, OUT any](input Stream[IN], mapper func(IN) Stream[OUT]) Stream[OUT] {
 	return &iterableStream[OUT]{
 		supply: func() iterator[OUT] {
@@ -152,6 +177,12 @@ func (is *iterableStream[T]) FlatMap(mapper func(T) Stream[T]) Stream[T] {
 	return FlatMap[T, T](is, mapper)
 }
 
+// Peek peturns a stream consisting of the elements of this stream, additionally performing
+// the provided action on each element as elements are consumed from the resulting stream.
+// This function is equivalent to invoking input.Peek(consumer) as method.
+func Peek[T any](input Stream[T], consumer func(T)) Stream[T] {
+	return input.Peek(consumer)
+}
 func (is *iterableStream[T]) Peek(consumer func(T)) Stream[T] {
 	return &iterableStream[T]{
 		infinite: is.isInfinite(),
@@ -170,6 +201,12 @@ func (is *iterableStream[T]) Peek(consumer func(T)) Stream[T] {
 	}
 }
 
+// Skip returns a stream consisting of the remaining elements of this stream after discarding
+// the first n elements of the stream.
+// This function is equivalent to invoking input.Skip(n) as method.
+func Skip[T any](input Stream[T], n int) Stream[T] {
+	return input.Skip(n)
+}
 func (is *iterableStream[T]) Skip(n int) Stream[T] {
 	return &iterableStream[T]{
 		infinite: is.isInfinite(),
