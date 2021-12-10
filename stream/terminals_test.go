@@ -7,6 +7,7 @@ import (
 	"github.com/mariomac/gostream/item"
 	"github.com/stretchr/testify/assert"
 	_ "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	_ "github.com/stretchr/testify/require"
 )
 
@@ -87,4 +88,24 @@ func TestCount(t *testing.T) {
 	assert.Equal(t, 3, Of(1, 2, 3).Count())
 	assert.Equal(t, 3, Of(1, 2, 3, 4, 5, 6).Skip(3).Count())
 	assert.Equal(t, 8, Iterate[int](1, item.Increment[int]).Limit(8).Count())
+}
+
+func TestFindFirst(t *testing.T) {
+	n, ok := Empty[int]().FindFirst()
+	require.False(t, ok)
+
+	n, ok = Of(1, 2, 3).Skip(3).FindFirst()
+	require.False(t, ok)
+
+	n, ok = Of(1, 2, 3).FindFirst()
+	require.True(t, ok)
+	assert.Equal(t, 1, n)
+
+	n, ok = Of(1, 2, 3, 4, 5, 6).Skip(3).FindFirst()
+	require.True(t, ok)
+	assert.Equal(t, 4, n)
+
+	n, ok = Iterate[int](1, item.Increment[int]).Limit(8).FindFirst()
+	require.True(t, ok)
+	assert.Equal(t, 1, n)
 }

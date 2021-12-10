@@ -1,4 +1,4 @@
-# GoStream
+# Go Streams API
 
 Type safe Stream processing library inspired in the [Java Streams API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html).
 
@@ -264,8 +264,7 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [X] AllMatch
   - [X] AnyMatch
   - [X] Count
-  - [ ] FindAny
-  - [ ] FindFirst
+  - [X] FindFirst
   - [X] ForEach
   - [ ] Max
   - [ ] Min
@@ -284,6 +283,8 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [ ] Allow users implement their own Comparable or Ordered types
   - [ ] More operations inspired in the Kafka Streams API
   - [ ] Parallel streams 
+    - [ ] FindAny
+
 
 ## Extra credits
 

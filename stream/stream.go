@@ -78,6 +78,10 @@ type Stream[T any] interface {
 	// Count of elements in this stream.
 	Count() int
 
+	// FindFirst returns the first element of this Stream along with true or, if the
+	// stream is empty, the zero value of the inner type along with false.
+	FindFirst() (T, bool)
+
 	// ForEach invokes the consumer function for each item of the Stream.
 	ForEach(consumer func(T))
 

@@ -79,3 +79,7 @@ func (is *iterableStream[T]) Count() int {
 	}
 	return count
 }
+
+func (is *iterableStream[T]) FindFirst() (T, bool) {
+	return is.iterator()()
+}

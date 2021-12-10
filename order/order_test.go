@@ -1,28 +1,29 @@
 package order
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNaturalOrder(t *testing.T) {
-	assert.True(t, Natural(1, 2))
-	assert.False(t, Natural(2, 1))
-	assert.False(t, Natural(-3, -3))
+	assert.Negative(t, Natural(1, 2))
+	assert.Positive(t, Natural(2, 1))
+	assert.Zero(t, Natural(-3, -3))
 
-	assert.True(t, Natural(1.0, 1.1))
-	assert.False(t, Natural(1.1, 1.0))
-	assert.False(t, Natural(-3.0, -3.0))
+	assert.Negative(t, Natural(1.0, 1.1))
+	assert.Positive(t, Natural(1.1, 1.0))
+	assert.Zero(t, Natural(-3.0, -3.0))
 
-	assert.True(t, Natural("Hello", "amici"))
-	assert.False(t, Natural("aaa", "Bbb"))
-	assert.False(t, Natural("lololo", "lololo"))
+	assert.Negative(t, Natural("Hello", "amici"))
+	assert.Positive(t, Natural("aaa", "Bbb"))
+	assert.Zero(t, Natural("lololo", "lololo"))
 }
 
 func TestIgnoreCase(t *testing.T) {
-	assert.True(t, IgnoreCase("aaa", "Bbb"))
-	assert.False(t, IgnoreCase("Hello", "amici"))
-	assert.False(t, IgnoreCase("LoloLo", "lOlolo"))
+	assert.Negative(t, IgnoreCase("aaa", "Bbb"))
+	assert.Positive(t, IgnoreCase("Hello", "amici"))
+	assert.Zero(t, IgnoreCase("LoloLo", "lOlolo"))
 }
 
 func TestSortSlice(t *testing.T) {
