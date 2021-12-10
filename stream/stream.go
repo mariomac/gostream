@@ -75,6 +75,9 @@ type Stream[T any] interface {
 	// the rest of the stream.
 	AnyMatch(predicate func(T) bool) bool
 
+	// Count of elements in this stream.
+	Count() int
+
 	// ForEach invokes the consumer function for each item of the Stream.
 	ForEach(consumer func(T))
 

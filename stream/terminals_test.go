@@ -1,12 +1,13 @@
 package stream
 
 import (
+	"strings"
+	"testing"
+
 	"github.com/mariomac/gostream/item"
 	"github.com/stretchr/testify/assert"
 	_ "github.com/stretchr/testify/assert"
 	_ "github.com/stretchr/testify/require"
-	"strings"
-	"testing"
 )
 
 func TestToSlice(t *testing.T) {
@@ -78,4 +79,12 @@ func TestIterableStream_NoneMatch(t *testing.T) {
 	assert.False(t, Of("hello", "world").NoneMatch(item.Not(item.IsZero[string])))
 	assert.False(t, Of("", "world").NoneMatch(item.Not(item.IsZero[string])))
 	assert.True(t, Of("", "").NoneMatch(item.Not(item.IsZero[string])))
+}
+
+func TestCount(t *testing.T) {
+	assert.Equal(t, 0, Empty[int]().Count())
+	assert.Equal(t, 0, Of(1, 2, 3).Skip(3).Count())
+	assert.Equal(t, 3, Of(1, 2, 3).Count())
+	assert.Equal(t, 3, Of(1, 2, 3, 4, 5, 6).Skip(3).Count())
+	assert.Equal(t, 8, Iterate[int](1, item.Increment[int]).Limit(8).Count())
 }

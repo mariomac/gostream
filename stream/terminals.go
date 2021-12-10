@@ -69,3 +69,13 @@ func (is *iterableStream[T]) AnyMatch(predicate func(T) bool) bool {
 func (is *iterableStream[T]) NoneMatch(predicate func(T) bool) bool {
 	return !is.AnyMatch(predicate)
 }
+
+func (is *iterableStream[T]) Count() int {
+	assertFinite[T](is)
+	count := 0
+	next := is.iterator()
+	for _, ok := next(); ok; _, ok = next() {
+		count++
+	}
+	return count
+}

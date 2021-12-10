@@ -2,13 +2,14 @@ package stream
 
 import (
 	"fmt"
-	"github.com/mariomac/gostream/item"
-	"github.com/mariomac/gostream/order"
-	"github.com/stretchr/testify/require"
 	"math/rand"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/mariomac/gostream/item"
+	"github.com/mariomac/gostream/order"
+	"github.com/stretchr/testify/require"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -65,6 +66,9 @@ func TestInfiniteStreamAssertion(t *testing.T) {
 		func(s Stream[int]) {
 			s.NoneMatch(item.IsZero[int])
 		},
+		func(s Stream[int]) {
+			s.Count()
+		},
 	}
 	for i, operation := range testCases {
 		t.Run(fmt.Sprint("testcase", i), func(t *testing.T) {
@@ -116,6 +120,9 @@ func TestLimitInfiniteStreamAssertion(t *testing.T) {
 		},
 		func(s Stream[int]) {
 			s.NoneMatch(item.IsZero[int])
+		},
+		func(s Stream[int]) {
+			s.Count()
 		},
 	}
 	for i, operation := range testCases {

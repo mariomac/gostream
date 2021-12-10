@@ -263,11 +263,10 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [X] ToSlice
   - [X] AllMatch
   - [X] AnyMatch
-  - [ ] Count
+  - [X] Count
   - [ ] FindAny
   - [ ] FindFirst
   - [X] ForEach
-  - [ ] Join (for strings)
   - [ ] Max
   - [ ] Min
   - [X] NoneMatch
@@ -280,10 +279,11 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
   - [ ] Neg (for numbers)
   - [X] Not (for bools)
 * Future
+  - [ ] Collectors for future standard generic data structures
+    - E.g. [ ] Join (for strings)
+  - [ ] Allow users implement their own Comparable or Ordered types
   - [ ] More operations inspired in the Kafka Streams API
   - [ ] Parallel streams 
-  - [ ] Allow users implement their own Comparable or Ordered types
-  - [ ] Collectors for future standard generic data structures
 
 ## Extra credits
 
