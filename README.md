@@ -27,6 +27,11 @@ alias go=gotip
 
 ## Usage examples
 
+For more details about the API, and until [pkg.go.dev](https://pkg.go.dev/github.com/mariomac/gostream), 
+is able to parse documentation for functions and types using generics, you can have a quick look
+to the generated [go doc text descriptions](./docs), or just let that the embedded document browser of your
+IDE does the job.
+
 ### Example 1: basic creation, transformation and iteration
 
 1. Creates a literal stream containing all the integers from 1 to 11.
