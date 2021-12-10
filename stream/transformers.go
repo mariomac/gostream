@@ -148,6 +148,24 @@ func FlatMap[IN, OUT any](input Stream[IN], mapper func(IN) Stream[OUT]) Stream[
 	}
 }
 
-func (is *iterableStream[T]) FlatMap(input Stream[T], mapper func(T) Stream[T]) Stream[T] {
-	return FlatMap[T, T](input, mapper)
+func (is *iterableStream[T]) FlatMap(mapper func(T) Stream[T]) Stream[T] {
+	return FlatMap[T, T](is, mapper)
+}
+
+func (is *iterableStream[T]) Peek(consumer func(T)) Stream[T] {
+	return &iterableStream[T]{
+		infinite: is.isInfinite(),
+		supply: func() iterator[T] {
+			next := is.iterator()
+			return func() (T, bool) {
+				n, ok := next()
+				if !ok {
+					var zeroVal T
+					return zeroVal, false
+				}
+				consumer(n)
+				return n, true
+			}
+		},
+	}
 }

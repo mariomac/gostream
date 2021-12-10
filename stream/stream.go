@@ -4,6 +4,7 @@ package stream
 
 import (
 	"fmt"
+
 	"github.com/mariomac/gostream/order"
 )
 
@@ -37,7 +38,7 @@ type Stream[T any] interface {
 	//
 	// If you need that the input and output Stream contain elements from different types, you need
 	// to invoke the standalone function FlatMap[IN,OUT](Stream[IN], func(IN)OUT) Stream[OUT].
-	FlatMap(input Stream[T], mapper func(T) Stream[T]) Stream[T]
+	FlatMap(mapper func(T) Stream[T]) Stream[T]
 
 	// Limit returns a stream consisting of the elements of this stream, truncated to
 	// be no longer than maxSize in length.
@@ -49,6 +50,10 @@ type Stream[T any] interface {
 	// the input and output Stream contain elements from different types, you need
 	// to invoke the standalone function Map[IN,OUT](Stream[IN], func(IN)OUT) Stream[OUT].
 	Map(mapper func(T) T) Stream[T]
+
+	// Peek peturns a stream consisting of the elements of this stream, additionally performing
+	// the provided action on each element as elements are consumed from the resulting stream.
+	Peek(consumer func(T)) Stream[T]
 
 	// Sorted returns a stream consisting of the elements of this stream, sorted according
 	// to the provided order.Comparator.

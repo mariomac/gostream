@@ -1,11 +1,14 @@
 package stream
 
 import (
+	"fmt"
+	"strconv"
+	"testing"
+
 	"github.com/mariomac/gostream/item"
 	"github.com/mariomac/gostream/order"
 	"github.com/stretchr/testify/assert"
-	"strconv"
-	"testing"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMap(t *testing.T) {
@@ -99,4 +102,22 @@ func TestFlapMap_Method(t *testing.T) {
 
 	items := FlatMap(Of[int](3, 2, 1, 0, 4), incrementalStream).ToSlice()
 	assert.Equal(t, []int{1, 2, 3, 1, 2, 1, 1, 2, 3, 4}, items)
+}
+
+func TestPeek(t *testing.T) {
+	var actions []string
+
+	sl := Of(1, 2, 3, 4, 5, 6).
+		Filter(func(n int) bool {
+			return n%2 == 1
+		}).
+		Peek(func(n int) {
+			actions = append(actions, fmt.Sprint("processed ", n))
+		}).
+		ToSlice()
+
+	require.Equal(t, []int{1, 3, 5}, sl)
+	assert.Equal(t, []string{
+		"processed 1", "processed 3", "processed 5",
+	}, actions)
 }
