@@ -140,7 +140,7 @@ Output:
 ### Example 4: deduplication of elements
 
 Following example requires to compare the elements of the Stream, so the Stream needs to be
-formed where T must formed by `comparable` elements (this is, accepted by the the `==` and `!=` operators):
+composed by `comparable` elements (this is, accepted by the the `==` and `!=` operators):
 
 1. Instantiate a `Stream` of `comparable` items.
 2. Pass it to the `Distinct` method, that will return a copy of the original Stream without
