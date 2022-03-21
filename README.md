@@ -13,17 +13,9 @@ Type safe Stream processing library inspired in the [Java Streams API](https://d
 
 ## Requirements
 
-* Go 1.18.
+* Go 1.18 or higher
 
 This library makes intensive usage of [Type Parameters (generics)](https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md) so it is not compatible with any Go version lower than 1.18.
-
-Until Go 1.18 stable is officially released, you can download the development version of Go 1.18 using [Gotip](https://pkg.go.dev/golang.org/dl/gotip):
-
-```
-go install golang.org/dl/gotip@latest
-gotip download
-alias go=gotip
-```
 
 ## Usage examples
 
