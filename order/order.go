@@ -3,9 +3,10 @@
 package order
 
 import (
-	"constraints"
 	"sort"
 	"strings"
+
+	"golang.org/x/exp/constraints"
 
 	"github.com/mariomac/gostream/item"
 )
