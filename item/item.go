@@ -1,7 +1,7 @@
 // Package item provides helper types and constraints for Stream operator
 package item
 
-import "constraints"
+import "golang.org/x/exp/constraints"
 
 // Number constraint: ints, uints, complexes, floats and all their subtypes
 type Number interface {
