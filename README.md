@@ -233,6 +233,10 @@ BenchmarkImperative-4            2098518               550.6 ns/op          1016
 BenchmarkFunctional-4             293095              3653 ns/op            2440 B/op         23 allocs/op
 ```
 
+If you want a more performant, parallelizable alternative to create data processing pipelines (following
+a programming model focused on Extract-Transform-Load, ETL), you
+could give a try to my alternative project: [PIPES: Processing In Pipeline-Embedded Stages](https://github.com/mariomac/pipes).
+
 ## Completion status
 
 * Stream instantiation functions
