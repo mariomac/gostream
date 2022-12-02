@@ -215,6 +215,8 @@ specification.
 
 ## Performance
 
+You might want to check: [Performance comparison of Go functional stream libraries](https://macias.info/entry/202212020000_go_streams.md).
+
 Streams aren't the fastest option. They are aimed for complex workflows where you can
 sacrifice few microseconds for the sake of code organization and readability. Also disclaimer:
 functional streams don't have to always be the most readable option.
