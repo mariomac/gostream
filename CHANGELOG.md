@@ -4,6 +4,7 @@
 
 * Added `Stream.Iter` method that allows directly using the stream within a for ... range loop.
 * Added `Stream.Seq` method that allows to create an iter.Seq from a stream.
+* Added `Seq2` function to iterate map-based streams as an iter.Sec2
 
 ## v0.8.1
 

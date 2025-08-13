@@ -53,6 +53,20 @@ func (is *iterableStream[T]) Seq(yield func(T) bool) {
 	}
 }
 
+// Seq2 returns the input Stream[item.Pair[K, V]] as a Go standard iter.Seq2[K,V].
+// Observe that this function will only work on Streams created from maps (or
+// explicitly created as streams of item.Pair[K, V])
+func Seq2[K comparable, V any](input Stream[item.Pair[K, V]]) iter.Seq2[K, V] {
+	return func(yield func(K, V) bool) {
+		next := input.iterator()
+		for item, ok := next(); ok; item, ok = next() {
+			if !yield(item.Key, item.Val) {
+				return
+			}
+		}
+	}
+}
+
 // ToSlice returns a Slice Containing all the elements of this Stream.
 // This function is equivalent to invoking input.ToSlice() as method.
 func ToSlice[T any](input Stream[T]) []T {

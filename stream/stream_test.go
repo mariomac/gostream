@@ -188,3 +188,15 @@ func TestSeqCombination(t *testing.T) {
 	}
 	assert.Equal(t, []int{4, 6, 8}, res)
 }
+
+func TestSeq2(t *testing.T) {
+	input := OfMap(map[int]string{1: "1", 2: "2", 3: "3", 4: "4", 5: "5", 6: "6"}).
+		Filter(func(i item.Pair[int, string]) bool {
+			return i.Key%2 == 0
+		})
+	output := map[int]string{}
+	for k, v := range Seq2(input) {
+		output[k] = v
+	}
+	assert.Equal(t, map[int]string{2: "2", 4: "4", 6: "6"}, output)
+}
