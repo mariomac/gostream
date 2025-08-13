@@ -1,10 +1,10 @@
 # Go Streams API
 
-Type safe Stream processing library inspired in the [Java Streams API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html).
-
 [![Go Reference](https://pkg.go.dev/badge/github.com/mariomac/gostream.svg)](https://pkg.go.dev/github.com/mariomac/gostream)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mariomac/gostream)](https://goreportcard.com/report/github.com/mariomac/gostream)
+[![codecov](https://codecov.io/github/mariomac/gostream/graph/badge.svg?token=D3C6Y3OCXZ)](https://codecov.io/github/mariomac/gostream)
 
+Type safe Stream processing library inspired in the [Java Streams API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html).
 
 ## Table of contents
 
