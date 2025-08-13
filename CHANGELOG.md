@@ -3,6 +3,7 @@
 ## v0.9.0
 
 * Added `Stream.Iter` method that allows directly using the stream within a for ... range loop.
+* Added `Stream.Seq` method that allows to create an iter.Seq from a stream.
 
 ## v0.8.1
 

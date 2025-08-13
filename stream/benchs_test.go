@@ -72,6 +72,24 @@ func BenchmarkIter(b *testing.B) {
 	}
 }
 
+func BenchmarkSeq(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		count := 0
+		sum := 0
+		for num := range Generate(func() int {
+			c := count
+			count++
+			return c
+		}).Limit(iterations).Seq {
+			sum += num
+		}
+		if sum != 4950 {
+			fmt.Println(sum)
+			b.FailNow()
+		}
+	}
+}
+
 func BenchmarkIterSlice(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		count := 0

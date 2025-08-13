@@ -169,3 +169,22 @@ func TestIterCombination(t *testing.T) {
 	}
 	assert.Equal(t, map[int]int{0: 4, 1: 6, 2: 8}, res)
 }
+
+func TestSeq(t *testing.T) {
+	var res []int
+	for n := range Of(2, 3, 4, 5, 6).Seq {
+		res = append(res, n)
+	}
+	assert.Equal(t, []int{2, 3, 4, 5, 6}, res)
+}
+
+func TestSeqCombination(t *testing.T) {
+	var res []int
+	for n := range Of(0, 1, 2, 3, 4, 5, 6, 7, 8).
+		Filter(func(i int) bool {
+			return i%2 == 0
+		}).Skip(2).Seq {
+		res = append(res, n)
+	}
+	assert.Equal(t, []int{4, 6, 8}, res)
+}

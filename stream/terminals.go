@@ -1,6 +1,8 @@
 package stream
 
 import (
+	"iter"
+
 	"github.com/mariomac/gostream/item"
 	"github.com/mariomac/gostream/order"
 )
@@ -20,6 +22,7 @@ func (is *iterableStream[T]) ForEach(consumer func(T)) {
 
 // Iter makes iterableStream compatible with Go's "for ... range" syntax.
 // It returns a function that can be used in range loops.
+// This function is equivalent to referencing the input.Iter method (without invoking it)
 func Iter[T any](input Stream[T]) func(func(int, T) bool) {
 	return input.Iter
 }
@@ -32,6 +35,21 @@ func (is *iterableStream[T]) Iter(yield func(int, T) bool) {
 			return
 		}
 		idx++
+	}
+}
+
+// Seq returns the input Stream[T] as a Go standard iter.Seq[T].
+// This function is equivalent to referencing the input.Seq method (without invoking it)
+func Seq[T any](input Stream[T]) iter.Seq[T] {
+	return input.Seq
+}
+
+func (is *iterableStream[T]) Seq(yield func(T) bool) {
+	next := is.iterator()
+	for item, ok := next(); ok; item, ok = next() {
+		if !yield(item) {
+			return
+		}
 	}
 }
 
