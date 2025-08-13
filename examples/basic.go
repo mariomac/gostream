@@ -7,7 +7,7 @@ import (
 )
 
 func isPrime(n int) bool {
-	for i := 2; i < n/2; i++ {
+	for i := 2; i <= n/2; i++ {
 		if n%i == 0 {
 			return false
 		}
@@ -16,9 +16,9 @@ func isPrime(n int) bool {
 }
 
 func main_basic() {
-	stream.Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).
-		Filter(isPrime).
-		ForEach(func(n int) {
-			fmt.Printf("%d is a prime number\n", n)
-		})
+	numbers := stream.Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+
+	for _, n := range numbers.Filter(isPrime).Iter {
+		fmt.Printf("%d is a prime number\n", n)
+	}
 }

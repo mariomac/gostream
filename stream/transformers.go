@@ -25,8 +25,8 @@ func Map[IT, OT any](input Stream[IT], mapper func(IT) OT) Stream[OT] {
 	}
 }
 
-func (bs *iterableStream[T]) Map(mapper func(T) T) Stream[T] {
-	return Map[T, T](bs, mapper)
+func (is *iterableStream[T]) Map(mapper func(T) T) Stream[T] {
+	return Map[T, T](is, mapper)
 }
 
 // Filter returns a Stream consisting of the items of this stream that match the given
@@ -36,11 +36,11 @@ func Filter[T any](input Stream[T], predicate func(T) bool) Stream[T] {
 	return input.Filter(predicate)
 }
 
-func (as *iterableStream[T]) Filter(predicate func(T) bool) Stream[T] {
+func (is *iterableStream[T]) Filter(predicate func(T) bool) Stream[T] {
 	return &iterableStream[T]{
-		infinite: as.infinite,
+		infinite: is.infinite,
 		supply: func() iterator[T] {
-			next := as.iterator()
+			next := is.iterator()
 			return func() (T, bool) {
 				for {
 					n, ok := next()
@@ -63,11 +63,11 @@ func Limit[T any](input Stream[T], maxSize int) Stream[T] {
 	return input.Limit(maxSize)
 }
 
-func (as *iterableStream[T]) Limit(maxSize int) Stream[T] {
+func (is *iterableStream[T]) Limit(maxSize int) Stream[T] {
 	return &iterableStream[T]{
 		infinite: false,
 		supply: func() iterator[T] {
-			next := as.iterator()
+			next := is.iterator()
 			count := 0
 			return func() (T, bool) {
 				if count == maxSize {

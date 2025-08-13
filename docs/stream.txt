@@ -5,6 +5,10 @@ processing operations
 
 FUNCTIONS
 
+func Iter[T any](input Stream[T]) func(func(int, T) bool)
+    Iter makes iterableStream compatible with Go's "for ... range" syntax. It
+    returns a function that can be used in range loops.
+
 func AllMatch[T any](input Stream[T], predicate func(T) bool) bool
     AllMatch returns whether all elements of this stream match the provided
     predicate. If this operation finds an item where the predicate is false, it
@@ -68,6 +72,12 @@ func ToSlice[T any](input Stream[T]) []T
 TYPES
 
 type Stream[T any] interface {
+
+	// Iter makes iterableStream compatible with Go's "for ... range" syntax.
+	// You don't have to directly invoke this function but refer to it from
+	// the for ... range loop:
+	// for i, n := range stream.Of(1,2,3).Range {
+	Iter(func(int, T) bool)
 
 	// Filter returns a Stream consisting of the items of this stream that match the given
 	// predicate (this is, applying the predicate function over the item returns true).

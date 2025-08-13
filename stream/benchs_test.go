@@ -1,6 +1,9 @@
 package stream
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 const iterations = 100
 
@@ -30,5 +33,59 @@ func BenchmarkFunctional(b *testing.B) {
 		}).Map(func(n int) int {
 			return n * n
 		}).Limit(iterations).ToSlice()
+	}
+}
+
+func BenchmarkForEach(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		count := 0
+		sum := 0
+		Generate(func() int {
+			c := count
+			count++
+			return c
+		}).Limit(iterations).ForEach(func(num int) {
+			sum += num
+		})
+		if sum != 4950 {
+			fmt.Println(sum)
+			b.FailNow()
+		}
+	}
+}
+
+func BenchmarkIter(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		count := 0
+		sum := 0
+		for _, num := range Generate(func() int {
+			c := count
+			count++
+			return c
+		}).Limit(iterations).Iter {
+			sum += num
+		}
+		if sum != 4950 {
+			fmt.Println(sum)
+			b.FailNow()
+		}
+	}
+}
+
+func BenchmarkIterSlice(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		count := 0
+		sum := 0
+		for _, num := range Generate(func() int {
+			c := count
+			count++
+			return c
+		}).Limit(iterations).ToSlice() {
+			sum += num
+		}
+		if sum != 4950 {
+			fmt.Println(sum)
+			b.FailNow()
+		}
 	}
 }

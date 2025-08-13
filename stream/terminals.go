@@ -11,10 +11,27 @@ func ForEach[T any](input Stream[T], consumer func(T)) {
 	input.ForEach(consumer)
 }
 
-func (bs *iterableStream[T]) ForEach(consumer func(T)) {
-	next := bs.iterator()
+func (is *iterableStream[T]) ForEach(consumer func(T)) {
+	next := is.iterator()
 	for in, ok := next(); ok; in, ok = next() {
 		consumer(in)
+	}
+}
+
+// Iter makes iterableStream compatible with Go's "for ... range" syntax.
+// It returns a function that can be used in range loops.
+func Iter[T any](input Stream[T]) func(func(int, T) bool) {
+	return input.Iter
+}
+
+func (is *iterableStream[T]) Iter(yield func(int, T) bool) {
+	next := is.iterator()
+	idx := 0
+	for item, ok := next(); ok; item, ok = next() {
+		if !yield(idx, item) {
+			return
+		}
+		idx++
 	}
 }
 
@@ -24,11 +41,11 @@ func ToSlice[T any](input Stream[T]) []T {
 	return input.ToSlice()
 }
 
-func (st *iterableStream[T]) ToSlice() []T {
-	assertFinite[T](st)
+func (is *iterableStream[T]) ToSlice() []T {
+	assertFinite[T](is)
 	// TODO: use "count" for better performance
 	res := []T{}
-	next := st.iterator()
+	next := is.iterator()
 	for r, ok := next(); ok; r, ok = next() {
 		res = append(res, r)
 	}

@@ -13,6 +13,7 @@ func GetFunctionName(i interface{}) string {
 func main() {
 	funcs := []func(){
 		main_basic,
+		main_basic_foreach,
 		main_comparable,
 		main_dice,
 		main_iterate,

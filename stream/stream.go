@@ -108,6 +108,11 @@ type Stream[T any] interface {
 
 	// ToSlice returns a Slice Containing all the elements of this Stream.
 	ToSlice() []T
+
+	// Iter makes the Stream compatible with Go's "for ... range" syntax.
+	// It's a function that must not be directly invoked but referenced in for ... range loops:
+	// for i, item := range Of(1, 2, 3).Iter { ... }
+	Iter(yield func(int, T) bool)
 }
 
 // if there are more items to iterate, returns the next item and true.
@@ -123,7 +128,7 @@ func finishedIterator[T any]() (T, bool) {
 
 type iteratorSupplier[T any] func() iterator[T]
 
-// iterableStream is a generic stream that is iterated by the iterator returned by the
+// iterableStream is a generic stream iterated by the iterator returned by the
 // supplier function
 type iterableStream[T any] struct {
 	infinite bool

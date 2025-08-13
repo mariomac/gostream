@@ -144,3 +144,28 @@ func TestLimitInfiniteStreamAssertion(t *testing.T) {
 		})
 	}
 }
+
+func TestIter(t *testing.T) {
+	res := map[int]int{}
+	expectedI := 0
+	for i, n := range Iter(Of(2, 3, 4, 5, 6)) {
+		require.Equal(t, expectedI, i)
+		expectedI++
+		res[i] = n
+	}
+	assert.Equal(t, map[int]int{0: 2, 1: 3, 2: 4, 3: 5, 4: 6}, res)
+}
+
+func TestIterCombination(t *testing.T) {
+	res := map[int]int{}
+	expectedI := 0
+	for i, n := range Of(0, 1, 2, 3, 4, 5, 6, 7, 8).
+		Filter(func(i int) bool {
+			return i%2 == 0
+		}).Skip(2).Iter {
+		require.Equal(t, expectedI, i)
+		expectedI++
+		res[i] = n
+	}
+	assert.Equal(t, map[int]int{0: 4, 1: 6, 2: 8}, res)
+}

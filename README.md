@@ -13,7 +13,7 @@ Type safe Stream processing library inspired in the [Java Streams API](https://d
 
 ## Requirements
 
-* Go 1.18 or higher
+* Go 1.24 or higher
 
 This library makes intensive usage of [Type Parameters (generics)](https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md) so it is not compatible with any Go version lower than 1.18.
 
@@ -28,7 +28,7 @@ IDE does the job.
 
 1. Creates a literal stream containing all the integers from 1 to 11.
 2. From the Stream, selects all the integers that are prime
-3. For each filtered int, prints a message.
+3. Iterates the stream. For each filtered int, prints a message.
 
 ```go
 import (
@@ -37,15 +37,15 @@ import (
 )
 
 func main() {
-  stream.Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).
-    Filter(isPrime).
-    ForEach(func(n int) {
-      fmt.Printf("%d is a prime number\n", n)
-    })
+  numbers := stream.Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+
+  for _, n := range numbers.Filter(isPrime).Iter {
+    fmt.Printf("%d is a prime number\n", n)
+  }
 }
 
 func isPrime(n int) bool {
-  for i := 2; i < n/2; i++ {
+  for i := 2; i <= n/2; i++ {
     if n%i == 0 {
       return false
     }
@@ -64,6 +64,17 @@ Output:
 11 is a prime number
 ```
 
+Alternatively, you can use the `ForEach` method to iterate the stream in a functional way:
+
+```go
+func main() {
+  stream.Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).
+    Filter(isPrime).
+    ForEach(func(n int) {
+      fmt.Printf("%d is a prime number\n", n)
+    })
+}
+```
 ### Example 2: generation, map, limit and slice conversion
 
 1. Creates an **infinite** stream of random integers (no problem, streams are evaluated lazily!)
@@ -272,6 +283,7 @@ could give a try to my alternative project: [PIPES: Processing In Pipeline-Embed
   - [X] Min
   - [X] NoneMatch
   - [X] Reduce
+  - [X] Iter
 * Auxiliary Functions
   - [X] Add (for numbers)
   - [X] Increment (for numbers)

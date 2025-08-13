@@ -1,5 +1,9 @@
 # Go Streams API changelog
 
+## v0.9.0
+
+* Added `Stream.Iter` method that allows directly using the stream within a for ... range loop.
+
 ## v0.8.1
 
 * Adapted code to work in final version of Go 1.18, where the `constraints` package has been moved
