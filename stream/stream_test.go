@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mariomac/gostream/item"
-	"github.com/mariomac/gostream/order"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/mariomac/gostream/item"
+	"github.com/mariomac/gostream/order"
 )
 
 func TestLazyOperation(t *testing.T) {
@@ -38,7 +38,6 @@ func TestLazyOperation(t *testing.T) {
 		"map(friend)",
 		"foreach(6)",
 	}, actions)
-
 }
 
 func TestInfiniteStreamAssertion(t *testing.T) {

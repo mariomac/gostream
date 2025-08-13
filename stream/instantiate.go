@@ -35,7 +35,8 @@ func Generate[T any](supplier func() T) Stream[T] {
 			return func() (T, bool) {
 				return supplier(), true
 			}
-		}}
+		},
+	}
 }
 
 // Iterate returns an infinite sequential ordered Stream produced by iterative application of a function
@@ -54,7 +55,8 @@ func Iterate[T any](seed T, f func(T) T) Stream[T] {
 				lastElement = f(lastElement)
 				return i, true
 			}
-		}}
+		},
+	}
 }
 
 // Concat creates a lazily concatenated stream whose elements are all the elements of the first stream

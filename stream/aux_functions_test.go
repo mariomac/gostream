@@ -3,8 +3,9 @@ package stream
 import (
 	"testing"
 
-	"github.com/mariomac/gostream/item"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/mariomac/gostream/item"
 )
 
 func TestIsZero(t *testing.T) {

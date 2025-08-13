@@ -4,13 +4,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/mariomac/gostream/item"
 	"github.com/mariomac/gostream/order"
-
-	"github.com/stretchr/testify/assert"
-	_ "github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	_ "github.com/stretchr/testify/require"
 )
 
 func TestToSlice(t *testing.T) {
@@ -93,13 +91,13 @@ func TestCount(t *testing.T) {
 }
 
 func TestFindFirst(t *testing.T) {
-	n, ok := Empty[int]().FindFirst()
+	_, ok := Empty[int]().FindFirst()
 	require.False(t, ok)
 
-	n, ok = Of(1, 2, 3).Skip(3).FindFirst()
+	_, ok = Of(1, 2, 3).Skip(3).FindFirst()
 	require.False(t, ok)
 
-	n, ok = Of(1, 2, 3).FindFirst()
+	n, ok := Of(1, 2, 3).FindFirst()
 	require.True(t, ok)
 	assert.Equal(t, 1, n)
 
@@ -113,13 +111,13 @@ func TestFindFirst(t *testing.T) {
 }
 
 func TestMax(t *testing.T) {
-	n, ok := Empty[int]().Max(order.Int[int])
+	_, ok := Empty[int]().Max(order.Int[int])
 	require.False(t, ok)
 
-	n, ok = Of(1, 2, 3).Skip(3).Max(order.Int[int])
+	_, ok = Of(1, 2, 3).Skip(3).Max(order.Int[int])
 	require.False(t, ok)
 
-	n, ok = Of(1, 2, 3).Skip(2).Max(order.Int[int])
+	n, ok := Of(1, 2, 3).Skip(2).Max(order.Int[int])
 	require.True(t, ok)
 	assert.Equal(t, 3, n)
 
@@ -137,13 +135,13 @@ func TestMax(t *testing.T) {
 }
 
 func TestMin(t *testing.T) {
-	n, ok := Empty[int]().Min(order.Int[int])
+	_, ok := Empty[int]().Min(order.Int[int])
 	require.False(t, ok)
 
-	n, ok = Of(1, 2, 3).Skip(3).Min(order.Int[int])
+	_, ok = Of(1, 2, 3).Skip(3).Min(order.Int[int])
 	require.False(t, ok)
 
-	n, ok = Of(1, 2, 3).Skip(2).Min(order.Int[int])
+	n, ok := Of(1, 2, 3).Skip(2).Min(order.Int[int])
 	require.True(t, ok)
 	assert.Equal(t, 3, n)
 

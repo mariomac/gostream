@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/mariomac/gostream/order"
 	"math/rand"
 
+	"github.com/mariomac/gostream/order"
 	"github.com/mariomac/gostream/stream"
 )
 

@@ -9,10 +9,10 @@ import (
 )
 
 func main_dice() {
-	rand.Seed(time.Now().UnixMilli())
+	rnd := rand.New(rand.NewSource(time.Now().UnixMilli()))
 	fmt.Println("let me throw 5 times a dice for you")
 
-	results := stream.Generate(rand.Int).
+	results := stream.Generate(rnd.Int).
 		Map(func(n int) int {
 			return n%6 + 1
 		}).
