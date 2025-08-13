@@ -1,12 +1,13 @@
 package stream
 
 import (
-	"github.com/mariomac/gostream/item"
-	"github.com/mariomac/gostream/order"
 	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/mariomac/gostream/item"
+	"github.com/mariomac/gostream/order"
 )
 
 func TestIterate(t *testing.T) {
@@ -58,8 +59,10 @@ func TestOfMap_SortedByKey(t *testing.T) {
 	}).ToSlice()
 
 	assert.Equal(t,
-		[]string{"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"},
+		[]string{
+			"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+		},
 		monthNames,
 	)
 }
@@ -75,8 +78,10 @@ func TestOfMap_SortedByVal(t *testing.T) {
 	}).ToSlice()
 
 	assert.Equal(t,
-		[]string{"Apr", "Aug", "Dec", "Feb", "Jan", "Jul",
-			"Jun", "Mar", "May", "Nov", "Oct", "Sep"},
+		[]string{
+			"Apr", "Aug", "Dec", "Feb", "Jan", "Jul",
+			"Jun", "Mar", "May", "Nov", "Oct", "Sep",
+		},
 		monthNames,
 	)
 }

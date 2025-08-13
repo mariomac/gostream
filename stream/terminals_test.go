@@ -4,13 +4,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/mariomac/gostream/item"
 	"github.com/mariomac/gostream/order"
-
-	"github.com/stretchr/testify/assert"
-	_ "github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	_ "github.com/stretchr/testify/require"
 )
 
 func TestToSlice(t *testing.T) {

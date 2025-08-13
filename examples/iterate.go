@@ -20,8 +20,10 @@ func double(n int) int {
 
 func asWord(n int) string {
 	if n < 10 {
-		return []string{"zero", "one", "two", "three", "four", "five",
-			"six", "seven", "eight", "nine"}[n]
+		return []string{
+			"zero", "one", "two", "three", "four", "five",
+			"six", "seven", "eight", "nine",
+		}[n]
 	} else {
 		return "many"
 	}

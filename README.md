@@ -3,6 +3,8 @@
 Type safe Stream processing library inspired in the [Java Streams API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html).
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/mariomac/gostream.svg)](https://pkg.go.dev/github.com/mariomac/gostream)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mariomac/gostream)](https://goreportcard.com/report/github.com/mariomac/gostream)
+
 
 ## Table of contents
 
@@ -85,10 +87,10 @@ func main() {
 4. Collects the stream items as a slice.
 
 ```go
-rand.Seed(time.Now().UnixMilli())
+rnd := rand.New(rand.NewSource(time.Now().UnixMilli()))
 fmt.Println("let me throw 5 times a dice for you")
 
-results := stream.Generate(rand.Int).
+results := stream.Generate(rnd.Int).
     Map(func(n int) int {
         return n%6 + 1
     }).
