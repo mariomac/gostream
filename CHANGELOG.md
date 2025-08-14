@@ -1,5 +1,9 @@
 # Go Streams API changelog
 
+## v0.9.1
+* Deprecated `order.Natural` and removed `order.Int` in favor of standard library's `cmp.Compare`
+* Removed `order.SortSlice` in favor of `slices.Sort...` family of standard library functions
+
 ## v0.9.0
 
 * Added `Stream.Iter` method that allows directly using the stream within a for ... range loop.

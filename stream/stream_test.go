@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"cmp"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -11,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mariomac/gostream/item"
-	"github.com/mariomac/gostream/order"
 )
 
 func TestLazyOperation(t *testing.T) {
@@ -43,7 +43,7 @@ func TestLazyOperation(t *testing.T) {
 func TestInfiniteStreamAssertion(t *testing.T) {
 	testCases := []func(s Stream[int]){
 		func(s Stream[int]) {
-			s.Sorted(order.Natural[int])
+			s.Sorted(cmp.Compare[int])
 		},
 		func(s Stream[int]) {
 			s.ToSlice()
@@ -98,7 +98,7 @@ func TestInfiniteStreamAssertion(t *testing.T) {
 func TestLimitInfiniteStreamAssertion(t *testing.T) {
 	testCases := []func(s Stream[int]){
 		func(s Stream[int]) {
-			s.Sorted(order.Natural[int])
+			s.Sorted(cmp.Compare[int])
 		},
 		func(s Stream[int]) {
 			s.ToSlice()
