@@ -3,6 +3,7 @@
 ## v0.9.1
 * Deprecated `order.Natural` and removed `order.Int` in favor of standard library's `cmp.Compare`
 * Removed `order.SortSlice` in favor of `slices.Sort...` family of standard library functions
+* `ToSlice` method will return a nil slice if the stream is empty. Before, it returned an empty slice.
 
 ## v0.9.0
 

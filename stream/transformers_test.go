@@ -124,8 +124,8 @@ func TestPeek(t *testing.T) {
 }
 
 func TestSkip(t *testing.T) {
-	assert.Equal(t, []int{}, Empty[int]().Skip(3).ToSlice())
-	assert.Equal(t, []int{}, Of(1, 2).Skip(3).ToSlice())
-	assert.Equal(t, []int{}, Of(1, 2, 3).Skip(3).ToSlice())
+	assert.Empty(t, Empty[int]().Skip(3).ToSlice())
+	assert.Empty(t, Of(1, 2).Skip(3).ToSlice())
+	assert.Empty(t, Of(1, 2, 3).Skip(3).ToSlice())
 	assert.Equal(t, []int{4, 5, 6}, Of(1, 2, 3, 4, 5, 6).Skip(3).ToSlice())
 }

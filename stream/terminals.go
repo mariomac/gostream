@@ -2,6 +2,7 @@ package stream
 
 import (
 	"iter"
+	"slices"
 
 	"github.com/mariomac/gostream/item"
 	"github.com/mariomac/gostream/order"
@@ -75,13 +76,7 @@ func ToSlice[T any](input Stream[T]) []T {
 
 func (is *iterableStream[T]) ToSlice() []T {
 	assertFinite[T](is)
-	// TODO: use "count" for better performance
-	res := []T{}
-	next := is.iterator()
-	for r, ok := next(); ok; r, ok = next() {
-		res = append(res, r)
-	}
-	return res
+	return slices.Collect(is.Seq)
 }
 
 // ToMap returns a map Containing all the item.Pair elements of this Stream, where

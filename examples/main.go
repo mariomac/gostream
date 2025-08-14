@@ -19,6 +19,7 @@ func main() {
 		main_iterate,
 		main_reduce,
 		main_sort,
+		main_seq_api,
 		main_seq2_api,
 	}
 
