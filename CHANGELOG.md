@@ -1,6 +1,7 @@
 # Go Streams API changelog
 
-## v0.9.1
+## v0.10.0
+* Added `stream.OfSeq` and `stream.OfSeq2` instantiation functions.
 * Deprecated `order.Natural` and removed `order.Int` in favor of standard library's `cmp.Compare`
 * Removed `order.SortSlice` in favor of `slices.Sort...` family of standard library functions
 * `ToSlice` method will return a nil slice if the stream is empty. Before, it returned an empty slice.

@@ -2,6 +2,7 @@ package stream
 
 import (
 	"cmp"
+	"maps"
 	"math/rand"
 	"testing"
 
@@ -100,4 +101,47 @@ func TestOfChannel(t *testing.T) {
 	assert.Equal(t,
 		[]string{"por", "el", "puente", "de", "aranda"},
 		OfChannel[string](elems).ToSlice())
+}
+
+func TestOfSeq(t *testing.T) {
+	// Create an iter.Seq from a slice using slices.Values
+	values := []int{1, 2, 3, 4, 5}
+	seq := func(yield func(int) bool) {
+		for _, v := range values {
+			if !yield(v) {
+				return
+			}
+		}
+	}
+
+	stream := OfSeq(seq)
+	assert.Equal(t, []int{1, 2, 3, 4, 5}, stream.ToSlice())
+
+	// test that iterating for the second time produces the same results
+	stream = OfSeq(seq)
+	assert.Equal(t, []int{1, 2, 3, 4, 5}, stream.ToSlice())
+}
+
+func TestOfSeq2(t *testing.T) {
+	// Create an iter.Seq2 from key-value pairs
+	seq2 := maps.All(map[string]int{"a": 1, "b": 2, "c": 3})
+
+	stream := OfSeq2(seq2)
+	assert.Equal(t, 3, stream.Count())
+	assert.True(t, stream.AnyMatch(item.Equals(
+		item.Pair[string, int]{Key: "a", Val: 1})))
+	assert.True(t, stream.AnyMatch(item.Equals(
+		item.Pair[string, int]{Key: "b", Val: 2})))
+	assert.True(t, stream.AnyMatch(item.Equals(
+		item.Pair[string, int]{Key: "c", Val: 3})))
+
+	// test that iterating for the second time produces the same results
+	stream = OfSeq2(seq2)
+	assert.Equal(t, 3, stream.Count())
+	assert.True(t, stream.AnyMatch(item.Equals(
+		item.Pair[string, int]{Key: "a", Val: 1})))
+	assert.True(t, stream.AnyMatch(item.Equals(
+		item.Pair[string, int]{Key: "b", Val: 2})))
+	assert.True(t, stream.AnyMatch(item.Equals(
+		item.Pair[string, int]{Key: "c", Val: 3})))
 }
