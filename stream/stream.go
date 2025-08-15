@@ -4,6 +4,7 @@ package stream
 
 import (
 	"fmt"
+	"iter"
 
 	"github.com/mariomac/gostream/order"
 )
@@ -110,17 +111,18 @@ type Stream[T any] interface {
 	ToSlice() []T
 
 	// Iter makes the Stream compatible with Go's "for ... range" syntax.
-	// This function must not be directly invoked but referenced in for ... range loops:
-	// for i, item := range Of(1, 2, 3).Iter { ... }
-	Iter(yield func(int, T) bool)
+	// The returned `iter.Seq2` has two fields: the first is the index of the item within
+	// the stream, and the second is the item itself.
+	// To iterate map-like `stream.Stream[item.Pair[K, V]]`, you need to use the `stream.Seq2`
+	// helper function
+	Iter() iter.Seq2[int, T]
 
-	// Seq makes the Stream[T] compatible with the Go standard iter.Seq[T] type,
+	// Seq returns a Go standard iter.Seq[T] iterator type,
 	// allow using the Stream as an iterator that yields each element of this stream.
 	// It fulfills the standard iter.Seq[T] type definition and can be used with
-	// Go's "for ... range" syntax: for item := range stream.Seq { ... }
+	// Go's "for ... range" syntax: for item := range stream.Seq() { ... }
 	// as well as other functions using the standard Go iter.Seq type.
-	// This function must not be directly invoked but used as a reference.
-	Seq(yeld func(T) bool)
+	Seq() iter.Seq[T]
 }
 
 // if there are more items to iterate, returns the next item and true.

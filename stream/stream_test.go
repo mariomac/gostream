@@ -155,13 +155,32 @@ func TestIter(t *testing.T) {
 	assert.Equal(t, map[int]int{0: 2, 1: 3, 2: 4, 3: 5, 4: 6}, res)
 }
 
+func TestIter_MultipleInstances(t *testing.T) {
+	str := Of(1, 2, 3)
+	var indexes, elems []int
+	for i, n := range Iter(str) {
+		indexes = append(indexes, i)
+		elems = append(elems, n)
+	}
+	assert.Equal(t, []int{1, 2, 3}, elems)
+	assert.Equal(t, []int{0, 1, 2}, indexes)
+	// check that a new Iter instance returns a fres iterator from the start
+	var indexes2, elems2 []int
+	for i, n := range Iter(str) {
+		indexes2 = append(indexes2, i)
+		elems2 = append(elems2, n)
+	}
+	assert.Equal(t, []int{1, 2, 3}, elems2)
+	assert.Equal(t, []int{0, 1, 2}, indexes2)
+}
+
 func TestIterCombination(t *testing.T) {
 	res := map[int]int{}
 	expectedI := 0
 	for i, n := range Of(0, 1, 2, 3, 4, 5, 6, 7, 8).
 		Filter(func(i int) bool {
 			return i%2 == 0
-		}).Skip(2).Iter {
+		}).Skip(2).Iter() {
 		require.Equal(t, expectedI, i)
 		expectedI++
 		res[i] = n
@@ -171,7 +190,7 @@ func TestIterCombination(t *testing.T) {
 
 func TestSeq(t *testing.T) {
 	var res []int
-	for n := range Of(2, 3, 4, 5, 6).Seq {
+	for n := range Of(2, 3, 4, 5, 6).Seq() {
 		res = append(res, n)
 	}
 	assert.Equal(t, []int{2, 3, 4, 5, 6}, res)
@@ -182,10 +201,25 @@ func TestSeqCombination(t *testing.T) {
 	for n := range Of(0, 1, 2, 3, 4, 5, 6, 7, 8).
 		Filter(func(i int) bool {
 			return i%2 == 0
-		}).Skip(2).Seq {
+		}).Skip(2).Seq() {
 		res = append(res, n)
 	}
 	assert.Equal(t, []int{4, 6, 8}, res)
+}
+
+func TestSeq_MultipleInstances(t *testing.T) {
+	str := Of(1, 2, 3)
+	var elems []int
+	for n := range Seq(str) {
+		elems = append(elems, n)
+	}
+	assert.Equal(t, []int{1, 2, 3}, elems)
+	// check that a new Iter instance returns a fres iterator from the start
+	var elems2 []int
+	for n := range Seq(str) {
+		elems2 = append(elems2, n)
+	}
+	assert.Equal(t, []int{1, 2, 3}, elems2)
 }
 
 func TestSeq2(t *testing.T) {
@@ -198,4 +232,26 @@ func TestSeq2(t *testing.T) {
 		output[k] = v
 	}
 	assert.Equal(t, map[int]string{2: "2", 4: "4", 6: "6"}, output)
+}
+
+func TestSeq2_MultipleInstances(t *testing.T) {
+	str := Of(
+		item.Pair[int, int]{Key: 3, Val: 1},
+		item.Pair[int, int]{Key: 2, Val: 2},
+		item.Pair[int, int]{Key: 1, Val: 3})
+	var keys, vals []int
+	for k, v := range Seq2(str) {
+		keys = append(keys, k)
+		vals = append(vals, v)
+	}
+	assert.Equal(t, []int{3, 2, 1}, keys)
+	assert.Equal(t, []int{1, 2, 3}, vals)
+	// check that a new Iter instance returns a fres iterator from the start
+	var keys2, vals2 []int
+	for k, v := range Seq2(str) {
+		keys2 = append(keys2, k)
+		vals2 = append(vals2, v)
+	}
+	assert.Equal(t, []int{3, 2, 1}, keys2)
+	assert.Equal(t, []int{1, 2, 3}, vals2)
 }

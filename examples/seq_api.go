@@ -35,19 +35,19 @@ func main_seq_api() {
 
 	// .Seq method allows iterating the stream within a for..range
 	fmt.Println("Top 3 files:")
-	for v := range sizeTop3.Seq {
+	for v := range sizeTop3.Seq() {
 		fmt.Println(v.Name())
 	}
 
 	// .Iter method allows iterating the stream within an indexed for..range
 	fmt.Println("Top 3 files (indexed):")
-	for k, v := range sizeTop3.Iter {
+	for k, v := range sizeTop3.Iter() {
 		fmt.Printf("[%v] %v\n", k, v.Name())
 	}
 
 	// .Seq method also allows connecting the stream to other Go
 	// standard library functions that expect an iter.Seq input
 	// for example, slices.Collect
-	asSlice := slices.Collect(sizeTop3.Seq)
+	asSlice := slices.Collect(sizeTop3.Seq())
 	fmt.Println("Top 3 files (as slice): ", asSlice)
 }

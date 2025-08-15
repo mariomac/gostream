@@ -62,7 +62,7 @@ func BenchmarkIter(b *testing.B) {
 			c := count
 			count++
 			return c
-		}).Limit(iterations).Iter {
+		}).Limit(iterations).Iter() {
 			sum += num
 		}
 		if sum != 4950 {
@@ -80,7 +80,7 @@ func BenchmarkSeq(b *testing.B) {
 			c := count
 			count++
 			return c
-		}).Limit(iterations).Seq {
+		}).Limit(iterations).Seq() {
 			sum += num
 		}
 		if sum != 4950 {

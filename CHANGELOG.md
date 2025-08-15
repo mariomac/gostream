@@ -1,5 +1,8 @@
 # Go Streams API changelog
 
+## v0.10.1
+* Fix: `.Item` and `.Seq` methods are not used as a function reference anymore, but directly invoked.
+
 ## v0.10.0
 * Added `stream.OfSeq` and `stream.OfSeq2` instantiation functions.
 * Deprecated `order.Natural` and removed `order.Int` in favor of standard library's `cmp.Compare`

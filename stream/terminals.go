@@ -23,33 +23,37 @@ func (is *iterableStream[T]) ForEach(consumer func(T)) {
 
 // Iter makes iterableStream compatible with Go's "for ... range" syntax.
 // It returns a function that can be used in range loops.
-// This function is equivalent to referencing the input.Iter method (without invoking it)
+// This function is equivalent to invoking the input.Iter method
 func Iter[T any](input Stream[T]) func(func(int, T) bool) {
-	return input.Iter
+	return input.Iter()
 }
 
-func (is *iterableStream[T]) Iter(yield func(int, T) bool) {
+func (is *iterableStream[T]) Iter() iter.Seq2[int, T] {
 	next := is.iterator()
-	idx := 0
-	for item, ok := next(); ok; item, ok = next() {
-		if !yield(idx, item) {
-			return
+	return func(yield func(int, T) bool) {
+		idx := 0
+		for item, ok := next(); ok; item, ok = next() {
+			if !yield(idx, item) {
+				return
+			}
+			idx++
 		}
-		idx++
 	}
 }
 
 // Seq returns the input Stream[T] as a Go standard iter.Seq[T].
-// This function is equivalent to referencing the input.Seq method (without invoking it)
+// This function is equivalent to invoking the input.Seq() method
 func Seq[T any](input Stream[T]) iter.Seq[T] {
-	return input.Seq
+	return input.Seq()
 }
 
-func (is *iterableStream[T]) Seq(yield func(T) bool) {
+func (is *iterableStream[T]) Seq() iter.Seq[T] {
 	next := is.iterator()
-	for item, ok := next(); ok; item, ok = next() {
-		if !yield(item) {
-			return
+	return func(yield func(T) bool) {
+		for item, ok := next(); ok; item, ok = next() {
+			if !yield(item) {
+				return
+			}
 		}
 	}
 }
@@ -76,7 +80,7 @@ func ToSlice[T any](input Stream[T]) []T {
 
 func (is *iterableStream[T]) ToSlice() []T {
 	assertFinite[T](is)
-	return slices.Collect(is.Seq)
+	return slices.Collect(is.Seq())
 }
 
 // ToMap returns a map Containing all the item.Pair elements of this Stream, where

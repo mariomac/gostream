@@ -18,7 +18,7 @@ func isPrime(n int) bool {
 func main_basic() {
 	numbers := stream.Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
 
-	for _, n := range numbers.Filter(isPrime).Iter {
+	for _, n := range numbers.Filter(isPrime).Iter() {
 		fmt.Printf("%d is a prime number\n", n)
 	}
 }
