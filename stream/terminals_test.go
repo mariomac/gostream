@@ -1,6 +1,7 @@
 package stream
 
 import (
+	cmp "cmp"
 	"strings"
 	"testing"
 
@@ -8,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mariomac/gostream/item"
-	"github.com/mariomac/gostream/order"
 )
 
 func TestToSlice(t *testing.T) {
@@ -111,49 +111,49 @@ func TestFindFirst(t *testing.T) {
 }
 
 func TestMax(t *testing.T) {
-	_, ok := Empty[int]().Max(order.Int[int])
+	_, ok := Empty[int]().Max(cmp.Compare[int])
 	require.False(t, ok)
 
-	_, ok = Of(1, 2, 3).Skip(3).Max(order.Int[int])
+	_, ok = Of(1, 2, 3).Skip(3).Max(cmp.Compare[int])
 	require.False(t, ok)
 
-	n, ok := Of(1, 2, 3).Skip(2).Max(order.Int[int])
+	n, ok := Of(1, 2, 3).Skip(2).Max(cmp.Compare[int])
 	require.True(t, ok)
 	assert.Equal(t, 3, n)
 
-	n, ok = Of(1, 2, 3).Max(order.Int[int])
+	n, ok = Of(1, 2, 3).Max(cmp.Compare[int])
 	require.True(t, ok)
 	assert.Equal(t, 3, n)
 
-	n, ok = Of(1, 2, 3, 4, 5, 6).Skip(3).Max(order.Int[int])
+	n, ok = Of(1, 2, 3, 4, 5, 6).Skip(3).Max(cmp.Compare[int])
 	require.True(t, ok)
 	assert.Equal(t, 6, n)
 
-	n, ok = Iterate[int](1, item.Increment[int]).Limit(8).Max(order.Int[int])
+	n, ok = Iterate[int](1, item.Increment[int]).Limit(8).Max(cmp.Compare[int])
 	require.True(t, ok)
 	assert.Equal(t, 8, n)
 }
 
 func TestMin(t *testing.T) {
-	_, ok := Empty[int]().Min(order.Int[int])
+	_, ok := Empty[int]().Min(cmp.Compare[int])
 	require.False(t, ok)
 
-	_, ok = Of(1, 2, 3).Skip(3).Min(order.Int[int])
+	_, ok = Of(1, 2, 3).Skip(3).Min(cmp.Compare[int])
 	require.False(t, ok)
 
-	n, ok := Of(1, 2, 3).Skip(2).Min(order.Int[int])
+	n, ok := Of(1, 2, 3).Skip(2).Min(cmp.Compare[int])
 	require.True(t, ok)
 	assert.Equal(t, 3, n)
 
-	n, ok = Of(1, 2, 3).Min(order.Int[int])
+	n, ok = Of(1, 2, 3).Min(cmp.Compare[int])
 	require.True(t, ok)
 	assert.Equal(t, 1, n)
 
-	n, ok = Of(1, 2, 3, 4, 5, 6).Skip(3).Min(order.Int[int])
+	n, ok = Of(1, 2, 3, 4, 5, 6).Skip(3).Min(cmp.Compare[int])
 	require.True(t, ok)
 	assert.Equal(t, 4, n)
 
-	n, ok = Iterate[int](1, item.Increment[int]).Limit(8).Min(order.Int[int])
+	n, ok = Iterate[int](1, item.Increment[int]).Limit(8).Min(cmp.Compare[int])
 	require.True(t, ok)
 	assert.Equal(t, 1, n)
 }

@@ -1,6 +1,8 @@
 package stream
 
 import (
+	"slices"
+
 	"github.com/mariomac/gostream/order"
 )
 
@@ -123,7 +125,7 @@ func (is *iterableStream[T]) Sorted(comparator order.Comparator[T]) Stream[T] {
 		infinite: false,
 		supply: func() iterator[T] {
 			items := is.ToSlice()
-			order.SortSlice(items, comparator)
+			slices.SortFunc(items, comparator)
 			return func() (T, bool) {
 				if len(items) == 0 {
 					return finishedIterator[T]()

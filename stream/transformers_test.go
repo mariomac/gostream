@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"cmp"
 	"fmt"
 	"strconv"
 	"testing"
@@ -9,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mariomac/gostream/item"
-	"github.com/mariomac/gostream/order"
 )
 
 func TestMap(t *testing.T) {
@@ -69,7 +69,7 @@ func TestSort(t *testing.T) {
 	assert.Equal(t,
 		[]int{1, 1, 2, 3, 5, 6, 7, 8, 8},
 		Of(1, 7, 8, 3, 2, 1, 5, 8, 6).
-			Sorted(order.Natural[int]).ToSlice())
+			Sorted(cmp.Compare[int]).ToSlice())
 }
 
 func TestFlapMap(t *testing.T) {
@@ -124,8 +124,8 @@ func TestPeek(t *testing.T) {
 }
 
 func TestSkip(t *testing.T) {
-	assert.Equal(t, []int{}, Empty[int]().Skip(3).ToSlice())
-	assert.Equal(t, []int{}, Of(1, 2).Skip(3).ToSlice())
-	assert.Equal(t, []int{}, Of(1, 2, 3).Skip(3).ToSlice())
+	assert.Empty(t, Empty[int]().Skip(3).ToSlice())
+	assert.Empty(t, Of(1, 2).Skip(3).ToSlice())
+	assert.Empty(t, Of(1, 2, 3).Skip(3).ToSlice())
 	assert.Equal(t, []int{4, 5, 6}, Of(1, 2, 3, 4, 5, 6).Skip(3).ToSlice())
 }

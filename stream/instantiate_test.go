@@ -1,6 +1,8 @@
 package stream
 
 import (
+	"cmp"
+	"maps"
 	"math/rand"
 	"testing"
 
@@ -52,7 +54,7 @@ func TestOfMap_SortedByKey(t *testing.T) {
 	months := OfMap(map[int]string{
 		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
 		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
-	}).Sorted(order.ByKey[int, string](order.Natural[int]))
+	}).Sorted(order.ByKey[int, string](cmp.Compare[int]))
 
 	monthNames := Map(months, func(p item.Pair[int, string]) string {
 		return p.Val
@@ -71,7 +73,7 @@ func TestOfMap_SortedByVal(t *testing.T) {
 	months := OfMap(map[int]string{
 		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
 		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
-	}).Sorted(order.ByVal[int, string](order.Natural[string]))
+	}).Sorted(order.ByVal[int, string](cmp.Compare[string]))
 
 	monthNames := Map(months, func(p item.Pair[int, string]) string {
 		return p.Val
@@ -99,4 +101,47 @@ func TestOfChannel(t *testing.T) {
 	assert.Equal(t,
 		[]string{"por", "el", "puente", "de", "aranda"},
 		OfChannel[string](elems).ToSlice())
+}
+
+func TestOfSeq(t *testing.T) {
+	// Create an iter.Seq from a slice using slices.Values
+	values := []int{1, 2, 3, 4, 5}
+	seq := func(yield func(int) bool) {
+		for _, v := range values {
+			if !yield(v) {
+				return
+			}
+		}
+	}
+
+	stream := OfSeq(seq)
+	assert.Equal(t, []int{1, 2, 3, 4, 5}, stream.ToSlice())
+
+	// test that iterating for the second time produces the same results
+	stream = OfSeq(seq)
+	assert.Equal(t, []int{1, 2, 3, 4, 5}, stream.ToSlice())
+}
+
+func TestOfSeq2(t *testing.T) {
+	// Create an iter.Seq2 from key-value pairs
+	seq2 := maps.All(map[string]int{"a": 1, "b": 2, "c": 3})
+
+	stream := OfSeq2(seq2)
+	assert.Equal(t, 3, stream.Count())
+	assert.True(t, stream.AnyMatch(item.Equals(
+		item.Pair[string, int]{Key: "a", Val: 1})))
+	assert.True(t, stream.AnyMatch(item.Equals(
+		item.Pair[string, int]{Key: "b", Val: 2})))
+	assert.True(t, stream.AnyMatch(item.Equals(
+		item.Pair[string, int]{Key: "c", Val: 3})))
+
+	// test that iterating for the second time produces the same results
+	stream = OfSeq2(seq2)
+	assert.Equal(t, 3, stream.Count())
+	assert.True(t, stream.AnyMatch(item.Equals(
+		item.Pair[string, int]{Key: "a", Val: 1})))
+	assert.True(t, stream.AnyMatch(item.Equals(
+		item.Pair[string, int]{Key: "b", Val: 2})))
+	assert.True(t, stream.AnyMatch(item.Equals(
+		item.Pair[string, int]{Key: "c", Val: 3})))
 }

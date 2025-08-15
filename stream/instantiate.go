@@ -1,6 +1,8 @@
 package stream
 
 import (
+	"iter"
+
 	"github.com/mariomac/gostream/item"
 )
 
@@ -125,6 +127,29 @@ func OfChannel[T any](source <-chan T) Stream[T] {
 			return func() (T, bool) {
 				v, ok := <-source
 				return v, ok
+			}
+		},
+	}
+}
+
+// OfSeq creates a Stream[T] from a standard iter.Seq[T] iterator
+func OfSeq[T any](source iter.Seq[T]) Stream[T] {
+	return &iterableStream[T]{
+		supply: func() iterator[T] {
+			pull, _ := iter.Pull(source)
+			return pull
+		},
+	}
+}
+
+// OfSeq2 creates a Stream[item.Pair[K, V]] from a standard iter.Seq2[K, V] iterator.
+func OfSeq2[K comparable, V any](source iter.Seq2[K, V]) Stream[item.Pair[K, V]] {
+	return &iterableStream[item.Pair[K, V]]{
+		supply: func() iterator[item.Pair[K, V]] {
+			pull, _ := iter.Pull2(source)
+			return func() (item.Pair[K, V], bool) {
+				k, v, ok := pull()
+				return item.Pair[K, V]{Key: k, Val: v}, ok
 			}
 		},
 	}
