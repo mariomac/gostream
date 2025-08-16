@@ -19,8 +19,6 @@ Type safe Stream processing library inspired in the [Java Streams API](https://d
 
 * Go 1.24 or higher
 
-This library makes intensive usage of [Type Parameters (generics)](https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md) so it is not compatible with any Go version lower than 1.18.
-
 ## Usage examples
 
 For more details about the API, and until [pkg.go.dev](https://pkg.go.dev/github.com/mariomac/gostream), 
@@ -216,6 +214,10 @@ Output:
 ```
 The factorial of 8 is 40320
 ```
+
+### Other examples: interact with Go's `iter` package
+
+Check out this blog post: [Go streams meet standard Go iterators!](https://macias.info/entry/202508160000_gostream_meets_goiter.md)
 
 ## Limitations
 
