@@ -49,10 +49,10 @@ func TestFilter(t *testing.T) {
 
 func TestLimit(t *testing.T) {
 	count := 0
-	items := Limit(Generate(func() int {
+	items := Limit(7, Generate(func() int {
 		count++
 		return count
-	}), 7)
+	}))
 
 	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7}, slices.Collect(items))
 }
@@ -106,8 +106,8 @@ func TestPeek(t *testing.T) {
 }
 
 func TestSkip(t *testing.T) {
-	assert.Empty(t, slices.Collect(Skip(Empty[int](), 3)))
-	assert.Empty(t, slices.Collect(Skip(slices.Values([]int{1, 2}),3)))
-	assert.Empty(t, slices.Collect(Skip(slices.Values([]int{1, 2, 3}), 3)))
-	assert.Equal(t, []int{4, 5, 6}, slices.Collect(Skip(slices.Values([]int{1, 2, 3, 4, 5, 6}),3)))
+	assert.Empty(t, slices.Collect(Skip(3, Empty[int]())))
+	assert.Empty(t, slices.Collect(Skip(3, slices.Values([]int{1, 2}))))
+	assert.Empty(t, slices.Collect(Skip(3, slices.Values([]int{1, 2, 3}))))
+	assert.Equal(t, []int{4, 5, 6}, slices.Collect(Skip(3, slices.Values([]int{1, 2, 3, 4, 5, 6}))))
 }

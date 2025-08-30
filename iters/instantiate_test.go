@@ -14,11 +14,11 @@ func TestIterate(t *testing.T) {
 	})
 	assert.Equal(t,
 		[]int{2, 4, 16, 256, 65536},
-		slices.Collect(Limit(gen, 5)))
+		slices.Collect(Limit(5, gen)))
 	// test that iterating for the second time produces the same results
 	assert.Equal(t,
 		[]int{2, 4, 16, 256, 65536},
-		slices.Collect(Limit(gen, 5)))
+		slices.Collect(Limit(5, gen)))
 }
 
 func TestGenerate(t *testing.T) {
@@ -29,7 +29,7 @@ func TestGenerate(t *testing.T) {
 	})
 	assert.Equal(t,
 		[]int{1, 2, 3, 4, 5},
-		slices.Collect(Limit(gen, 5)))
+		slices.Collect(Limit(5, gen)))
 }
 
 func TestConcat(t *testing.T) {

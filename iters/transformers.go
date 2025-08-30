@@ -33,7 +33,7 @@ func Filter[T any](input iter.Seq[T], predicate func(T) bool) iter.Seq[T] {
 // Limit returns a stream consisting of the elements of this stream, truncated to
 // be no longer than maxSize in length.
 // This function is equivalent to invoking input.Limit(maxSize) as method.
-func Limit[T any](input iter.Seq[T], maxSize int) iter.Seq[T] {
+func Limit[T any](maxSize int, input iter.Seq[T]) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		count := 0
 		for i := range input {
@@ -105,7 +105,7 @@ func Peek[T any](input iter.Seq[T], consumer func(T)) iter.Seq[T] {
 // Skip returns a stream consisting of the remaining elements of this stream after discarding
 // the first n elements of the stream.
 // This function is equivalent to invoking input.Skip(n) as method.
-func Skip[T any](input iter.Seq[T], n int) iter.Seq[T] {
+func Skip[T any](n int, input iter.Seq[T]) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		next, _ := iter.Pull(input)
 		var it T
