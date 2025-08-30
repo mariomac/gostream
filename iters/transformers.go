@@ -16,7 +16,7 @@ func Map[IT, OT any](input iter.Seq[IT], mapper func(IT) OT) iter.Seq[OT] {
 	}
 }
 
-// Filter returns a iter.Seq consisting of the items of this stream that match the given
+// Filter returns a iter.Seq consisting of the items of this input iter.Seq that match the given
 // predicate (this is, applying the predicate function over the item returns true).
 func Filter[T any](input iter.Seq[T], predicate func(T) bool) iter.Seq[T] {
 	return func(yield func(T) bool) {
@@ -30,9 +30,8 @@ func Filter[T any](input iter.Seq[T], predicate func(T) bool) iter.Seq[T] {
 	}
 }
 
-// Limit returns a stream consisting of the elements of this stream, truncated to
+// Limit returns an iter.Seq consisting of the elements of the input iter.Seq, truncated to
 // be no longer than maxSize in length.
-// This function is equivalent to invoking input.Limit(maxSize) as method.
 func Limit[T any](maxSize int, input iter.Seq[T]) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		count := 0
@@ -48,10 +47,10 @@ func Limit[T any](maxSize int, input iter.Seq[T]) iter.Seq[T] {
 	}
 }
 
-// Distinct returns a stream consisting of the distinct elements (according to equality operator)
-// of the input stream.
+// Distinct returns an iter.Seq consisting of the distinct elements (according to equality operator)
+// of the input iter.Seq.
 // This function needs to internally store the previous distinct elements in memory, so it might
-// not be suitable for large or infinite streams with high variability in their items.
+// not be suitable for large or infinite sequences with high variability in their items.
 func Distinct[T comparable](input iter.Seq[T]) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		elems := map[T]struct{}{}
@@ -66,13 +65,13 @@ func Distinct[T comparable](input iter.Seq[T]) iter.Seq[T] {
 	}
 }
 
-// FlatMap returns a stream consisting of the results of replacing each element of this stream
-// with the contents of a mapped stream produced by applying the provided mapping function to
-// each element. Each mapped stream is closed after its contents have been placed into this
-// stream. (If a mapped stream is null an empty stream is used, instead.)
+// FlatMap returns an iter.Seq consisting of the results of replacing each element of the input iter.Seq
+// with the contents of a mapped iter.Seq produced by applying the provided mapping function to
+// each element. Each mapped iter.Seq is closed after its contents have been placed into this
+// iter.Seq. (If a mapped iter.Seq is null an empty iter.Seq is used, instead.)
 //
-// Due to the lazy nature of streams, if any of the mapped streams is infinite it will remain
-// unnoticed and some operations (Count, Reduce, Sorted, AllMatch...) will not end.
+// Due to the lazy nature of sequences, if any of the mapped sequences is infinite,
+// some operations (Count, Reduce, Sorted, AllMatch...) will not end.
 //
 // When both the input and output type are the same, the operation can be
 // invoked as the method input.FlatMap(mapper).
@@ -88,9 +87,8 @@ func FlatMap[IN, OUT any](input iter.Seq[IN], mapper func(IN) iter.Seq[OUT]) ite
 	}
 }
 
-// Peek peturns a stream consisting of the elements of this stream, additionally performing
-// the provided action on each element as elements are consumed from the resulting stream.
-// This function is equivalent to invoking input.Peek(consumer) as method.
+// Peek peturns an iter.Seq consisting of the elements of the input iter.Seq, additionally performing
+// the provided action on each element as elements are consumed from the resulting iter.Seq.
 func Peek[T any](input iter.Seq[T], consumer func(T)) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		for i := range input {
@@ -102,19 +100,16 @@ func Peek[T any](input iter.Seq[T], consumer func(T)) iter.Seq[T] {
 	}
 }
 
-// Skip returns a stream consisting of the remaining elements of this stream after discarding
-// the first n elements of the stream.
-// This function is equivalent to invoking input.Skip(n) as method.
+// Skip returns an iter.Seq consisting of the remaining elements of the input iter.Seq after discarding
+// the first n elements of the sequence.
 func Skip[T any](n int, input iter.Seq[T]) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		next, _ := iter.Pull(input)
-		var it T
-		var ok bool
 		skipped := 0
-		for it, ok = next(); ok && skipped < n-1; it, ok = next() {
+		for _, ok := next(); ok && skipped < n-1; _, ok = next() {
 			skipped++
 		}
-		for it, ok = next(); ok; it, ok = next() {
+		for it, ok := next(); ok; it, ok = next() {
 			if !yield(it) {
 				return
 			}

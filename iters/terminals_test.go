@@ -5,9 +5,10 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/mariomac/gostream/item"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/mariomac/gostream/item"
 )
 
 func TestReduce(t *testing.T) {
@@ -138,7 +139,7 @@ func TestMinFunc(t *testing.T) {
 func TestForEach2(t *testing.T) {
 	var keys, vals []int
 	ForEach2(func(yield func(a, b int) bool) {
-		for i := range []int{1, 2, 3, 4} {
+		for _, i := range []int{1, 2, 3, 4} {
 			if !yield(i, i*2) {
 				return
 			}

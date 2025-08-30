@@ -61,7 +61,7 @@ func TestDistinct(t *testing.T) {
 	in := slices.Values([]int{1, 1, 2, 3, 3, 3, 4, 5, 1, 2, 3, 4, 5})
 	assert.Equal(t,
 		[]int{1, 2, 3, 4, 5},
-			slices.Collect(Distinct(in)),
+		slices.Collect(Distinct(in)),
 	)
 }
 
@@ -92,7 +92,7 @@ func TestFlapMap(t *testing.T) {
 func TestPeek(t *testing.T) {
 	var actions []string
 	in := slices.Values([]int{1, 2, 3, 4, 5, 6})
-	in = Filter(in, func(n int) bool {return n%2 == 1 })
+	in = Filter(in, func(n int) bool { return n%2 == 1 })
 	in = Peek(in, func(n int) {
 		actions = append(actions, fmt.Sprint("processed ", n))
 	})

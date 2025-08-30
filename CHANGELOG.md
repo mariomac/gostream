@@ -1,5 +1,8 @@
 # Go Streams API changelog
 
+## v0.11.0
+* Added `iters` package with auxiliary functions for the `iter` package from the standard library.
+
 ## v0.10.1
 * Fix: `.Item` and `.Seq` methods are not used as a function reference anymore, but directly invoked.
 
