@@ -8,7 +8,7 @@ type Number interface {
 	constraints.Integer | constraints.Float | constraints.Complex
 }
 
-// Number constraint any type that define the addition + operation, and their subtypes
+// Addable constraint any type that define the addition + and subtraction - operation, and their subtypes
 type Addable interface {
 	constraints.Ordered | constraints.Complex
 }
