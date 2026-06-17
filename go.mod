@@ -1,10 +1,10 @@
 module github.com/mariomac/gostream
 
-go 1.24
+go 1.25.0
 
 require (
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/exp v0.0.0-20250811191247-51f88131bc50
+	golang.org/x/exp v0.0.0-20260611194520-c48552f49976
 )
 
 require (
