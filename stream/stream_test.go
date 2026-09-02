@@ -41,31 +41,31 @@ func TestLazyOperation(t *testing.T) {
 }
 
 func TestInfiniteStreamAssertion(t *testing.T) {
-	testCases := []func(s Stream[int]){
-		func(s Stream[int]) {
+	testCases := []func(s *Stream[int]){
+		func(s *Stream[int]) {
 			s.Sorted(cmp.Compare[int])
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			s.ToSlice()
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			ToMap(Map(s, func(i int) item.Pair[int, int] {
 				return item.Pair[int, int]{Key: i, Val: i}
 			}))
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			s.Reduce(item.Add[int])
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			s.AnyMatch(item.IsZero[int])
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			s.AllMatch(item.IsZero[int])
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			s.NoneMatch(item.IsZero[int])
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			s.Count()
 		},
 	}
@@ -96,31 +96,31 @@ func TestInfiniteStreamAssertion(t *testing.T) {
 }
 
 func TestLimitInfiniteStreamAssertion(t *testing.T) {
-	testCases := []func(s Stream[int]){
-		func(s Stream[int]) {
+	testCases := []func(s *Stream[int]){
+		func(s *Stream[int]) {
 			s.Sorted(cmp.Compare[int])
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			s.ToSlice()
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			ToMap(Map(s, func(i int) item.Pair[int, int] {
 				return item.Pair[int, int]{Key: i, Val: i}
 			}))
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			s.Reduce(item.Add[int])
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			s.AnyMatch(item.IsZero[int])
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			s.AllMatch(item.IsZero[int])
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			s.NoneMatch(item.IsZero[int])
 		},
-		func(s Stream[int]) {
+		func(s *Stream[int]) {
 			s.Count()
 		},
 	}

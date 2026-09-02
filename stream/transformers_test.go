@@ -73,10 +73,10 @@ func TestSort(t *testing.T) {
 }
 
 func TestFlapMap(t *testing.T) {
-	generateCharSequence := func(in string) Stream[byte] {
+	generateCharSequence := func(in string) *Stream[byte] {
 		return OfSlice([]byte(in))
 	}
-	generateNillableCharSequence := func(in string) Stream[byte] {
+	generateNillableCharSequence := func(in string) *Stream[byte] {
 		if len(in) == 0 {
 			return nil
 		}
@@ -97,7 +97,7 @@ func TestFlapMap(t *testing.T) {
 }
 
 func TestFlapMap_Method(t *testing.T) {
-	incrementalStream := func(length int) Stream[int] {
+	incrementalStream := func(length int) *Stream[int] {
 		return Iterate(1, item.Increment[int]).Limit(length)
 	}
 

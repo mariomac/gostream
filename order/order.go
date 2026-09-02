@@ -6,8 +6,6 @@ import (
 	"cmp"
 	"strings"
 
-	"golang.org/x/exp/constraints"
-
 	"github.com/mariomac/gostream/item"
 )
 
@@ -19,7 +17,7 @@ type Comparator[T any] func(a, b T) int
 // Natural implements the Comparator for those elements whose type
 // has a natural order (numbers and strings).
 // Deprecated in favor of cmp.Compare
-func Natural[T constraints.Ordered](a, b T) int {
+func Natural[T cmp.Ordered](a, b T) int {
 	return cmp.Compare(a, b)
 }
 

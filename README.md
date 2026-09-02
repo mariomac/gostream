@@ -17,7 +17,7 @@ Type safe Stream processing library inspired in the [Java Streams API](https://d
 
 ## Requirements
 
-* Go 1.24 or higher
+* Go 1.27 or higher
 
 ## Usage examples
 
@@ -112,7 +112,7 @@ results: [3 5 2 1 3]
    [go does not allow type parameters in methods](https://github.com/golang/go/issues/49085),
    we need to invoke the `stream.Map` function instead of the `numbers.Map` method
    because the contained type of the output stream (`string`) is different than the type of
-   the input stream (`int`).
+   the input *Stream (`int`).
 3. Converts the words stream to a slice and prints it.
 
 
@@ -225,10 +225,10 @@ Due to the initial limitations of Go generics, the API has the following limitat
 We will work on overcome them as long as new features are added to the Go type parameters
 specification.
 
-* You can use `Map` and `FlatMap` as method as long as the output element has the same type of the input.
+* to FIX: You can use `Map` and `FlatMap` as method as long as the output element has the same type of the input.
   If you need to map to a different type, you need to use `stream.Map` or `stream.FlatMap` as functions.
-* There is no `Distinct` method. There is only a `stream.Distinct` function.
-* There is no `ToMap` method. There is only a `stream.ToMap` function.
+* TO FIX: There is no `Distinct` method. There is only a `stream.Distinct` function.
+* to There is no `ToMap` method. There is only a `stream.ToMap` function.
 
 ## Performance
 

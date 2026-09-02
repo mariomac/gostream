@@ -1,16 +1,20 @@
 // Package item provides helper types and constraints for Stream operator
 package item
 
-import "golang.org/x/exp/constraints"
+import (
+	"cmp"
+
+	"golang.org/x/exp/constraints"
+)
 
 // Number constraint: ints, uints, complexes, floats and all their subtypes
 type Number interface {
 	constraints.Integer | constraints.Float | constraints.Complex
 }
 
-// Number constraint any type that define the addition + operation, and their subtypes
+// Addable constraint any type that define the addition + operation, and their subtypes
 type Addable interface {
-	constraints.Ordered | constraints.Complex
+	cmp.Ordered | constraints.Complex
 }
 
 // Pair of Key-Value made to manage maps and other key-value structures
@@ -64,7 +68,7 @@ func Equals[T comparable](reference T) func(i T) bool {
 
 // GreaterThan returns a predicate that is true when the checked value is larger than
 // the provided reference.
-func GreaterThan[T constraints.Ordered](reference T) func(i T) bool {
+func GreaterThan[T cmp.Ordered](reference T) func(i T) bool {
 	return func(i T) bool {
 		return i > reference
 	}
@@ -72,7 +76,7 @@ func GreaterThan[T constraints.Ordered](reference T) func(i T) bool {
 
 // GreaterThanOrEq returns a predicate that is true when the checked value is equal or larger than
 // the provided reference.
-func GreaterThanOrEq[T constraints.Ordered](reference T) func(i T) bool {
+func GreaterThanOrEq[T cmp.Ordered](reference T) func(i T) bool {
 	return func(i T) bool {
 		return i >= reference
 	}
@@ -80,7 +84,7 @@ func GreaterThanOrEq[T constraints.Ordered](reference T) func(i T) bool {
 
 // LessThan returns a predicate that is true when the checked value is less than
 // the provided reference.
-func LessThan[T constraints.Ordered](reference T) func(i T) bool {
+func LessThan[T cmp.Ordered](reference T) func(i T) bool {
 	return func(i T) bool {
 		return i < reference
 	}
@@ -88,7 +92,7 @@ func LessThan[T constraints.Ordered](reference T) func(i T) bool {
 
 // LessThanOrEq returns a predicate that is true when the checked value is equal or less than
 // the provided reference.
-func LessThanOrEq[T constraints.Ordered](reference T) func(i T) bool {
+func LessThanOrEq[T cmp.Ordered](reference T) func(i T) bool {
 	return func(i T) bool {
 		return i >= reference
 	}
