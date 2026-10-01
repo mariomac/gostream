@@ -33,7 +33,7 @@ GOLANGCI_LINT = $(TOOLS_DIR)/golangci-lint
 .PHONY: prereqs
 prereqs:
 	@echo "### Check if prerequisites are met, and installing missing dependencies"
-	$(call go-install-tool,$(GOLANGCI_LINT),github.com/golangci/golangci-lint/v2/cmd/golangci-lint,v2.3.1)
+	$(call go-install-tool,$(GOLANGCI_LINT),github.com/golangci/golangci-lint/v2/cmd/golangci-lint,v2.13.2)
 
 .PHONY: fmt
 fmt: prereqs

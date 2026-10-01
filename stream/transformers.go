@@ -7,14 +7,12 @@ import (
 )
 
 // Map returns a Stream consisting of the results of individually applying
-// the mapper function to each elements of the input *Stream.
-// When both the input and output type are the same, the operation can be
-// invoked as the method input.Map(mapper).
-func Map[IT, OT any](input *Stream[IT], mapper func(IT) OT) *Stream[OT] {
+// the mapper function to each elements of the target Stream.
+func (is *Stream[T]) Map[OT any](mapper func(T) OT) *Stream[OT] {
 	return &Stream[OT]{
-		infinite: input.isInfinite(),
+		infinite: is.isInfinite(),
 		supply: func() iterator[OT] {
-			next := input.iterator()
+			next := is.iterator()
 			return func() (OT, bool) {
 				n, ok := next()
 				if !ok {
@@ -27,17 +25,8 @@ func Map[IT, OT any](input *Stream[IT], mapper func(IT) OT) *Stream[OT] {
 	}
 }
 
-func (is *Stream[T]) Map(mapper func(T) T) *Stream[T] {
-	return Map[T, T](is, mapper)
-}
-
-// Filter returns a Stream consisting of the items of this stream that match the given
+// Filter returns a Stream consisting of the items of the target stream that match the given
 // predicate (this is, applying the predicate function over the item returns true).
-// This function is equivalent to invoking input.Filter(predicate) as method.
-func Filter[T any](input *Stream[T], predicate func(T) bool) *Stream[T] {
-	return input.Filter(predicate)
-}
-
 func (is *Stream[T]) Filter(predicate func(T) bool) *Stream[T] {
 	return &Stream[T]{
 		infinite: is.infinite,
@@ -61,11 +50,6 @@ func (is *Stream[T]) Filter(predicate func(T) bool) *Stream[T] {
 
 // Limit returns a stream consisting of the elements of this stream, truncated to
 // be no longer than maxSize in length.
-// This function is equivalent to invoking input.Limit(maxSize) as method.
-func Limit[T any](input *Stream[T], maxSize int) *Stream[T] {
-	return input.Limit(maxSize)
-}
-
 func (is *Stream[T]) Limit(maxSize int) *Stream[T] {
 	return &Stream[T]{
 		infinite: false,
@@ -112,13 +96,8 @@ func Distinct[T comparable](input *Stream[T]) *Stream[T] {
 	}}
 }
 
-// Sorted returns a stream consisting of the elements of this stream, sorted according
+// Sorted Stream a stream consisting of the elements of the target Stream, sorted according
 // to the provided order.Comparator.
-// This function is equivalent to invoking input.Sorted(comparator) as method.
-func Sorted[T any](input *Stream[T], comparator order.Comparator[T]) *Stream[T] {
-	return input.Sorted(comparator)
-}
-
 func (is *Stream[T]) Sorted(comparator order.Comparator[T]) *Stream[T] {
 	assertFinite[T](is)
 	return &Stream[T]{
