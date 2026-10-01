@@ -9,7 +9,7 @@ import (
 func main_iterate() {
 	numbers := stream.Iterate(1, double).Limit(6)
 
-	words := stream.Map(numbers, asWord).ToSlice()
+	words := numbers.Map(asWord).ToSlice()
 
 	fmt.Println(words)
 }

@@ -21,7 +21,7 @@ func TestLazyOperation(t *testing.T) {
 		actions = append(actions, "filter("+s+")")
 		return strings.Contains(s, "e")
 	})
-	mapped := Map(filtered, func(s string) int {
+	mapped := filtered.Map(func(s string) int {
 		actions = append(actions, "map("+s+")")
 		return len(s)
 	})
@@ -49,7 +49,7 @@ func TestInfiniteStreamAssertion(t *testing.T) {
 			s.ToSlice()
 		},
 		func(s *Stream[int]) {
-			ToMap(Map(s, func(i int) item.Pair[int, int] {
+			ToMap(s.Map(func(i int) item.Pair[int, int] {
 				return item.Pair[int, int]{Key: i, Val: i}
 			}))
 		},
@@ -104,7 +104,7 @@ func TestLimitInfiniteStreamAssertion(t *testing.T) {
 			s.ToSlice()
 		},
 		func(s *Stream[int]) {
-			ToMap(Map(s, func(i int) item.Pair[int, int] {
+			ToMap(s.Map(func(i int) item.Pair[int, int] {
 				return item.Pair[int, int]{Key: i, Val: i}
 			}))
 		},

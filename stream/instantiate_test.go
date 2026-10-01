@@ -56,7 +56,7 @@ func TestOfMap_SortedByKey(t *testing.T) {
 		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
 	}).Sorted(order.ByKey[int, string](cmp.Compare[int]))
 
-	monthNames := Map(months, func(p item.Pair[int, string]) string {
+	monthNames := months.Map(func(p item.Pair[int, string]) string {
 		return p.Val
 	}).ToSlice()
 
@@ -75,7 +75,7 @@ func TestOfMap_SortedByVal(t *testing.T) {
 		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
 	}).Sorted(order.ByVal[int, string](cmp.Compare[string]))
 
-	monthNames := Map(months, func(p item.Pair[int, string]) string {
+	monthNames := months.Map(func(p item.Pair[int, string]) string {
 		return p.Val
 	}).ToSlice()
 

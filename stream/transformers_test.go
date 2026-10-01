@@ -8,8 +8,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mariomac/gostream/item"
 )
 
 func TestMap(t *testing.T) {
@@ -19,7 +17,7 @@ func TestMap(t *testing.T) {
 	})
 	assert.Equal(t, []int{2, 4, 6, 8, 10}, double.ToSlice())
 
-	strings := Map(in, strconv.Itoa)
+	strings := in.Map(strconv.Itoa)
 	assert.Equal(t, []string{"1", "2", "3", "4", "5"}, strings.ToSlice())
 }
 
@@ -60,9 +58,45 @@ func TestLimit(t *testing.T) {
 func TestDistinct(t *testing.T) {
 	assert.Equal(t,
 		[]int{1, 2, 3, 4, 5},
-		Distinct(Of(1, 1, 2, 3, 3, 3, 4, 5, 1, 2, 3, 4, 5)).
-			ToSlice(),
+		Of(1, 1, 2, 3, 3, 3, 4, 5, 1, 2, 3, 4, 5).Distinct().ToSlice(),
 	)
+}
+
+func TestDistinctNonComparable(t *testing.T) {
+	items := [][]int{{1}, {1}, {2}}
+	assert.Equal(t, items, OfSlice(items).Distinct().ToSlice())
+}
+
+func TestDistinctInterfaceValues(t *testing.T) {
+	items := []any{nil, nil, 1, 1, "1", []int{2}, []int{2}, map[string]int{"a": 1}}
+	assert.Equal(t,
+		[]any{nil, 1, "1", []int{2}, []int{2}, map[string]int{"a": 1}},
+		OfSlice(items).Distinct().ToSlice())
+}
+
+func TestDistinctNestedInterfaceValues(t *testing.T) {
+	type entry struct{ Value any }
+	items := []entry{{1}, {1}, {[]int{2}}, {[]int{2}}}
+	assert.Equal(t, []entry{{1}, {[]int{2}}, {[]int{2}}}, OfSlice(items).Distinct().ToSlice())
+	arrays := [][1]any{{1}, {1}, {[]int{2}}, {[]int{2}}}
+	assert.Equal(t, [][1]any{{1}, {[]int{2}}, {[]int{2}}}, OfSlice(arrays).Distinct().ToSlice())
+}
+
+func TestDistinctLazyAndReusable(t *testing.T) {
+	consumed := 0
+	distinct := Of(1, 1, 2, 2, 3).Peek(func(int) { consumed++ }).Distinct()
+	assert.Zero(t, consumed)
+	assert.Equal(t, []int{1, 2}, distinct.Limit(2).ToSlice())
+	assert.Equal(t, 3, consumed)
+	assert.Equal(t, []int{1, 2, 3}, distinct.ToSlice())
+	assert.Empty(t, Empty[int]().Distinct().ToSlice())
+}
+
+func TestDistinctInfinite(t *testing.T) {
+	distinct := Iterate(0, func(n int) int { return n + 1 }).Distinct()
+	assert.Panics(t, func() { distinct.ToSlice() })
+	assert.Equal(t, []int{0, 1, 2}, distinct.Limit(3).ToSlice())
+	assert.Panics(t, func() { Generate(func() []int { return []int{1} }).Distinct().ToSlice() })
 }
 
 func TestSort(t *testing.T) {
@@ -83,26 +117,15 @@ func TestFlapMap(t *testing.T) {
 		return OfSlice([]byte(in))
 	}
 
-	assert.Empty(t, FlatMap(Of[string](), generateCharSequence).ToSlice())
+	assert.Empty(t, Of[string]().FlatMap(generateCharSequence).ToSlice())
 
-	chars := FlatMap(
-		Of[string]("", "hello", "my", "", "friends!", ""),
-		generateCharSequence).ToSlice()
+	chars := Of[string]("", "hello", "my", "", "friends!", "").
+		FlatMap(generateCharSequence).ToSlice()
 	assert.Equal(t, []byte("hellomyfriends!"), chars)
 
-	chars = FlatMap(
-		Of[string]("", "hello", "my", "", "friends!", ""),
-		generateNillableCharSequence).ToSlice()
+	chars = Of[string]("", "hello", "my", "", "friends!", "").
+		FlatMap(generateNillableCharSequence).ToSlice()
 	assert.Equal(t, []byte("hellomyfriends!"), chars)
-}
-
-func TestFlapMap_Method(t *testing.T) {
-	incrementalStream := func(length int) *Stream[int] {
-		return Iterate(1, item.Increment[int]).Limit(length)
-	}
-
-	items := FlatMap(Of[int](3, 2, 1, 0, 4), incrementalStream).ToSlice()
-	assert.Equal(t, []int{1, 2, 3, 1, 2, 1, 1, 2, 3, 4}, items)
 }
 
 func TestPeek(t *testing.T) {

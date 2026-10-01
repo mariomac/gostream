@@ -25,11 +25,11 @@ func main_seq2_api() {
 			return !entry.IsDir()
 		})
 
-	// 1. Convert each os.DirEntry to a name/size item.Pair (stream.Map function)
+	// 1. Convert each os.DirEntry to a name/size item.Pair (Map method)
 	// 2. Sorting the stream by file size in descending order
 	//    (using Sorted method cmp.Compare and order.Inverse)
 	// 3. Limit the stream size to the top 3 files by size (using Limit method)
-	sizeTop3 := stream.Map(justFiles,
+	sizeTop3 := justFiles.Map(
 		func(entry os.DirEntry) item.Pair[string, int64] {
 			info, _ := entry.Info()
 			return item.Pair[string, int64]{

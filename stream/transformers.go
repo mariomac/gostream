@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"reflect"
 	"slices"
 
 	"github.com/mariomac/gostream/order"
@@ -74,12 +75,20 @@ func (is *Stream[T]) Limit(maxSize int) *Stream[T] {
 	}
 }
 
-// Distinct returns a stream consisting of the distinct elements (according to equality operator)
-// of the input *Stream.
-func Distinct[T comparable](input *Stream[T]) *Stream[T] {
-	return &Stream[T]{supply: func() iterator[T] {
-		next := input.iterator()
-		elems := map[T]struct{}{}
+// Distinct returns a stream consisting of the distinct elements according to the equality
+// operator ==, preserving encounter order. Values that cannot safely be compared are passed
+// through unchanged, including every occurrence of such a value.
+func (is *Stream[T]) Distinct() *Stream[T] {
+	typ := reflect.TypeFor[T]()
+	if !typ.Comparable() {
+		return &Stream[T]{infinite: is.isInfinite(), supply: is.supply}
+	}
+	// Interfaces, including those nested in structs or arrays, may contain
+	// values that cannot be used as map keys. Scalar types need no per-value check.
+	checkValues := typ.Kind() == reflect.Interface || typ.Kind() == reflect.Struct || typ.Kind() == reflect.Array
+	return &Stream[T]{infinite: is.isInfinite(), supply: func() iterator[T] {
+		next := is.iterator()
+		elems := map[any]struct{}{}
 		return func() (T, bool) {
 			for {
 				n, ok := next()
@@ -87,8 +96,12 @@ func Distinct[T comparable](input *Stream[T]) *Stream[T] {
 					var zeroVal T
 					return zeroVal, false
 				}
-				if _, ok := elems[n]; !ok {
-					elems[n] = struct{}{}
+				if checkValues && !reflect.ValueOf(&n).Elem().Comparable() {
+					return n, true
+				}
+				key := any(n)
+				if _, ok := elems[key]; !ok {
+					elems[key] = struct{}{}
 					return n, true
 				}
 			}
@@ -121,16 +134,10 @@ func (is *Stream[T]) Sorted(comparator order.Comparator[T]) *Stream[T] {
 // with the contents of a mapped stream produced by applying the provided mapping function to
 // each element. Each mapped stream is closed after its contents have been placed into this
 // stream. (If a mapped stream is null an empty stream is used, instead.)
-//
-// Due to the lazy nature of streams, if any of the mapped streams is infinite it will remain
-// unnoticed and some operations (Count, Reduce, Sorted, AllMatch...) will not end.
-//
-// When both the input and output type are the same, the operation can be
-// invoked as the method input.FlatMap(mapper).
-func FlatMap[IN, OUT any](input *Stream[IN], mapper func(IN) *Stream[OUT]) *Stream[OUT] {
+func (is *Stream[IN]) FlatMap[OUT any](mapper func(IN) *Stream[OUT]) *Stream[OUT] {
 	return &Stream[OUT]{
 		supply: func() iterator[OUT] {
-			nextFromInputStream := input.iterator()
+			nextFromInputStream := is.iterator()
 			var nextFromOutputStream iterator[OUT]
 			return func() (OUT, bool) {
 				for {
@@ -157,17 +164,8 @@ func FlatMap[IN, OUT any](input *Stream[IN], mapper func(IN) *Stream[OUT]) *Stre
 	}
 }
 
-func (is *Stream[T]) FlatMap(mapper func(T) *Stream[T]) *Stream[T] {
-	return FlatMap[T, T](is, mapper)
-}
-
 // Peek peturns a stream consisting of the elements of this stream, additionally performing
 // the provided action on each element as elements are consumed from the resulting stream.
-// This function is equivalent to invoking input.Peek(consumer) as method.
-func Peek[T any](input *Stream[T], consumer func(T)) *Stream[T] {
-	return input.Peek(consumer)
-}
-
 func (is *Stream[T]) Peek(consumer func(T)) *Stream[T] {
 	return &Stream[T]{
 		infinite: is.isInfinite(),
@@ -188,11 +186,6 @@ func (is *Stream[T]) Peek(consumer func(T)) *Stream[T] {
 
 // Skip returns a stream consisting of the remaining elements of this stream after discarding
 // the first n elements of the stream.
-// This function is equivalent to invoking input.Skip(n) as method.
-func Skip[T any](input *Stream[T], n int) *Stream[T] {
-	return input.Skip(n)
-}
-
 func (is *Stream[T]) Skip(n int) *Stream[T] {
 	return &Stream[T]{
 		infinite: is.isInfinite(),
