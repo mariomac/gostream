@@ -1,3 +1,5 @@
+github.com/mariomac/iters v0.2.0 h1:65051M/Y9i14ZfmQEWkCVycuJXXHZPuO5ZSLGSfI/zM=
+github.com/mariomac/iters v0.2.0/go.mod h1:dk5mSj4kiyvxEAhKHGi9xo8deujwcsEkdHvfisJ1KIM=
 github.com/stretchr/testify v1.12.1 h1:EuwCh5fleGS7H32xRwO3wRGT7DxrDhLAT6FF8MpWDWE=
 github.com/stretchr/testify v1.12.1/go.mod h1:MDEgiDPPsNp5cuIrHPPCyornHKgEVbtFUmoNlxoYthg=
 go.yaml.in/yaml/v3 v3.0.5 h1:N6y/pJk8buWs9NY5ERU2HSMfm+IuD/OtfdAnq6kESPw=

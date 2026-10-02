@@ -9,11 +9,6 @@ import (
 )
 
 // ForEach invokes the consumer function for each item of the Stream.
-// This function is equivalent to invoking input.ForEach(consumer) as method.
-func ForEach[T any](input *Stream[T], consumer func(T)) {
-	input.ForEach(consumer)
-}
-
 func (is *Stream[T]) ForEach(consumer func(T)) {
 	next := is.iterator()
 	for in, ok := next(); ok; in, ok = next() {
@@ -21,13 +16,8 @@ func (is *Stream[T]) ForEach(consumer func(T)) {
 	}
 }
 
-// Iter makes Stream compatible with Go's "for ... range" syntax.
-// It returns a function that can be used in range loops.
-// This function is equivalent to invoking the input.Iter method
-func Iter[T any](input *Stream[T]) func(func(int, T) bool) {
-	return input.Iter()
-}
-
+// Iter makes returns a Go standard iter.Seq2[int, T] from this stream,
+// making it usable in Go "for ... range" loops.
 func (is *Stream[T]) Iter() iter.Seq2[int, T] {
 	next := is.iterator()
 	return func(yield func(int, T) bool) {
@@ -42,11 +32,6 @@ func (is *Stream[T]) Iter() iter.Seq2[int, T] {
 }
 
 // Seq returns the input *Stream[T] as a Go standard iter.Seq[T].
-// This function is equivalent to invoking the input.Seq() method
-func Seq[T any](input *Stream[T]) iter.Seq[T] {
-	return input.Seq()
-}
-
 func (is *Stream[T]) Seq() iter.Seq[T] {
 	next := is.iterator()
 	return func(yield func(T) bool) {

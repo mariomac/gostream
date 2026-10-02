@@ -17,13 +17,6 @@ type Addable interface {
 	cmp.Ordered | ~complex64 | ~complex128
 }
 
-// Pair of Key-Value made to manage maps and other key-value structures
-// TODO: use "constraints.Map" when it is defined in the constraints package
-type Pair[K comparable, V any] struct {
-	Key K
-	Val V
-}
-
 // Add the two arguments using the plus + operator
 func Add[T Addable](a, b T) T {
 	return a + b
