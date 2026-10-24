@@ -8,8 +8,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mariomac/gostream/item"
 )
 
 func TestMap(t *testing.T) {
@@ -61,7 +59,7 @@ func TestDistinct(t *testing.T) {
 	assert.Equal(t,
 		[]int{1, 2, 3, 4, 5},
 		Of(1, 1, 2, 3, 3, 3, 4, 5, 1, 2, 3, 4, 5).
-			Distinct(item.IsCmp[int]).ToSlice(),
+			Distinct(Cmp).ToSlice(),
 	)
 }
 

@@ -7,8 +7,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mariomac/gostream/item"
 )
 
 func TestToMap(t *testing.T) {
@@ -31,18 +29,19 @@ func TestToMap(t *testing.T) {
 	}, processed.ToMap())
 }
 
-func isEmpty(k, _ string) bool { return k == "" }
+func isEmpty(k, _ string) bool  { return k == "" }
+func notEmpty(k, _ string) bool { return k != "" }
 func TestStream2_AllMatch(t *testing.T) {
 	// for empty streams, following Java behavior as reference
 	assert.True(t, Empty2[string, string]().AllMatch(isEmpty))
 	assert.True(t, OfMap(map[string]string{
 		"hello": "fo",
 		"world": "bar",
-	}).AllMatch(item.Not2[string, string](isEmpty)))
+	}).AllMatch(notEmpty))
 	assert.False(t, OfMap(map[string]string{
 		"hello": "fo",
 		"":      "bar",
-	}).AllMatch(item.Not2[string, string](isEmpty)))
+	}).AllMatch(notEmpty))
 }
 
 func TestStream2_AnyMatch(t *testing.T) {
@@ -51,14 +50,14 @@ func TestStream2_AnyMatch(t *testing.T) {
 	assert.True(t, OfMap(map[string]string{
 		"hello": "fo",
 		"world": "bar",
-	}).AnyMatch(item.Not2[string, string](isEmpty)))
+	}).AnyMatch(notEmpty))
 	assert.True(t, OfMap(map[string]string{
 		"hello": "fo",
 		"":      "bar",
-	}).AnyMatch(item.Not2[string, string](isEmpty)))
+	}).AnyMatch(notEmpty))
 	assert.False(t, OfMap(map[string]string{
 		"": "bar",
-	}).AnyMatch(item.Not2[string, string](isEmpty)))
+	}).AnyMatch(notEmpty))
 }
 
 func TestStream2_NoneMatch(t *testing.T) {
@@ -102,7 +101,9 @@ func TestFindFirst2(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, 4, n)
 
-	n, ok = Iterate[int](1, item.Increment[int]).Limit(8).FindFirst()
+	n, ok = Iterate[int](1, func(n int) int {
+		return n + 1
+	}).Limit(8).FindFirst()
 	require.True(t, ok)
 	assert.Equal(t, 1, n)
 }

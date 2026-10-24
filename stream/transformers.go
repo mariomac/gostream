@@ -71,9 +71,15 @@ func (is *Stream[T]) Limit(maxSize int) *Stream[T] {
 	}
 }
 
+// IsCmp is an auxiliary function that has to be passed as argument to the stream.Stream's Distinct method,
+// to help with some limitations of Go generic type system.
+func Cmp[T comparable](i T) T {
+	return i
+}
+
 // Distinct returns a stream consisting of the distinct elements (according to equality operator)
 // of the input stream.
-// Due to the limitations of the Go generics system, you need to pass `item.IsCmp[T]`
+// Due to the limitations of the Go generics system, you need to pass Cmp[T]
 // as argument to let compiler checking at runtime that the stream type T is comparable.
 func (is *Stream[T]) Distinct[O comparable](cmp func(T) O) *Stream[O] {
 	return &Stream[O]{supply: func() iterator[O] {
