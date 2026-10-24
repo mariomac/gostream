@@ -9,11 +9,6 @@ import (
 )
 
 // ForEach invokes the consumer function for each item of the Stream.
-// This function is equivalent to invoking input.ForEach(consumer) as method.
-func ForEach[T any](input *Stream[T], consumer func(T)) {
-	input.ForEach(consumer)
-}
-
 func (is *Stream[T]) ForEach(consumer func(T)) {
 	next := is.iterator()
 	for in, ok := next(); ok; in, ok = next() {
@@ -23,11 +18,9 @@ func (is *Stream[T]) ForEach(consumer func(T)) {
 
 // Iter makes Stream compatible with Go's "for ... range" syntax.
 // It returns a function that can be used in range loops.
-// This function is equivalent to invoking the input.Iter method
-func Iter[T any](input *Stream[T]) func(func(int, T) bool) {
-	return input.Iter()
-}
-
+// The difference with the Seq method is that Iter returns an
+// iter.Seq2[int, T] whose first value is the position of the sequence
+// in the stream.
 func (is *Stream[T]) Iter() iter.Seq2[int, T] {
 	next := is.iterator()
 	return func(yield func(int, T) bool) {
@@ -42,11 +35,9 @@ func (is *Stream[T]) Iter() iter.Seq2[int, T] {
 }
 
 // Seq returns the input *Stream[T] as a Go standard iter.Seq[T].
-// This function is equivalent to invoking the input.Seq() method
-func Seq[T any](input *Stream[T]) iter.Seq[T] {
-	return input.Seq()
-}
-
+// The difference with the Iter method is that the returned iter.Seq
+// only iterates through the ordered values, without returning its
+// position within the stream
 func (is *Stream[T]) Seq() iter.Seq[T] {
 	next := is.iterator()
 	return func(yield func(T) bool) {
@@ -61,6 +52,7 @@ func (is *Stream[T]) Seq() iter.Seq[T] {
 // Seq2 returns the input *Stream[item.Pair[K, V]] as a Go standard iter.Seq2[K,V].
 // Observe that this function will only work on Streams created from maps (or
 // explicitly created as streams of item.Pair[K, V])
+// TODO esto hay que moverlo
 func Seq2[K comparable, V any](input *Stream[item.Pair[K, V]]) iter.Seq2[K, V] {
 	return func(yield func(K, V) bool) {
 		next := input.iterator()
@@ -73,11 +65,6 @@ func Seq2[K comparable, V any](input *Stream[item.Pair[K, V]]) iter.Seq2[K, V] {
 }
 
 // ToSlice returns a Slice Containing all the elements of this Stream.
-// This function is equivalent to invoking input.ToSlice() as method.
-func ToSlice[T any](input *Stream[T]) []T {
-	return input.ToSlice()
-}
-
 func (is *Stream[T]) ToSlice() []T {
 	assertFinite[T](is)
 	return slices.Collect(is.Seq())
@@ -85,6 +72,7 @@ func (is *Stream[T]) ToSlice() []T {
 
 // ToMap returns a map Containing all the item.Pair elements of this Stream, where
 // the Key/Val fields of the item.Pair represents the key/value of the map, respectively.
+// TODO esto hay que moverlo
 func ToMap[K comparable, V any](input *Stream[item.Pair[K, V]]) map[K]V {
 	assertFinite(input)
 	out := map[K]V{}
@@ -98,11 +86,6 @@ func ToMap[K comparable, V any](input *Stream[item.Pair[K, V]]) map[K]V {
 // accumulation function, and returns an value describing the reduced value, if any.
 // If no reduced value (e.g. because the stream is empty), the second returned value
 // is false.
-// This function is equivalent to invoking input.Reduce(accumulator) as method.
-func Reduce[T any](input *Stream[T], accumulator func(a, b T) T) (T, bool) {
-	return input.Reduce(accumulator)
-}
-
 func (is *Stream[T]) Reduce(accumulator func(a, b T) T) (T, bool) {
 	assertFinite[T](is)
 	next := is.iterator()
@@ -119,11 +102,6 @@ func (is *Stream[T]) Reduce(accumulator func(a, b T) T) (T, bool) {
 // AllMatch returns whether all elements of this stream match the provided predicate.
 // If this operation finds an item where the predicate is false, it stops processing
 // the rest of the stream.
-// This function is equivalent to invoking input.AllMatch(predicate) as method
-func AllMatch[T any](input *Stream[T], predicate func(T) bool) bool {
-	return input.AllMatch(predicate)
-}
-
 func (is *Stream[T]) AllMatch(predicate func(T) bool) bool {
 	assertFinite[T](is)
 	next := is.iterator()
@@ -138,11 +116,6 @@ func (is *Stream[T]) AllMatch(predicate func(T) bool) bool {
 // AnyMatch returns whether any elements of this stream match the provided predicate.
 // If this operation finds an item where the predicate is true, it stops processing
 // the rest of the stream.
-// This function is equivalent to invoking input.AnyMatch(predicate) as method
-func AnyMatch[T any](input *Stream[T], predicate func(T) bool) bool {
-	return input.AnyMatch(predicate)
-}
-
 func (is *Stream[T]) AnyMatch(predicate func(T) bool) bool {
 	assertFinite[T](is)
 	next := is.iterator()
@@ -158,20 +131,12 @@ func (is *Stream[T]) AnyMatch(predicate func(T) bool) bool {
 // If this operation finds an item where the predicate is true, it stops processing
 // the rest of the stream.
 // This function is equivalent to invoking input.NoneMatch(predicate) as method.
-func NoneMatch[T any](input *Stream[T], predicate func(T) bool) bool {
-	return input.NoneMatch(predicate)
-}
-
 func (is *Stream[T]) NoneMatch(predicate func(T) bool) bool {
 	return !is.AnyMatch(predicate)
 }
 
 // Count of elements in this stream.
 // This function is equivalent to invoking input.Count() as method.
-func Count[T any](input *Stream[T]) int {
-	return input.Count()
-}
-
 func (is *Stream[T]) Count() int {
 	assertFinite[T](is)
 	count := 0
@@ -184,11 +149,6 @@ func (is *Stream[T]) Count() int {
 
 // FindFirst returns the first element of this Stream along with true or, if the
 // stream is empty, the zero value of the inner type along with false.
-// This function is equivalent to invoking input.FindFirst() as method.
-func FindFirst[T any](input *Stream[T]) (T, bool) {
-	return input.FindFirst()
-}
-
 func (is *Stream[T]) FindFirst() (T, bool) {
 	return is.iterator()()
 }
@@ -196,11 +156,6 @@ func (is *Stream[T]) FindFirst() (T, bool) {
 // Max returns the maximum element of this stream according to the provided Comparator,
 // along with true if the stream is not empty. If the stream is empty, returns the zero
 // value along with false.
-// This function is equivalent to invoking input.Max(cmp) as method.
-func Max[T any](input *Stream[T], cmp order.Comparator[T]) (T, bool) {
-	return input.Max(cmp)
-}
-
 func (is *Stream[T]) Max(cmp order.Comparator[T]) (T, bool) {
 	assertFinite[T](is)
 	next := is.iterator()
@@ -219,11 +174,6 @@ func (is *Stream[T]) Max(cmp order.Comparator[T]) (T, bool) {
 // Min returns the minimum element of this stream according to the provided Comparator,
 // along with true if the stream is not empty. If the stream is empty, returns the zero
 // value along with false.
-// This function is equivalent to invoking input.Min(cmp) as method.
-func Min[T any](input *Stream[T], cmp order.Comparator[T]) (T, bool) {
-	return input.Min(cmp)
-}
-
 func (is *Stream[T]) Min(cmp order.Comparator[T]) (T, bool) {
 	assertFinite[T](is)
 	next := is.iterator()

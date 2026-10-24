@@ -6,9 +6,10 @@ import (
 	"github.com/mariomac/gostream/stream"
 )
 
-func ExampleStream_Distinct() {
-	words := stream.Of("hello", "hello", "!", "ho", "ho", "ho", "!").Distinct().ToSlice()
+func ExampleDistinct() {
+	words := stream.Of("hello", "hello", "!", "ho", "ho", "ho", "!")
+	dedupe := stream.Distinct(words)
 
-	fmt.Printf("Deduplicated words: %v\n", words)
+	fmt.Printf("Deduplicated words: %v\n", dedupe.ToSlice())
 	// Output: Deduplicated words: [hello ! ho]
 }
