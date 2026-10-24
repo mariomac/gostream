@@ -12,17 +12,10 @@ import (
 	"github.com/mariomac/gostream/order"
 )
 
-func TestIterate2(t *testing.T) {
-	gen := Iterate2(2, 4, func(k, v int) (int, int) {
-		return k * k, v + 1
+func TestIterate(t *testing.T) {
+	gen := Iterate(2, func(n int) int {
+		return n * n
 	})
-	assert.Equal(t, map[int]int{
-		2:   4,
-		4:   5,
-		16:  6,
-		256: 7,
-		65536, 8,
-	}, gen.Limit(5).ToMap())
 	assert.Equal(t,
 		[]int{2, 4, 16, 256, 65536},
 		gen.Limit(5).ToSlice())

@@ -141,3 +141,29 @@ func (is *Stream2[K, V]) Concat(append *Stream2[K, V]) *Stream2[K, V] {
 		},
 	}
 }
+
+// TODO: document and test
+func (is *Stream2[K, V]) Keys() *Stream[K] {
+	return &Stream[K]{
+		supply: func() iterator[K] {
+			next := is.iterator()
+			return func() (K, bool) {
+				k, _, ok := next()
+				return k, ok
+			}
+		},
+	}
+}
+
+// TODO: document and test
+func (is *Stream2[K, V]) Values() *Stream[V] {
+	return &Stream[V]{
+		supply: func() iterator[V] {
+			next := is.iterator()
+			return func() (V, bool) {
+				_, v, ok := next()
+				return v, ok
+			}
+		},
+	}
+}

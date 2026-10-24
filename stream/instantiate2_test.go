@@ -3,7 +3,6 @@ package stream
 import (
 	"cmp"
 	"maps"
-	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,49 +11,78 @@ import (
 	"github.com/mariomac/gostream/order"
 )
 
-func TestIterate(t *testing.T) {
-	gen := Iterate(2, func(n int) int {
-		return n * n
+func TestIterate2(t *testing.T) {
+	gen := Iterate2(2, 4, func(k, v int) (int, int) {
+		return k * k, v + 1
 	})
-	assert.Equal(t,
-		[]int{2, 4, 16, 256, 65536},
-		gen.Limit(5).ToSlice())
+	assert.Equal(t, map[int]int{
+		2:     4,
+		4:     5,
+		16:    6,
+		256:   7,
+		65536: 8,
+	}, gen.Limit(5).ToMap())
 	// test that iterating for the second time produces the same results
-	assert.Equal(t,
-		[]int{2, 4, 16, 256, 65536},
-		gen.Limit(5).ToSlice())
+	assert.Equal(t, map[int]int{
+		2:     4,
+		4:     5,
+		16:    6,
+		256:   7,
+		65536: 8,
+	}, gen.Limit(5).ToMap())
 }
 
-func TestGenerate(t *testing.T) {
-	cnt := 0
-	gen := Generate(func() int {
+func TestGenerate2(t *testing.T) {
+	cnt, cnt2 := 0, "a"
+	gen := Generate2(func() (int, string) {
 		cnt++
-		return cnt
+		cnt2 += "a"
+		return cnt, cnt2
 	})
 	assert.Equal(t,
-		[]int{1, 2, 3, 4, 5},
-		gen.Limit(5).ToSlice())
+		map[int]string{
+			1: "a",
+			2: "aa",
+			3: "aaa",
+		},
+		gen.Limit(3).ToMap())
 }
 
-func TestConcat(t *testing.T) {
-	concat := Concat[int](
-		Of(1, 2, 3, 4, 5, 6),
-		Of(7, 8, 9, 10),
-	)
-	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
+func TestConcat2(t *testing.T) {
+	concat := OfMap(map[string]int{"a": 1, "b": 2, "c": 3}).
+		Concat(OfMap(map[string]int{"d": 1, "e": 2, "f": 3}))
+	assert.Equal(t, map[string]int{
+		"a": 1,
+		"b": 2,
+		"c": 3,
+		"d": 1,
+		"e": 1,
+		"f": 1,
+	}, concat.ToMap())
 	// test that iterating for the second time produces the same results
-	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
+	assert.Equal(t, map[string]int{
+		"a": 1,
+		"b": 2,
+		"c": 3,
+		"d": 1,
+		"e": 1,
+		"f": 1,
+	}, concat.ToMap())
 }
 
-func TestEmpty(t *testing.T) {
-	assert.Empty(t, Empty[int]().Map(rand.Intn).ToSlice())
+func TestEmpty2(t *testing.T) {
+	assert.Empty(t, Empty2[int, int]().Map(func(int, int) (float64, float64) {
+		return 1, 2
+	}).ToMap())
 }
 
-func TestOfMap_SortedByKey(t *testing.T) {
+func TestOfMap(t *testing.T) {
 	months := OfMap(map[int]string{
 		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
 		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
-	}).Sorted(order.ByKey[int, string](cmp.Compare[int]))
+	})
+
+
 
 	monthNames := months.Map(func(p item.Pair[int, string]) string {
 		return p.Val
