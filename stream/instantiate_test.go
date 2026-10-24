@@ -1,15 +1,10 @@
 package stream
 
 import (
-	"cmp"
-	"maps"
 	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/mariomac/gostream/item"
-	"github.com/mariomac/gostream/order"
 )
 
 func TestIterate(t *testing.T) {
@@ -37,10 +32,8 @@ func TestGenerate(t *testing.T) {
 }
 
 func TestConcat(t *testing.T) {
-	concat := Concat[int](
-		Of(1, 2, 3, 4, 5, 6),
-		Of(7, 8, 9, 10),
-	)
+	concat := Of(1, 2, 3, 4, 5, 6).
+		Concat(Of(7, 8, 9, 10))
 	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
 	// test that iterating for the second time produces the same results
 	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
@@ -48,44 +41,6 @@ func TestConcat(t *testing.T) {
 
 func TestEmpty(t *testing.T) {
 	assert.Empty(t, Empty[int]().Map(rand.Intn).ToSlice())
-}
-
-func TestOfMap_SortedByKey(t *testing.T) {
-	months := OfMap(map[int]string{
-		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
-		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
-	}).Sorted(order.ByKey[int, string](cmp.Compare[int]))
-
-	monthNames := months.Map(func(p item.Pair[int, string]) string {
-		return p.Val
-	}).ToSlice()
-
-	assert.Equal(t,
-		[]string{
-			"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-		},
-		monthNames,
-	)
-}
-
-func TestOfMap_SortedByVal(t *testing.T) {
-	months := OfMap(map[int]string{
-		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
-		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
-	}).Sorted(order.ByVal[int, string](cmp.Compare[string]))
-
-	monthNames := months.Map(func(p item.Pair[int, string]) string {
-		return p.Val
-	}).ToSlice()
-
-	assert.Equal(t,
-		[]string{
-			"Apr", "Aug", "Dec", "Feb", "Jan", "Jul",
-			"Jun", "Mar", "May", "Nov", "Oct", "Sep",
-		},
-		monthNames,
-	)
 }
 
 func TestOfChannel(t *testing.T) {
@@ -120,28 +75,4 @@ func TestOfSeq(t *testing.T) {
 	// test that iterating for the second time produces the same results
 	stream = OfSeq(seq)
 	assert.Equal(t, []int{1, 2, 3, 4, 5}, stream.ToSlice())
-}
-
-func TestOfSeq2(t *testing.T) {
-	// Create an iter.Seq2 from key-value pairs
-	seq2 := maps.All(map[string]int{"a": 1, "b": 2, "c": 3})
-
-	stream := OfSeq2(seq2)
-	assert.Equal(t, 3, stream.Count())
-	assert.True(t, stream.AnyMatch(item.Equals(
-		item.Pair[string, int]{Key: "a", Val: 1})))
-	assert.True(t, stream.AnyMatch(item.Equals(
-		item.Pair[string, int]{Key: "b", Val: 2})))
-	assert.True(t, stream.AnyMatch(item.Equals(
-		item.Pair[string, int]{Key: "c", Val: 3})))
-
-	// test that iterating for the second time produces the same results
-	stream = OfSeq2(seq2)
-	assert.Equal(t, 3, stream.Count())
-	assert.True(t, stream.AnyMatch(item.Equals(
-		item.Pair[string, int]{Key: "a", Val: 1})))
-	assert.True(t, stream.AnyMatch(item.Equals(
-		item.Pair[string, int]{Key: "b", Val: 2})))
-	assert.True(t, stream.AnyMatch(item.Equals(
-		item.Pair[string, int]{Key: "c", Val: 3})))
 }

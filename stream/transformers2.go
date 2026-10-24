@@ -197,7 +197,7 @@ type tuple[K comparable, V any] struct {
 	v V
 }
 
-// poner ejemplo de orrdenar natural by value
+// TODO: poner ejemplo de orrdenar natural by value
 func (is *Stream2[K, V]) Sorted(cmp order.Comparator2[K, V]) *Stream2[K, V] {
 	return &Stream2[K, V]{
 		supply: func() iterator2[K, V] {
@@ -219,7 +219,9 @@ func (is *Stream2[K, V]) Sorted(cmp order.Comparator2[K, V]) *Stream2[K, V] {
 	}
 }
 
-// natural order
+// TODO: natural order
 func (is *Stream2[K, V]) SortedByKey() *Stream2[K, V] {
 	return is.Sorted(order.ByKey[K, V](order.Natural))
 }
+
+// TODO: skip

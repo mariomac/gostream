@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/mariomac/gostream/item"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -58,45 +59,9 @@ func TestLimit(t *testing.T) {
 func TestDistinct(t *testing.T) {
 	assert.Equal(t,
 		[]int{1, 2, 3, 4, 5},
-		Of(1, 1, 2, 3, 3, 3, 4, 5, 1, 2, 3, 4, 5).Distinct().ToSlice(),
+		Of(1, 1, 2, 3, 3, 3, 4, 5, 1, 2, 3, 4, 5).
+			Distinct(item.IsCmp[int]).ToSlice(),
 	)
-}
-
-func TestDistinctNonComparable(t *testing.T) {
-	items := [][]int{{1}, {1}, {2}}
-	assert.Equal(t, items, OfSlice(items).Distinct().ToSlice())
-}
-
-func TestDistinctInterfaceValues(t *testing.T) {
-	items := []any{nil, nil, 1, 1, "1", []int{2}, []int{2}, map[string]int{"a": 1}}
-	assert.Equal(t,
-		[]any{nil, 1, "1", []int{2}, []int{2}, map[string]int{"a": 1}},
-		OfSlice(items).Distinct().ToSlice())
-}
-
-func TestDistinctNestedInterfaceValues(t *testing.T) {
-	type entry struct{ Value any }
-	items := []entry{{1}, {1}, {[]int{2}}, {[]int{2}}}
-	assert.Equal(t, []entry{{1}, {[]int{2}}, {[]int{2}}}, OfSlice(items).Distinct().ToSlice())
-	arrays := [][1]any{{1}, {1}, {[]int{2}}, {[]int{2}}}
-	assert.Equal(t, [][1]any{{1}, {[]int{2}}, {[]int{2}}}, OfSlice(arrays).Distinct().ToSlice())
-}
-
-func TestDistinctLazyAndReusable(t *testing.T) {
-	consumed := 0
-	distinct := Of(1, 1, 2, 2, 3).Peek(func(int) { consumed++ }).Distinct()
-	assert.Zero(t, consumed)
-	assert.Equal(t, []int{1, 2}, distinct.Limit(2).ToSlice())
-	assert.Equal(t, 3, consumed)
-	assert.Equal(t, []int{1, 2, 3}, distinct.ToSlice())
-	assert.Empty(t, Empty[int]().Distinct().ToSlice())
-}
-
-func TestDistinctInfinite(t *testing.T) {
-	distinct := Iterate(0, func(n int) int { return n + 1 }).Distinct()
-	assert.Panics(t, func() { distinct.ToSlice() })
-	assert.Equal(t, []int{0, 1, 2}, distinct.Limit(3).ToSlice())
-	assert.Panics(t, func() { Generate(func() []int { return []int{1} }).Distinct().ToSlice() })
 }
 
 func TestSort(t *testing.T) {

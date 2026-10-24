@@ -72,3 +72,6 @@ func (is *Stream2[K, V]) Count() int {
 	}
 	return count
 }
+
+// TODO: findfirst
+// TODO: max and min

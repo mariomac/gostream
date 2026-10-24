@@ -44,6 +44,13 @@ func Not[T any](condition func(i T) bool) func(i T) bool {
 	}
 }
 
+// Not2 negates the boolean result of the keyVal input condition function
+func Not2[K comparable, V any](condition func(K, V) bool) func(K, V) bool {
+	return func(k K, v V) bool {
+		return !condition(k, v)
+	}
+}
+
 // IsZero returns true if the input value corresponds to the zero value of its type:
 // 0 for numeric values, empty string, false, nil pointer, etc...
 func IsZero[T comparable](input T) bool {
@@ -91,7 +98,8 @@ func LessThanOrEq[T cmp.Ordered](reference T) func(i T) bool {
 	}
 }
 
-// IsCmp is an auxiliary function that has to be passed as argument to the stream.Stream's Distinct method.
+// IsCmp is an auxiliary function that has to be passed as argument to the stream.Stream's Distinct method,
+// to help with some limitations of Go generic type system.
 func IsCmp[T comparable](i T) T {
 	return i
 }
