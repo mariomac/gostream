@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"cmp"
@@ -9,7 +9,7 @@ import (
 	"github.com/mariomac/gostream/stream"
 )
 
-func main_sort() {
+func ExampleGenerate() {
 	fmt.Println("picking up 5 random numbers from higher to lower")
 	stream.Generate(rand.Uint32).
 		Limit(5).

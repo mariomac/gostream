@@ -1,15 +1,14 @@
-package main
+package examples
 
 import (
 	"fmt"
 	"math/rand"
-	"time"
 
 	"github.com/mariomac/gostream/stream"
 )
 
-func main_dice() {
-	rnd := rand.New(rand.NewSource(time.Now().UnixMilli()))
+func Example_dice() {
+	rnd := rand.New(rand.NewSource(1))
 	fmt.Println("let me throw 5 times a dice for you")
 
 	results := stream.Generate(rnd.Int).

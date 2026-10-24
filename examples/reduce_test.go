@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"fmt"
@@ -7,9 +7,10 @@ import (
 	"github.com/mariomac/gostream/stream"
 )
 
-func main_reduce() {
+func ExampleReduce() {
 	fac8, _ := stream.Iterate(1, item.Increment[int]).
 		Limit(8).
 		Reduce(item.Multiply[int])
 	fmt.Println("The factorial of 8 is", fac8)
+	// Output: The factorial of 8 is 40320
 }

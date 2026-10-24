@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"fmt"
@@ -6,12 +6,13 @@ import (
 	"github.com/mariomac/gostream/stream"
 )
 
-func main_iterate() {
+func ExampleIterate() {
 	numbers := stream.Iterate(1, double).Limit(6)
 
 	words := numbers.Map(asWord).ToSlice()
 
 	fmt.Println(words)
+	// Output: [one two four eight many many]
 }
 
 func double(n int) int {
