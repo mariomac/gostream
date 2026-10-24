@@ -7,7 +7,7 @@ import (
 	"github.com/mariomac/gostream/stream"
 )
 
-func ExampleReduce() {
+func ExampleStream_Reduce() {
 	fac8, _ := stream.Iterate(1, item.Increment[int]).
 		Limit(8).
 		Reduce(item.Multiply[int])

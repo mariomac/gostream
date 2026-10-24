@@ -111,6 +111,7 @@ func Concat[T any](streams ...*Stream[T]) *Stream[T] {
 						return *new(T), false
 					}
 					current, following = following[0], following[1:]
+					next = current.iterator()
 				}
 			}
 		},

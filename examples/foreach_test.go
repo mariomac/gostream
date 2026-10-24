@@ -6,7 +6,7 @@ import (
 	"github.com/mariomac/gostream/stream"
 )
 
-func ExampleForEach() {
+func ExampleStream_ForEach() {
 	stream.Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).
 		Filter(isPrime).
 		ForEach(func(n int) {

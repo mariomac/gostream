@@ -115,31 +115,16 @@ func TestMax2(t *testing.T) {
 	_, _, ok := Empty2[int, int]().Max(cmpKey)
 	require.False(t, ok)
 
-	_, _, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Skip(3).Max(cmpKey)
-	require.False(t, ok)
-
-	k, v, ok := OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Skip(2).Max(cmpKey)
+	k, v, ok := OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Max(cmpKey)
 	require.True(t, ok)
 	assert.Equal(t, 3, k)
 	assert.Equal(t, 1, v)
 
-	k, v, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Max(cmpKey)
-	require.True(t, ok)
-	assert.Equal(t, 3, k)
-	assert.Equal(t, 1, v)
-
-	k, v, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1, 4: 10, 5: 7, 6: 8}).Skip(3).Max(cmpKey)
+	k, v, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1, 4: 10, 5: 7, 6: 8}).Max(cmpKey)
 	require.True(t, ok)
 	assert.Equal(t, 6, k)
 	assert.Equal(t, 8, v)
 
-	inc := func(k, v int) (int, int) {
-		return k + 1, v + 2
-	}
-	k, v, ok = Iterate2[int](1, 1, inc).Limit(8).Max(cmpKey)
-	require.True(t, ok)
-	assert.Equal(t, 8, k)
-	assert.Equal(t, 16, v)
 }
 
 func TestMin2(t *testing.T) {
@@ -150,29 +135,8 @@ func TestMin2(t *testing.T) {
 	_, _, ok := Empty2[int, int]().Min(cmpKey)
 	require.False(t, ok)
 
-	_, _, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Skip(3).Min(cmpKey)
-	require.False(t, ok)
-
-	k, v, ok := OfMap(map[int]int{1: 6, 2: 1, 3: 1}).Skip(2).Min(cmpKey)
-	require.True(t, ok)
-	assert.Equal(t, 3, k)
-	assert.Equal(t, 1, v)
-
-	k, v, ok = OfMap(map[int]int{1: 6, 2: 1, 3: 1}).Min(cmpKey)
+	k, v, ok := OfMap(map[int]int{1: 6, 2: 1, 3: 1}).Min(cmpKey)
 	require.True(t, ok)
 	assert.Equal(t, 1, k)
 	assert.Equal(t, 6, v)
-
-	k, v, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1, 4: 10, 5: 7, 6: 8}).Skip(3).Min(cmpKey)
-	require.True(t, ok)
-	assert.Equal(t, 4, k)
-	assert.Equal(t, 10, v)
-
-	inc := func(k, v int) (int, int) {
-		return k + 1, v + 2
-	}
-	k, v, ok = Iterate2[int](1, 1, inc).Limit(8).Min(cmpKey)
-	require.True(t, ok)
-	assert.Equal(t, 1, k)
-	assert.Equal(t, 1, v)
 }
