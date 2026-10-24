@@ -6,9 +6,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/mariomac/gostream/item"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/mariomac/gostream/item"
 )
 
 func TestMap(t *testing.T) {

@@ -139,7 +139,6 @@ func TestConcat2(t *testing.T) {
 			// test that iterating for the second time produces the same results
 			assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.MapStream(dedupe).ToSlice())
 		})
-
 	}
 }
 
@@ -154,7 +153,7 @@ func TestConcat2_Empty(t *testing.T) {
 		{title: "multiple empty", input: []*Stream2[int, int]{Empty2[int, int](), Empty2[int, int](), Empty2[int, int]()}},
 	} {
 		t.Run(tc.title, func(t *testing.T) {
-			concat := Concat2[int, int](tc.input...)
+			concat := Concat2(tc.input...)
 			assert.Empty(t, concat.Count())
 		})
 	}

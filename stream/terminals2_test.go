@@ -124,7 +124,6 @@ func TestMax2(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, 6, k)
 	assert.Equal(t, 8, v)
-
 }
 
 func TestMin2(t *testing.T) {
