@@ -5,8 +5,6 @@ package order
 import (
 	"cmp"
 	"strings"
-
-	"github.com/mariomac/gostream/item"
 )
 
 // Comparator function compares its two arguments for order. Returns a negative
@@ -30,19 +28,5 @@ func IgnoreCase(a, b string) int {
 func Inverse[T any](cmp Comparator[T]) Comparator[T] {
 	return func(a, b T) int {
 		return -cmp(a, b)
-	}
-}
-
-// ByKey uses the source comparator to compare the key of two item.Pair entries
-func ByKey[K comparable, V any](cmp Comparator[K]) Comparator[item.Pair[K, V]] {
-	return func(a, b item.Pair[K, V]) int {
-		return cmp(a.Key, b.Key)
-	}
-}
-
-// ByVal uses the source comparator to compare the value of two item.Pair entries
-func ByVal[K, V comparable](cmp Comparator[V]) Comparator[item.Pair[K, V]] {
-	return func(a, b item.Pair[K, V]) int {
-		return cmp(a.Val, b.Val)
 	}
 }

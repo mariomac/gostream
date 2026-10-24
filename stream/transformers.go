@@ -73,19 +73,19 @@ func (is *Stream[T]) Limit(maxSize int) *Stream[T] {
 
 // Distinct returns a stream consisting of the distinct elements (according to equality operator)
 // of the input stream.
-// Unlike the rest of stream transformations, Distinct is a function instead of a method
-// due to some limitations in the Go generic type system.
-func Distinct[T comparable](input *Stream[T]) *Stream[T] {
-	return &Stream[T]{supply: func() iterator[T] {
-		next := input.iterator()
-		elems := map[T]struct{}{}
-		return func() (T, bool) {
+// Due to the limitations of the Go generics system, you need to pass `item.IsCmp[T]`
+// as argument to let compiler checking at runtime that the stream type T is comparable.
+func (is *Stream[T]) Distinct[O comparable](cmp func(T) O) *Stream[O] {
+	return &Stream[O]{supply: func() iterator[O] {
+		next := is.iterator()
+		elems := map[O]struct{}{}
+		return func() (O, bool) {
 			for {
-				n, ok := next()
+				nt, ok := next()
 				if !ok {
-					var zeroVal T
-					return zeroVal, false
+					return *new(O), false
 				}
+				n := cmp(nt)
 				if _, ok := elems[n]; !ok {
 					elems[n] = struct{}{}
 					return n, true
@@ -209,6 +209,24 @@ func (is *Stream[T]) Concat(append *Stream[T]) *Stream[T] {
 					next = finishedIterator[T]
 				}
 				return next()
+			}
+		},
+	}
+}
+
+// MapStream2 returns a Stream2 (two output types for key and value) consisting of the results of individually applying
+// the mapper function to each key-value pair of the target Stream.
+func (is *Stream[T]) MapStream2[K comparable, V any](mapper func(i T) (K, V)) *Stream2[K, V] {
+	return &Stream2[K, V]{
+		supply: func() iterator2[K, V] {
+			next := is.iterator()
+			return func() (K, V, bool) {
+				n, ok := next()
+				if !ok {
+					return *new(K), *new(V), false
+				}
+				k, v := mapper(n)
+				return k, v, true
 			}
 		},
 	}

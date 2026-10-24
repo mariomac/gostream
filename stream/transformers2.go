@@ -1,7 +1,13 @@
 package stream
 
-// Map returns a Stream consisting of the results of individually applying
-// the mapper function to each element of the target Stream.
+import (
+	"slices"
+
+	"github.com/mariomac/gostream/order"
+)
+
+// Map returns a Stream2 consisting of the results of individually applying
+// the mapper function to each key-value pair of the target Stream2.
 func (is *Stream2[K, V]) Map[OK comparable, OV comparable](mapper func(K, V) (OK, OV)) *Stream2[OK, OV] {
 	return &Stream2[OK, OV]{
 		supply: func() iterator2[OK, OV] {
@@ -13,6 +19,24 @@ func (is *Stream2[K, V]) Map[OK comparable, OV comparable](mapper func(K, V) (OK
 				}
 				okk, ov := mapper(k, v)
 				return okk, ov, true
+			}
+		},
+	}
+}
+
+// MapStream returns a Stream (single output type) consisting of the results of individually applying
+// the mapper function to each key-value pair of the target Stream2.
+func (is *Stream2[K, V]) MapStream[O any](mapper func(K, V) O) *Stream[O] {
+	return &Stream[O]{
+		supply: func() iterator[O] {
+			next := is.iterator()
+			return func() (O, bool) {
+				k, v, ok := next()
+				if !ok {
+					return *new(O), false
+				}
+				o := mapper(k, v)
+				return o, true
 			}
 		},
 	}
@@ -166,4 +190,36 @@ func (is *Stream2[K, V]) Values() *Stream[V] {
 			}
 		},
 	}
+}
+
+type tuple[K comparable, V any] struct {
+	k K
+	v V
+}
+
+// poner ejemplo de orrdenar natural by value
+func (is *Stream2[K, V]) Sorted(cmp order.Comparator2[K, V]) *Stream2[K, V] {
+	return &Stream2[K, V]{
+		supply: func() iterator2[K, V] {
+			items := is.MapStream(func(k K, v V) tuple[K, V] {
+				return tuple[K, V]{k: k, v: v}
+			}).ToSlice()
+			slices.SortFunc(items, func(a, b tuple[K, V]) int {
+				return cmp(a.k, a.v, b.k, b.v)
+			})
+			return func() (K, V, bool) {
+				if len(items) == 0 {
+					return finishedIterator2[K, V]()
+				}
+				n := items[0]
+				items = items[1:]
+				return n.k, n.v, true
+			}
+		},
+	}
+}
+
+// natural order
+func (is *Stream2[K, V]) SortedByKey() *Stream2[K, V] {
+	return is.Sorted(order.ByKey[K, V](order.Natural))
 }

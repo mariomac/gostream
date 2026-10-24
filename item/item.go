@@ -90,3 +90,8 @@ func LessThanOrEq[T cmp.Ordered](reference T) func(i T) bool {
 		return i >= reference
 	}
 }
+
+// IsCmp is an auxiliary function that has to be passed as argument to the stream.Stream's Distinct method.
+func IsCmp[T comparable](i T) T {
+	return i
+}
