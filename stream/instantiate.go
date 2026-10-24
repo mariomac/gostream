@@ -2,8 +2,6 @@ package stream
 
 import (
 	"iter"
-
-	"github.com/mariomac/gostream/item"
 )
 
 // Of creates an Stream from a variable number of elements that are passed as
@@ -32,7 +30,6 @@ func OfSlice[T any](elems []T) *Stream[T] {
 // different results.
 func Generate[T any](supplier func() T) *Stream[T] {
 	return &Stream[T]{
-		infinite: true,
 		supply: func() iterator[T] {
 			return func() (T, bool) {
 				return supplier(), true
@@ -49,7 +46,6 @@ func Generate[T any](supplier func() T) *Stream[T] {
 // different results.
 func Iterate[T any](seed T, f func(T) T) *Stream[T] {
 	return &Stream[T]{
-		infinite: true,
 		supply: func() iterator[T] {
 			lastElement := seed
 			return func() (T, bool) {
@@ -61,59 +57,11 @@ func Iterate[T any](seed T, f func(T) T) *Stream[T] {
 	}
 }
 
-// Concat creates a lazily concatenated stream whose elements are all the elements of the first stream
-// followed by all the elements of the second stream.
-func Concat[T any](a, b *Stream[T]) *Stream[T] {
-	return &Stream[T]{
-		infinite: a.isInfinite() || b.isInfinite(),
-		supply: func() iterator[T] {
-			first := true
-			next := a.iterator()
-			return func() (T, bool) {
-				n, ok := next()
-				if ok {
-					return n, true
-				}
-				if first {
-					first = false
-					next = b.iterator()
-				} else {
-					next = finishedIterator[T]
-				}
-				return next()
-			}
-		},
-	}
-}
-
 // Empty returns an empty stream
 func Empty[T any]() *Stream[T] {
 	return &Stream[T]{
 		supply: func() iterator[T] {
 			return finishedIterator[T]
-		},
-	}
-}
-
-// OfMap creates a Stream of item.Pair elements. Each kv.Pair corresponds to
-// a key/value entry of the source map.
-func OfMap[K comparable, V any](source map[K]V) *Stream[item.Pair[K, V]] {
-	return &Stream[item.Pair[K, V]]{
-		supply: func() iterator[item.Pair[K, V]] {
-			// the map slice is instantiated lazily
-			// TODO: use low-level code to directly iterate Map?
-			items := make([]item.Pair[K, V], 0, len(source))
-			for k, v := range source {
-				items = append(items, item.Pair[K, V]{Key: k, Val: v})
-			}
-			return func() (item.Pair[K, V], bool) {
-				if len(items) == 0 {
-					return finishedIterator[item.Pair[K, V]]()
-				}
-				n := items[0]
-				items = items[1:]
-				return n, true
-			}
 		},
 	}
 }
@@ -138,19 +86,6 @@ func OfSeq[T any](source iter.Seq[T]) *Stream[T] {
 		supply: func() iterator[T] {
 			pull, _ := iter.Pull(source)
 			return pull
-		},
-	}
-}
-
-// OfSeq2 creates a Stream[item.Pair[K, V]] from a standard iter.Seq2[K, V] iterator.
-func OfSeq2[K comparable, V any](source iter.Seq2[K, V]) *Stream[item.Pair[K, V]] {
-	return &Stream[item.Pair[K, V]]{
-		supply: func() iterator[item.Pair[K, V]] {
-			pull, _ := iter.Pull2(source)
-			return func() (item.Pair[K, V], bool) {
-				k, v, ok := pull()
-				return item.Pair[K, V]{Key: k, Val: v}, ok
-			}
 		},
 	}
 }

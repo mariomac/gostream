@@ -7,10 +7,9 @@ import (
 )
 
 // Map returns a Stream consisting of the results of individually applying
-// the mapper function to each elements of the target Stream.
+// the mapper function to each element of the target Stream.
 func (is *Stream[T]) Map[OT any](mapper func(T) OT) *Stream[OT] {
 	return &Stream[OT]{
-		infinite: is.isInfinite(),
 		supply: func() iterator[OT] {
 			next := is.iterator()
 			return func() (OT, bool) {
@@ -29,7 +28,6 @@ func (is *Stream[T]) Map[OT any](mapper func(T) OT) *Stream[OT] {
 // predicate (this is, applying the predicate function over the item returns true).
 func (is *Stream[T]) Filter(predicate func(T) bool) *Stream[T] {
 	return &Stream[T]{
-		infinite: is.infinite,
 		supply: func() iterator[T] {
 			next := is.iterator()
 			return func() (T, bool) {
@@ -52,7 +50,6 @@ func (is *Stream[T]) Filter(predicate func(T) bool) *Stream[T] {
 // be no longer than maxSize in length.
 func (is *Stream[T]) Limit(maxSize int) *Stream[T] {
 	return &Stream[T]{
-		infinite: false,
 		supply: func() iterator[T] {
 			next := is.iterator()
 			count := 0
@@ -101,9 +98,7 @@ func Distinct[T comparable](input *Stream[T]) *Stream[T] {
 // Sorted Stream a stream consisting of the elements of the target Stream, sorted according
 // to the provided order.Comparator.
 func (is *Stream[T]) Sorted(comparator order.Comparator[T]) *Stream[T] {
-	assertFinite[T](is)
 	return &Stream[T]{
-		infinite: false,
 		supply: func() iterator[T] {
 			items := is.ToSlice()
 			slices.SortFunc(items, comparator)
@@ -156,11 +151,10 @@ func (is *Stream[IN]) FlatMap[OUT any](mapper func(IN) *Stream[OUT]) *Stream[OUT
 	}
 }
 
-// Peek peturns a stream consisting of the elements of this stream, additionally performing
+// Peek returns a stream consisting of the elements of this stream, additionally performing
 // the provided action on each element as elements are consumed from the resulting stream.
 func (is *Stream[T]) Peek(consumer func(T)) *Stream[T] {
 	return &Stream[T]{
-		infinite: is.isInfinite(),
 		supply: func() iterator[T] {
 			next := is.iterator()
 			return func() (T, bool) {
@@ -180,7 +174,6 @@ func (is *Stream[T]) Peek(consumer func(T)) *Stream[T] {
 // the first n elements of the stream.
 func (is *Stream[T]) Skip(n int) *Stream[T] {
 	return &Stream[T]{
-		infinite: is.isInfinite(),
 		supply: func() iterator[T] {
 			next := is.iterator()
 			skipped := 0
@@ -191,6 +184,31 @@ func (is *Stream[T]) Skip(n int) *Stream[T] {
 					skipped++
 				}
 				return it, ok
+			}
+		},
+	}
+}
+
+// Concat returns a lazily concatenated stream whose elements are all the elements of the
+// target Stream followed by all the elements of the argument Stream
+// todo: consider multiple arguments
+func (is *Stream[T]) Concat(append *Stream[T]) *Stream[T] {
+	return &Stream[T]{
+		supply: func() iterator[T] {
+			first := true
+			next := is.iterator()
+			return func() (T, bool) {
+				n, ok := next()
+				if ok {
+					return n, true
+				}
+				if first {
+					first = false
+					next = append.iterator()
+				} else {
+					next = finishedIterator[T]
+				}
+				return next()
 			}
 		},
 	}

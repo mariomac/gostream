@@ -1,6 +1,9 @@
 
 * `Stream[T]` was an interface in v1. Now is a struct.
     - Consequently, instantiator methods which returned `Stream[T]` in v1, return `*Stream[T]` in v2.
+* Removed `item.Pair[K, V]` and created `Stream2[K, V]`
 * Removed all the transformation functions and replaced by methods. For example 
   `stream.Map(parent_stream, func)` is replaced by `parent_stream.Map(func)`
 * Removed functions that can run as a method, to avoid duplicities
+* For simplicity, no more infinite check. Java Streams do neither.
+* Concat is not an "instantiator" function anymore but a method

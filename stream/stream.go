@@ -2,10 +2,6 @@
 // operations
 package stream
 
-import (
-	"fmt"
-)
-
 // Stream is a sequence of elements supporting different processing and aggregation functionalities.
 // To perform a computation, Stream operations are composed into a stream pipeline. A stream pipeline
 // consists of a source (which might be an array, a collection, a generator function, an I/O channel,
@@ -15,8 +11,7 @@ import (
 // only performed when the terminal operation is initiated, and source elements are consumed only as
 // needed.
 type Stream[T any] struct {
-	infinite bool
-	supply   iteratorSupplier[T]
+	supply iteratorSupplier[T]
 }
 
 // if there are more items to iterate, returns the next item and true.
@@ -34,15 +29,4 @@ type iteratorSupplier[T any] func() iterator[T]
 
 func (is *Stream[T]) iterator() iterator[T] {
 	return is.supply()
-}
-
-func (is *Stream[T]) isInfinite() bool {
-	return is.infinite
-}
-
-func assertFinite[T any](is *Stream[T]) {
-	if is.isInfinite() {
-		var v T
-		panic(fmt.Sprintf("operation not allowed in an infinite Stream[%T]", v))
-	}
 }
