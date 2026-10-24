@@ -47,28 +47,6 @@ func TestGenerate2(t *testing.T) {
 		gen.Limit(3).ToMap())
 }
 
-func TestConcat2(t *testing.T) {
-	concat := OfMap(map[string]int{"a": 1, "b": 2, "c": 3}).
-		Concat(OfMap(map[string]int{"d": 1, "e": 2, "f": 3}))
-	assert.Equal(t, map[string]int{
-		"a": 1,
-		"b": 2,
-		"c": 3,
-		"d": 1,
-		"e": 2,
-		"f": 3,
-	}, concat.ToMap())
-	// test that iterating for the second time produces the same results
-	assert.Equal(t, map[string]int{
-		"a": 1,
-		"b": 2,
-		"c": 3,
-		"d": 1,
-		"e": 2,
-		"f": 3,
-	}, concat.ToMap())
-}
-
 func TestEmpty2(t *testing.T) {
 	assert.Empty(t, Empty2[int, int]().Map(func(int, int) (float64, float64) {
 		return 1, 2
@@ -130,4 +108,80 @@ func TestOfSeq2(t *testing.T) {
 	assert.True(t, stream.AnyMatch(func(s string, i int) bool {
 		return s == "c" && i == 3
 	}))
+}
+
+func TestConcat2(t *testing.T) {
+	dupe := func(i int) (int, int) { return i, i }
+	dedupe := func(i, _ int) int { return i }
+	type testCase struct {
+		title string
+		input []*Stream2[int, int]
+	}
+	for _, tc := range []testCase{{
+		title: "single",
+		input: []*Stream2[int, int]{Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).MapStream2(dupe)},
+	}, {
+		title: "basic double",
+		input: []*Stream2[int, int]{Of(1, 2, 3, 4, 5, 6).MapStream2(dupe), Of(7, 8, 9, 10).MapStream2(dupe)},
+	}, {
+		title: "multiple",
+		input: []*Stream2[int, int]{Of(1, 2, 3).MapStream2(dupe), Of(4, 5, 6).MapStream2(dupe), Of(7, 8).MapStream2(dupe), Of(9, 10).MapStream2(dupe)},
+	}, {
+		title: "multiple with empties",
+		input: []*Stream2[int, int]{Of(1, 2, 3, 4, 5, 6).MapStream2(dupe), Empty2[int, int](), Empty2[int, int](), Of(7, 8).MapStream2(dupe), Of(9, 10).MapStream2(dupe)},
+	}, {
+		title: "multiple with empties at start and end",
+		input: []*Stream2[int, int]{Empty2[int, int](), Of(1, 2, 3).MapStream2(dupe), Of(4, 5, 6).MapStream2(dupe), Of(7, 8).MapStream2(dupe), Of(9, 10).MapStream2(dupe), Empty2[int, int]()},
+	}} {
+		t.Run(tc.title, func(t *testing.T) {
+			concat := Concat2(tc.input...)
+			assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.MapStream(dedupe).ToSlice())
+			// test that iterating for the second time produces the same results
+			assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.MapStream(dedupe).ToSlice())
+		})
+
+	}
+}
+
+func TestConcat2_Empty(t *testing.T) {
+	type testCase struct {
+		title string
+		input []*Stream2[int, int]
+	}
+	for _, tc := range []testCase{
+		{title: "no arguments"},
+		{title: "empty", input: []*Stream2[int, int]{Empty2[int, int]()}},
+		{title: "multiple empty", input: []*Stream2[int, int]{Empty2[int, int](), Empty2[int, int](), Empty2[int, int]()}},
+	} {
+		t.Run(tc.title, func(t *testing.T) {
+			concat := Concat2[int, int](tc.input...)
+			assert.Empty(t, concat.Count())
+		})
+	}
+}
+
+func TestZip(t *testing.T) {
+	assert.Equal(t,
+		map[int]string{1: "one", 2: "two", 3: "three"},
+		Zip(
+			Of(1, 2, 3, 4),
+			Of("one", "two", "three"),
+		).ToMap())
+	assert.Equal(t,
+		map[string]int{"one": 1, "two": 2, "three": 3},
+		Zip(
+			Of("one", "two", "three"),
+			Of(1, 2, 3, 4),
+		).ToMap())
+
+	assert.Empty(t,
+		Zip(
+			Empty[int](),
+			Of(1, 2, 3, 4),
+		).ToMap())
+	assert.Empty(t,
+		Zip(
+			Of(1, 2, 3, 4),
+			Empty[int](),
+		).ToMap())
 }

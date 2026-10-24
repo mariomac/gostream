@@ -66,4 +66,30 @@ func OfSeq2[K comparable, V any](source iter.Seq2[K, V]) *Stream2[K, V] {
 	}
 }
 
-// TODO: CONCAT2
+// Concat2 returns a lazily concatenated stream whose elements are
+// all the elements of each of the provided Stream instances,
+// following the provided order.
+func Concat2[K comparable, V any](streams ...*Stream2[K, V]) *Stream2[K, V] {
+	if len(streams) == 0 {
+		return Empty2[K, V]()
+	}
+	return &Stream2[K, V]{
+		supply: func() iterator2[K, V] {
+			current, following := streams[0], streams[1:]
+			next := current.iterator()
+			return func() (K, V, bool) {
+				for {
+					k, v, ok := next()
+					if ok {
+						return k, v, true
+					}
+					if len(following) == 0 {
+						return *new(K), *new(V), false
+					}
+					current, following = following[0], following[1:]
+					next = current.iterator()
+				}
+			}
+		},
+	}
+}

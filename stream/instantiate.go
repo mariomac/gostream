@@ -117,3 +117,21 @@ func Concat[T any](streams ...*Stream[T]) *Stream[T] {
 		},
 	}
 }
+
+// Zip returns a Stream2 whose key instances are the elements in the Stream passed as
+// a first argument, and the values are the elements in the second argument; in the
+// corresponding order of each stream.
+// The lenght of the returned Stream2 is the length of the shorter input Stream.
+func Zip[K comparable, V any](ks *Stream[K], vs *Stream[V]) *Stream2[K, V] {
+	return &Stream2[K, V]{
+		supply: func() iterator2[K, V] {
+			keys := ks.iterator()
+			vals := vs.iterator()
+			return func() (K, V, bool) {
+				k, okk := keys()
+				v, okv := vals()
+				return k, v, okk && okv
+			}
+		},
+	}
+}

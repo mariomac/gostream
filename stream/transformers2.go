@@ -141,32 +141,7 @@ func (is *Stream2[K, V]) Peek(consumer func(K, V)) *Stream2[K, V] {
 	}
 }
 
-// Concat returns a lazily concatenated stream whose elements are all the elements of the
-// target Stream followed by all the elements of the argument Stream
-// todo: consider multiple arguments
-func (is *Stream2[K, V]) Concat(append *Stream2[K, V]) *Stream2[K, V] {
-	return &Stream2[K, V]{
-		supply: func() iterator2[K, V] {
-			first := true
-			next := is.iterator()
-			return func() (K, V, bool) {
-				k, v, ok := next()
-				if ok {
-					return k, v, true
-				}
-				if first {
-					first = false
-					next = append.iterator()
-				} else {
-					next = finishedIterator2[K, V]
-				}
-				return next()
-			}
-		},
-	}
-}
-
-// TODO: document and test
+// Keys returns a Stream containing the keys of the target Stream2, preserving the order
 func (is *Stream2[K, V]) Keys() *Stream[K] {
 	return &Stream[K]{
 		supply: func() iterator[K] {
@@ -179,7 +154,7 @@ func (is *Stream2[K, V]) Keys() *Stream[K] {
 	}
 }
 
-// TODO: document and test
+// Values returns a Stream containing the values of the target Stream2, preserving the order
 func (is *Stream2[K, V]) Values() *Stream[V] {
 	return &Stream[V]{
 		supply: func() iterator[V] {
@@ -197,7 +172,6 @@ type tuple[K comparable, V any] struct {
 	v V
 }
 
-// TODO: poner ejemplo de orrdenar natural by value
 func (is *Stream2[K, V]) Sorted(cmp order.Comparator2[K, V]) *Stream2[K, V] {
 	return &Stream2[K, V]{
 		supply: func() iterator2[K, V] {
