@@ -65,3 +65,5 @@ func OfSeq2[K comparable, V any](source iter.Seq2[K, V]) *Stream2[K, V] {
 		},
 	}
 }
+
+// TODO: CONCAT2

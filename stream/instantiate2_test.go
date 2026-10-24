@@ -32,7 +32,7 @@ func TestIterate2(t *testing.T) {
 }
 
 func TestGenerate2(t *testing.T) {
-	cnt, cnt2 := 0, "a"
+	cnt, cnt2 := 0, ""
 	gen := Generate2(func() (int, string) {
 		cnt++
 		cnt2 += "a"
@@ -55,8 +55,8 @@ func TestConcat2(t *testing.T) {
 		"b": 2,
 		"c": 3,
 		"d": 1,
-		"e": 1,
-		"f": 1,
+		"e": 2,
+		"f": 3,
 	}, concat.ToMap())
 	// test that iterating for the second time produces the same results
 	assert.Equal(t, map[string]int{
@@ -64,8 +64,8 @@ func TestConcat2(t *testing.T) {
 		"b": 2,
 		"c": 3,
 		"d": 1,
-		"e": 1,
-		"f": 1,
+		"e": 2,
+		"f": 3,
 	}, concat.ToMap())
 }
 
@@ -79,7 +79,7 @@ func TestOfMap(t *testing.T) {
 	months := OfMap(map[int]string{
 		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
 		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
-	}).SortedByKey().Values().ToSlice()
+	}).Sorted(order.ByKey[int, string](order.Natural)).Values().ToSlice()
 	assert.Equal(t,
 		[]string{
 			"Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -93,8 +93,8 @@ func TestOfMap_SortedByVal(t *testing.T) {
 	months := OfMap(map[int]string{
 		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
 		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
-	}).Sorted(order.ByVal[int, string](cmp.Compare[string])).
-		Values()
+	}).Sorted(order.ByVal[int](cmp.Compare[string])).
+		Values().ToSlice()
 	assert.Equal(t,
 		[]string{
 			"Apr", "Aug", "Dec", "Feb", "Jan", "Jul",

@@ -31,14 +31,6 @@ func TestGenerate(t *testing.T) {
 		gen.Limit(5).ToSlice())
 }
 
-func TestConcat(t *testing.T) {
-	concat := Of(1, 2, 3, 4, 5, 6).
-		Concat(Of(7, 8, 9, 10))
-	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
-	// test that iterating for the second time produces the same results
-	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
-}
-
 func TestEmpty(t *testing.T) {
 	assert.Empty(t, Empty[int]().Map(rand.Intn).ToSlice())
 }
@@ -75,4 +67,53 @@ func TestOfSeq(t *testing.T) {
 	// test that iterating for the second time produces the same results
 	stream = OfSeq(seq)
 	assert.Equal(t, []int{1, 2, 3, 4, 5}, stream.ToSlice())
+}
+
+func TestConcat(t *testing.T) {
+	type testCase struct {
+		title string
+		input []*Stream[int]
+	}
+	for _, tc := range []testCase{{
+		title: "single",
+		input: []*Stream[int]{Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)},
+	}, {
+		title: "basic double",
+		input: []*Stream[int]{Of(1, 2, 3, 4, 5, 6), Of(7, 8, 9, 10)},
+	}, {
+		title: "multiple",
+		input: []*Stream[int]{Of(1, 2, 3), Of(4, 5, 6), Of(7, 8), Of(9, 10)},
+	}, {
+		title: "multiple with empties",
+		input: []*Stream[int]{Of(1, 2, 3, 4, 5, 6), Empty[int](), Empty[int](), Of(7, 8), Of(9, 10)},
+	}, {
+		title: "multiple with empties at start and end",
+		input: []*Stream[int]{Empty[int](), Of(1, 2, 3), Of(4, 5, 6), Of(7, 8), Of(9, 10), Empty[int]()},
+	}} {
+		t.Run(tc.title, func(t *testing.T) {
+			concat := Concat(tc.input...)
+			assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
+			// test that iterating for the second time produces the same results
+			assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
+		})
+
+	}
+}
+
+func TestConcat_Empty(t *testing.T) {
+	type testCase struct {
+		title string
+		input []*Stream[int]
+	}
+	for _, tc := range []testCase{
+		{title: "no arguments"},
+		{title: "empty", input: []*Stream[int]{Empty[int]()}},
+		{title: "multiple empty", input: []*Stream[int]{Empty[int](), Empty[int](), Empty[int]()}},
+	} {
+		t.Run(tc.title, func(t *testing.T) {
+			concat := Concat[int](tc.input...)
+			assert.Empty(t, concat.ToSlice())
+		})
+	}
+
 }

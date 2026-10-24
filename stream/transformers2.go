@@ -219,9 +219,22 @@ func (is *Stream2[K, V]) Sorted(cmp order.Comparator2[K, V]) *Stream2[K, V] {
 	}
 }
 
-// TODO: natural order
-func (is *Stream2[K, V]) SortedByKey() *Stream2[K, V] {
-	return is.Sorted(order.ByKey[K, V](order.Natural))
+// Skip returns a stream consisting of the remaining elements of this stream after discarding
+// the first n elements of the stream.
+func (is *Stream2[K, V]) Skip(n int) *Stream2[K, V] {
+	return &Stream2[K, V]{
+		supply: func() iterator2[K, V] {
+			next := is.iterator()
+			skipped := 0
+			return func() (K, V, bool) {
+				var k K
+				var v V
+				var ok bool
+				for k, v, ok = next(); ok && skipped < n; k, v, ok = next() {
+					skipped++
+				}
+				return k, v, ok
+			}
+		},
+	}
 }
-
-// TODO: skip

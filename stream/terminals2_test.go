@@ -107,50 +107,72 @@ func TestFindFirst2(t *testing.T) {
 	assert.Equal(t, 1, n)
 }
 
-func TestMax(t *testing.T) {
-	_, _, ok := Empty2[int, int]().Max(cmp.Compare[int])
+func TestMax2(t *testing.T) {
+	cmpKey := func(k1, _, k2, _ int) int {
+		return cmp.Compare(k1, k2)
+	}
+
+	_, _, ok := Empty2[int, int]().Max(cmpKey)
 	require.False(t, ok)
 
-	_, _, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Skip(3).Max(cmp.Compare[int])
+	_, _, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Skip(3).Max(cmpKey)
 	require.False(t, ok)
 
-	_, n, ok := OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Skip(2).Max(cmp.Compare[int])
+	k, v, ok := OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Skip(2).Max(cmpKey)
 	require.True(t, ok)
-	assert.Equal(t, 3, n)
+	assert.Equal(t, 3, k)
+	assert.Equal(t, 1, v)
 
-	n, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Max(cmp.Compare[int])
+	k, v, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Max(cmpKey)
 	require.True(t, ok)
-	assert.Equal(t, 3, n)
+	assert.Equal(t, 3, k)
+	assert.Equal(t, 1, v)
 
-	n, ok = Of(1, 2, 3, 4, 5, 6).Skip(3).Max(cmp.Compare[int])
+	k, v, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1, 4: 10, 5: 7, 6: 8}).Skip(3).Max(cmpKey)
 	require.True(t, ok)
-	assert.Equal(t, 6, n)
+	assert.Equal(t, 6, k)
+	assert.Equal(t, 8, v)
 
-	n, ok = Iterate[int](1, item.Increment[int]).Limit(8).Max(cmp.Compare[int])
+	inc := func(k, v int) (int, int) {
+		return k + 1, v + 2
+	}
+	k, v, ok = Iterate2[int](1, 1, inc).Limit(8).Max(cmpKey)
 	require.True(t, ok)
-	assert.Equal(t, 8, n)
+	assert.Equal(t, 8, k)
+	assert.Equal(t, 16, v)
 }
 
-func TestMin(t *testing.T) {
-	_, _, ok := Empty[int]().Min(cmp.Compare[int])
+func TestMin2(t *testing.T) {
+	cmpKey := func(k1, _, k2, _ int) int {
+		return cmp.Compare(k1, k2)
+	}
+
+	_, _, ok := Empty2[int, int]().Min(cmpKey)
 	require.False(t, ok)
 
-	_, _, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Skip(3).Min(cmp.Compare[int])
+	_, _, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Skip(3).Min(cmpKey)
 	require.False(t, ok)
 
-	_, n, ok := OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Skip(2).Min(cmp.Compare[int])
+	k, v, ok := OfMap(map[int]int{1: 6, 2: 1, 3: 1}).Skip(2).Min(cmpKey)
 	require.True(t, ok)
-	assert.Equal(t, 3, n)
+	assert.Equal(t, 3, k)
+	assert.Equal(t, 1, v)
 
-	n, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1}).Min(cmp.Compare[int])
+	k, v, ok = OfMap(map[int]int{1: 6, 2: 1, 3: 1}).Min(cmpKey)
 	require.True(t, ok)
-	assert.Equal(t, 1, n)
+	assert.Equal(t, 1, k)
+	assert.Equal(t, 6, v)
 
-	n, ok = Of(1, 2, 3, 4, 5, 6).Skip(3).Min(cmp.Compare[int])
+	k, v, ok = OfMap(map[int]int{1: 1, 2: 1, 3: 1, 4: 10, 5: 7, 6: 8}).Skip(3).Min(cmpKey)
 	require.True(t, ok)
-	assert.Equal(t, 4, n)
+	assert.Equal(t, 4, k)
+	assert.Equal(t, 10, v)
 
-	n, ok = Iterate[int](1, item.Increment[int]).Limit(8).Min(cmp.Compare[int])
+	inc := func(k, v int) (int, int) {
+		return k + 1, v + 2
+	}
+	k, v, ok = Iterate2[int](1, 1, inc).Limit(8).Min(cmpKey)
 	require.True(t, ok)
-	assert.Equal(t, 1, n)
+	assert.Equal(t, 1, k)
+	assert.Equal(t, 1, v)
 }

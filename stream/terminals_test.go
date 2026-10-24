@@ -89,6 +89,7 @@ func TestFindFirst(t *testing.T) {
 	assert.Equal(t, 1, n)
 }
 
+// TODO:
 func TestMax(t *testing.T) {
 	_, ok := Empty[int]().Max(cmp.Compare[int])
 	require.False(t, ok)
@@ -113,6 +114,7 @@ func TestMax(t *testing.T) {
 	assert.Equal(t, 8, n)
 }
 
+// TODO:
 func TestMin(t *testing.T) {
 	_, ok := Empty[int]().Min(cmp.Compare[int])
 	require.False(t, ok)

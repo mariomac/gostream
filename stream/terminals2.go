@@ -3,6 +3,8 @@ package stream
 import (
 	"iter"
 	"maps"
+
+	"github.com/mariomac/gostream/order"
 )
 
 // ForEach invokes the consumer function for each item of the Stream2.
@@ -73,5 +75,42 @@ func (is *Stream2[K, V]) Count() int {
 	return count
 }
 
-// TODO: findfirst
-// TODO: max and min
+// FindFirst returns the first key-value pair of this Stream2 along with true or, if the
+// stream is empty, the zero value of the inner type along with false.
+func (is *Stream2[K, V]) FindFirst() (K, V, bool) {
+	return is.iterator()()
+}
+
+// Max returns the maximum key-value pair of this stream according to the provided Comparator2,
+// along with true if the stream is not empty. If the stream is empty, returns the zero
+// value along with false.
+func (is *Stream2[K, V]) Max(cmp order.Comparator2[K, V]) (K, V, bool) {
+	next := is.iterator()
+	maxK, maxV, ok := next()
+	if !ok {
+		return maxK, maxV, false
+	}
+	for k, v, ok := next(); ok; k, v, ok = next() {
+		if cmp(k, v, maxK, maxV) > 0 {
+			maxK, maxV = k, v
+		}
+	}
+	return maxK, maxV, true
+}
+
+// Min returns the minimum element of this stream according to the provided Comparator,
+// along with true if the stream is not empty. If the stream is empty, returns the zero
+// value along with false.
+func (is *Stream2[K, V]) Min(cmp order.Comparator2[K, V]) (K, V, bool) {
+	next := is.iterator()
+	minK, minV, ok := next()
+	if !ok {
+		return minK, minV, false
+	}
+	for k, v, ok := next(); ok; k, v, ok = next() {
+		if cmp(k, v, minK, minV) < 0 {
+			minK, minV = k, v
+		}
+	}
+	return minK, minV, true
+}

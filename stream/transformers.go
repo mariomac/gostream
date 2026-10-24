@@ -189,31 +189,6 @@ func (is *Stream[T]) Skip(n int) *Stream[T] {
 	}
 }
 
-// Concat returns a lazily concatenated stream whose elements are all the elements of the
-// target Stream followed by all the elements of the argument Stream
-// todo: consider multiple arguments
-func (is *Stream[T]) Concat(append *Stream[T]) *Stream[T] {
-	return &Stream[T]{
-		supply: func() iterator[T] {
-			first := true
-			next := is.iterator()
-			return func() (T, bool) {
-				n, ok := next()
-				if ok {
-					return n, true
-				}
-				if first {
-					first = false
-					next = append.iterator()
-				} else {
-					next = finishedIterator[T]
-				}
-				return next()
-			}
-		},
-	}
-}
-
 // MapStream2 returns a Stream2 (two output types for key and value) consisting of the results of individually applying
 // the mapper function to each key-value pair of the target Stream.
 func (is *Stream[T]) MapStream2[K comparable, V any](mapper func(i T) (K, V)) *Stream2[K, V] {

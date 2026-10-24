@@ -89,3 +89,30 @@ func OfSeq[T any](source iter.Seq[T]) *Stream[T] {
 		},
 	}
 }
+
+// Concat returns a lazily concatenated stream whose elements are
+// all the elements of each of the provided Stream instances,
+// following the provided order.
+func Concat[T any](streams ...*Stream[T]) *Stream[T] {
+	if len(streams) == 0 {
+		return Empty[T]()
+	}
+	return &Stream[T]{
+		supply: func() iterator[T] {
+			current, following := streams[0], streams[1:]
+			next := current.iterator()
+			return func() (T, bool) {
+				for {
+					n, ok := next()
+					if ok {
+						return n, true
+					}
+					if len(following) == 0 {
+						return *new(T), false
+					}
+					current, following = following[0], following[1:]
+				}
+			}
+		},
+	}
+}
