@@ -57,7 +57,7 @@ func TestLimit2(t *testing.T) {
 
 func TestLimit2Boundaries(t *testing.T) {
 	m := map[int]int{1: 10, 2: 20, 3: 30}
-	assert.Empty(t, OfMap(m).Limit(15).ToMap())
+	assert.Empty(t, OfMap(m).Limit(0).ToMap())
 	assert.Equal(t, m, OfMap(m).Limit(15).ToMap())
 }
 
@@ -76,24 +76,35 @@ func TestSort2(t *testing.T) {
 }
 
 func TestFlapMap2(t *testing.T) {
-	generateCharSequence := func(in string) *Stream[byte] {
-		return OfSlice([]byte(in))
+	add := func(i byte) byte { return i + 1 }
+	generateCharSequence := func(in string, _ byte) *Stream2[byte, byte] {
+		return Zip(
+			OfSlice([]byte(in)),
+			Iterate(1, add),
+		)
 	}
-	generateNillableCharSequence := func(in string) *Stream[byte] {
+	generateNillableCharSequence := func(in string, _ byte) *Stream2[byte, byte] {
 		if len(in) == 0 {
 			return nil
 		}
-		return OfSlice([]byte(in))
+		return Zip(
+			OfSlice([]byte(in)),
+			Iterate(1, add),
+		)
 	}
 
-	assert.Empty(t, Of[string]().FlatMap(generateCharSequence).ToSlice())
+	assert.Empty(t, Empty2[string, byte]().FlatMap(generateCharSequence).ToMap())
 
-	chars := Of[string]("", "hello", "my", "", "friends!", "").
-		FlatMap(generateCharSequence).ToSlice()
+	chars := Zip(
+		Of[string]("", "hello", "my", "", "friends!", ""),
+		Iterate[byte](1, add),
+	).FlatMap(generateCharSequence).Keys().ToSlice()
 	assert.Equal(t, []byte("hellomyfriends!"), chars)
 
-	chars = Of[string]("", "hello", "my", "", "friends!", "").
-		FlatMap(generateNillableCharSequence).ToSlice()
+	chars = Zip(
+		Of[string]("", "hello", "my", "", "friends!", ""),
+		Iterate[byte](1, add),
+	).FlatMap(generateNillableCharSequence).Keys().ToSlice()
 	assert.Equal(t, []byte("hellomyfriends!"), chars)
 }
 

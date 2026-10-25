@@ -56,8 +56,8 @@ func TestLimit(t *testing.T) {
 }
 
 func TestLimitBoundaries(t *testing.T) {
-	assert.Empty(t, Of(1, 2, 3).Limit(15).ToSlice())
-	assert.Equal(t, []int{1, 2, 3}, Of(1, 2, 3).Limit(0).ToSlice())
+	assert.Empty(t, Of(1, 2, 3).Limit(0).ToSlice())
+	assert.Equal(t, []int{1, 2, 3}, Of(1, 2, 3).Limit(15).ToSlice())
 }
 
 func TestDistinct(t *testing.T) {
