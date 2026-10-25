@@ -112,3 +112,19 @@ func (is *Stream2[K, V]) Min(cmp Comparator2[K, V]) (K, V, bool) {
 	}
 	return minK, minV, true
 }
+
+// Reduce performs a reduction on the key-value pairs of this stream, using an associative
+// accumulation function for keys and values separately, and returns a key-value pair describing the reduced pairs, if any.
+// If no reduced value (e.g. because the stream is empty), the third returned value
+// is false.
+func (is *Stream2[K, V]) Reduce(accumulator func(k1 K, v1 V, k2 K, v2 V) (K, V)) (K, V, bool) {
+	next := is.iterator()
+	kacc, vacc, ok := next()
+	if !ok {
+		return kacc, vacc, false
+	}
+	for k, v, ok := next(); ok; k, v, ok = next() {
+		kacc, vacc = accumulator(kacc, vacc, k, v)
+	}
+	return kacc, vacc, true
+}

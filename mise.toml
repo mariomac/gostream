@@ -6,7 +6,7 @@ golangci-lint = "2.15.0"
 run = "golangci-lint fmt"
 
 [tasks.lint]
-run = "golangci-lint run ./..."
+run = "golangci-lint run --fix ./..."
 
 [tasks.test]
 run = "go test -race ./... -coverpkg=./... -coverprofile coverage.out"

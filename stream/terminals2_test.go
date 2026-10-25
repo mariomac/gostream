@@ -147,12 +147,31 @@ func ExampleStream2_ForEach() {
 		"bread": 4,
 		"wine":  1,
 		"eggs":  2,
-	})
+	}).SortedByKey(cmp.Compare)
 	shopItems.ForEach(func(item string, amount int) {
 		fmt.Println(item, "->", amount)
 	})
 	// Output:
 	// bread -> 4
-	// wine -> 1
 	// eggs -> 2
+	// wine -> 1
+}
+
+func TestReduce2(t *testing.T) {
+	rck, rcv, ok := OfMap(map[int]int{
+		1: 2, 3: 4, 5: 6,
+	}).Reduce(func(k1, v1, k2, v2 int) (int, int) {
+		return k1 + k2, v1 + v2
+	})
+	require.True(t, ok)
+	assert.Equal(t, 9, rck)
+	assert.Equal(t, 12, rcv)
+}
+
+func TestReduce2_Empty(t *testing.T) {
+	_, _, ok := Empty2[int, int]().
+		Reduce(func(_, _, _, _ int) (int, int) {
+			return 1, 1
+		})
+	assert.False(t, ok)
 }

@@ -108,27 +108,47 @@ func TestFlapMap2(t *testing.T) {
 	assert.Equal(t, []byte("hellomyfriends!"), chars)
 }
 
-func TestPeek2(t *testing.T) {
-	var actions []string
-
-	sl := Of(1, 2, 3, 4, 5, 6).
-		Filter(func(n int) bool {
-			return n%2 == 1
-		}).
-		Peek(func(n int) {
-			actions = append(actions, fmt.Sprint("processed ", n))
-		}).
-		ToSlice()
-
-	require.Equal(t, []int{1, 3, 5}, sl)
-	assert.Equal(t, []string{
-		"processed 1", "processed 3", "processed 5",
-	}, actions)
-}
-
 func TestSkip2(t *testing.T) {
 	assert.Empty(t, Empty[int]().Skip(3).ToSlice())
 	assert.Empty(t, Of(1, 2).Skip(3).ToSlice())
 	assert.Empty(t, Of(1, 2, 3).Skip(3).ToSlice())
 	assert.Equal(t, []int{4, 5, 6}, Of(1, 2, 3, 4, 5, 6).Skip(3).ToSlice())
+}
+
+func TestPeek2(t *testing.T) {
+	peekCount := 0
+	rck, rcv, ok := OfMap(map[int]int{
+		1: 2, 3: 4, 5: 6,
+	}).Peek(func(k, v int) {
+		peekCount += k + v
+	}).Reduce(func(k1, v1, k2, v2 int) (int, int) {
+		return k1 + k2, v1 + v2
+	})
+	require.True(t, ok)
+	assert.Equal(t, 3+7+11, peekCount)
+	assert.Equal(t, 9, rck)
+	assert.Equal(t, 12, rcv)
+}
+
+func ExampleStream2_Sorted() {
+	cityPopulations := OfMap[string, int](map[string]int{
+		"Madrid":    4_000_000,
+		"Barcelona": 1_600_000,
+		"Tokyo":     14_270_000,
+		"Sabadell":  250_000,
+	})
+	sorted := cityPopulations.Sorted(
+		func(_ string, p1 int, _ string, p2 int) int {
+			return cmp.Compare(p2, p1)
+		})
+	fmt.Println("World cities sorted by population")
+	for k, v := range sorted.Seq2() {
+		fmt.Println(k+":", v)
+	}
+	// Output:
+	// World cities sorted by population
+	// Tokyo: 14270000
+	// Madrid: 4000000
+	// Barcelona: 1600000
+	// Sabadell: 250000
 }
