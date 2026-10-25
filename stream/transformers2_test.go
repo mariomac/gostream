@@ -47,12 +47,18 @@ func TestFilter2(t *testing.T) {
 
 func TestLimit2(t *testing.T) {
 	count := 0
-	items := Generate(func() int {
+	items := Generate2(func() (int, int) {
 		count++
-		return count
-	}).Limit(7).ToSlice()
+		return count, count * 10
+	}).Limit(7).ToMap()
 
-	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7}, items)
+	assert.Equal(t, map[int]int{1: 10, 2: 20, 3: 30, 4: 40, 5: 50, 6: 60, 7: 70}, items)
+}
+
+func TestLimit2Boundaries(t *testing.T) {
+	m := map[int]int{1: 10, 2: 20, 3: 30}
+	assert.Empty(t, OfMap(m).Limit(15).ToMap())
+	assert.Equal(t, m, OfMap(m).Limit(15).ToMap())
 }
 
 func TestDistinct2(t *testing.T) {

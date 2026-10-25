@@ -2,6 +2,7 @@ package stream
 
 import (
 	cmp "cmp"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -139,4 +140,19 @@ func TestMin2(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, 1, k)
 	assert.Equal(t, 6, v)
+}
+
+func ExampleStream2_ForEach() {
+	shopItems := OfMap(map[string]int{
+		"bread": 4,
+		"wine":  1,
+		"eggs":  2,
+	})
+	shopItems.ForEach(func(item string, amount int) {
+		fmt.Println(item, "->", amount)
+	})
+	// Output:
+	// bread -> 4
+	// wine -> 1
+	// eggs -> 2
 }
