@@ -6,8 +6,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/mariomac/gostream/order"
 )
 
 func TestIterate2(t *testing.T) {
@@ -57,7 +55,7 @@ func TestOfMap(t *testing.T) {
 	months := OfMap(map[int]string{
 		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
 		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
-	}).Sorted(order.ByKey[int, string](order.Natural)).Values().ToSlice()
+	}).SortedByKey(cmp.Compare).Values().ToSlice()
 	assert.Equal(t,
 		[]string{
 			"Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -71,8 +69,7 @@ func TestOfMap_SortedByVal(t *testing.T) {
 	months := OfMap(map[int]string{
 		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
 		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
-	}).Sorted(order.ByVal[int](cmp.Compare[string])).
-		Values().ToSlice()
+	}).SortedByVal(cmp.Compare).Values().ToSlice()
 	assert.Equal(t,
 		[]string{
 			"Apr", "Aug", "Dec", "Feb", "Jan", "Jul",

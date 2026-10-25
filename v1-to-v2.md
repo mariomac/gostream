@@ -8,3 +8,4 @@
 * For simplicity, no more infinite check. Java Streams do neither.
 * Concat is not an "instantiator" function anymore but a method
 * Removed predicates in "item" package.
+* Removed "order" package.

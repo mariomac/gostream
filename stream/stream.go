@@ -14,6 +14,12 @@ type Stream[T any] struct {
 	supply iteratorSupplier[T]
 }
 
+// Comparator is any function that compares its two arguments for order. Returns a negative
+// integer, zero, or a positive integer as the first argument is less than,
+// equal to, or greater than the second.
+// It is used as an accessory function in stream methods that provides sorting or ordering.
+type Comparator[T any] func(T, T) int
+
 // if there are more items to iterate, returns the next item and true.
 // if the iterator has iterated all the stream items, returns the zero value and false.
 // this function will usually depend on an external status (e.g. can be a struct method or

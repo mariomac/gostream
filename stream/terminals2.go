@@ -3,8 +3,6 @@ package stream
 import (
 	"iter"
 	"maps"
-
-	"github.com/mariomac/gostream/order"
 )
 
 // ForEach invokes the consumer function for each item of the Stream2.
@@ -84,7 +82,7 @@ func (is *Stream2[K, V]) FindFirst() (K, V, bool) {
 // Max returns the maximum key-value pair of this stream according to the provided Comparator2,
 // along with true if the stream is not empty. If the stream is empty, returns the zero
 // value along with false.
-func (is *Stream2[K, V]) Max(cmp order.Comparator2[K, V]) (K, V, bool) {
+func (is *Stream2[K, V]) Max(cmp Comparator2[K, V]) (K, V, bool) {
 	next := is.iterator()
 	maxK, maxV, ok := next()
 	if !ok {
@@ -101,7 +99,7 @@ func (is *Stream2[K, V]) Max(cmp order.Comparator2[K, V]) (K, V, bool) {
 // Min returns the minimum element of this stream according to the provided Comparator,
 // along with true if the stream is not empty. If the stream is empty, returns the zero
 // value along with false.
-func (is *Stream2[K, V]) Min(cmp order.Comparator2[K, V]) (K, V, bool) {
+func (is *Stream2[K, V]) Min(cmp Comparator2[K, V]) (K, V, bool) {
 	next := is.iterator()
 	minK, minV, ok := next()
 	if !ok {

@@ -2,8 +2,6 @@ package stream
 
 import (
 	"slices"
-
-	"github.com/mariomac/gostream/order"
 )
 
 // Map returns a Stream2 consisting of the results of individually applying
@@ -172,7 +170,7 @@ type tuple[K comparable, V any] struct {
 	v V
 }
 
-func (is *Stream2[K, V]) Sorted(cmp order.Comparator2[K, V]) *Stream2[K, V] {
+func (is *Stream2[K, V]) Sorted(cmp Comparator2[K, V]) *Stream2[K, V] {
 	return &Stream2[K, V]{
 		supply: func() iterator2[K, V] {
 			items := is.MapStream(func(k K, v V) tuple[K, V] {
@@ -180,6 +178,48 @@ func (is *Stream2[K, V]) Sorted(cmp order.Comparator2[K, V]) *Stream2[K, V] {
 			}).ToSlice()
 			slices.SortFunc(items, func(a, b tuple[K, V]) int {
 				return cmp(a.k, a.v, b.k, b.v)
+			})
+			return func() (K, V, bool) {
+				if len(items) == 0 {
+					return finishedIterator2[K, V]()
+				}
+				n := items[0]
+				items = items[1:]
+				return n.k, n.v, true
+			}
+		},
+	}
+}
+
+func (is *Stream2[K, V]) SortedByKey(cmp Comparator[K]) *Stream2[K, V] {
+	return &Stream2[K, V]{
+		supply: func() iterator2[K, V] {
+			items := is.MapStream(func(k K, v V) tuple[K, V] {
+				return tuple[K, V]{k: k, v: v}
+			}).ToSlice()
+			slices.SortFunc(items, func(a, b tuple[K, V]) int {
+				return cmp(a.k, b.k)
+			})
+			return func() (K, V, bool) {
+				if len(items) == 0 {
+					return finishedIterator2[K, V]()
+				}
+				n := items[0]
+				items = items[1:]
+				return n.k, n.v, true
+			}
+		},
+	}
+}
+
+func (is *Stream2[K, V]) SortedByVal(cmp Comparator[V]) *Stream2[K, V] {
+	return &Stream2[K, V]{
+		supply: func() iterator2[K, V] {
+			items := is.MapStream(func(k K, v V) tuple[K, V] {
+				return tuple[K, V]{k: k, v: v}
+			}).ToSlice()
+			slices.SortFunc(items, func(a, b tuple[K, V]) int {
+				return cmp(a.v, b.v)
 			})
 			return func() (K, V, bool) {
 				if len(items) == 0 {

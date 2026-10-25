@@ -2,8 +2,6 @@ package stream
 
 import (
 	"slices"
-
-	"github.com/mariomac/gostream/order"
 )
 
 // Map returns a Stream consisting of the results of individually applying
@@ -102,8 +100,8 @@ func (is *Stream[T]) Distinct[O comparable](cmp func(T) O) *Stream[O] {
 }
 
 // Sorted Stream a stream consisting of the elements of the target Stream, sorted according
-// to the provided order.Comparator.
-func (is *Stream[T]) Sorted(comparator order.Comparator[T]) *Stream[T] {
+// to the provided Comparator.
+func (is *Stream[T]) Sorted(comparator Comparator[T]) *Stream[T] {
 	return &Stream[T]{
 		supply: func() iterator[T] {
 			items := is.ToSlice()

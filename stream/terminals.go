@@ -3,8 +3,6 @@ package stream
 import (
 	"iter"
 	"slices"
-
-	"github.com/mariomac/gostream/order"
 )
 
 // ForEach invokes the consumer function for each item of the Stream.
@@ -121,7 +119,7 @@ func (is *Stream[T]) FindFirst() (T, bool) {
 // Max returns the maximum element of this stream according to the provided Comparator,
 // along with true if the stream is not empty. If the stream is empty, returns the zero
 // value along with false.
-func (is *Stream[T]) Max(cmp order.Comparator[T]) (T, bool) {
+func (is *Stream[T]) Max(cmp Comparator[T]) (T, bool) {
 	next := is.iterator()
 	max, ok := next()
 	if !ok {
@@ -138,7 +136,7 @@ func (is *Stream[T]) Max(cmp order.Comparator[T]) (T, bool) {
 // Min returns the minimum element of this stream according to the provided Comparator,
 // along with true if the stream is not empty. If the stream is empty, returns the zero
 // value along with false.
-func (is *Stream[T]) Min(cmp order.Comparator[T]) (T, bool) {
+func (is *Stream[T]) Min(cmp Comparator[T]) (T, bool) {
 	next := is.iterator()
 	min, ok := next()
 	if !ok {
