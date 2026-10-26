@@ -17,7 +17,7 @@ Type safe Stream processing library inspired in the [Java Streams API](https://d
 
 ## Requirements
 
-* Go 1.24 or higher
+* Go 1.27 or higher
 
 ## Usage examples
 
@@ -104,59 +104,22 @@ let me throw 5 times a dice for you
 results: [3 5 2 1 3]
 ```
 
-### Example 3: Generation from an iterator, Map to a different type
-
-1. Generates an infinite stream composed by `1`, `double(1)`, `double(double(1))`, etc...
-   and cut it to 6 elements.
-2. Maps the numbers' stream to a strings' stream. Because, at the moment,
-   [go does not allow type parameters in methods](https://github.com/golang/go/issues/49085),
-   we need to invoke the `stream.Map` function instead of the `numbers.Map` method
-   because the contained type of the output stream (`string`) is different than the type of
-   the input stream (`int`).
-3. Converts the words stream to a slice and prints it.
-
-
-```go
-func main() {
-    numbers := stream.Iterate(1, double).Limit(6)
-    words := stream.Map(numbers, asWord).ToSlice()
-    fmt.Println(words)
-}
-
-func double(n int) int {
-    return 2 * n
-}
-
-func asWord(n int) string {
-    if n < 10 {
-        return []string{"zero", "one", "two", "three", "four", "five",
-            "six", "seven", "eight", "nine"}[n]
-    } else {
-        return "many"
-    }
-}
-```
-
-Output:
-```
-[one two four eight many many]
-```
-
-### Example 4: deduplication of elements
+### Example 3: deduplication of elements
 
 Following example requires to compare the elements of the Stream, so the Stream needs to be
 composed by `comparable` elements (this is, accepted by the the `==` and `!=` operators):
 
 1. Instantiate a `Stream` of `comparable` items.
-2. Pass it to the `Distinct` method, that will return a copy of the original Stream without
-   duplicates
+2. Invoke `Distinct` method, that will return a copy of the original Stream without
+   duplicates.
+   * Due to limitations in the Go generic's type system, the `stream.Cmp[string]`
+     argument is required to certify at compile time that `string` fulfills the `comparable` constraint.
 3. Operating as any other stream.
 
 ```go
-words := stream.Distinct(
-  stream.Of("hello", "hello", "!", "ho", "ho", "ho", "!"),
-).ToSlice()
-
+words := stream.Of("hello", "hello", "!", "ho", "ho", "ho", "!").
+    Distinct(stream.Cmp[string]).
+    ToSlice()
 fmt.Printf("Deduplicated words: %v\n", words)
 ```
 
@@ -166,7 +129,7 @@ Output:
 Deduplicated words: [hello ! ho]
 ```
 
-### Example 5: sorting from higher to lower
+### Example 4: sorting from higher to lower
 
 1. Generate a stream of uint32 numbers.
 2. Picking up 5 elements.
@@ -175,13 +138,17 @@ Deduplicated words: [hello ! ho]
      `Sorted` over an infinite stream (otherwise it would panic).
 
 ```go
+inverseCompare := func(l, r uint32) int {
+    return cmp.Compare(r, l)
+}
+
 fmt.Println("picking up 5 random numbers from higher to lower")
 stream.Generate(rand.Uint32).
-    Limit(5).
-    Sorted(order.Inverse(cmp.Compare[uint32])).
-    ForEach(func(n uint32) {
-        fmt.Println(n)
-    })
+  Limit(5).
+  Sorted(inverseCompare).
+  ForEach(func(n uint32) {
+    fmt.Println(n)
+  })
 ```
 
 Output:
@@ -195,7 +162,7 @@ picking up 5 random numbers from higher to lower
 1823804162
 ```
 
-### Example 6: Reduce and helper functions
+### Example 5: Reduce and helper functions
 
 1. Generate an infinite incremental Stream (1, 2, 3, 4...) using the `stream.Iterate`
    instantiator and the `item.Increment` helper function.
@@ -203,9 +170,12 @@ picking up 5 random numbers from higher to lower
 3. Reduce all the elements multiplying them using the item.Multiply helper function
 
 ```go
-fac8, _ := stream.Iterate(1, item.Increment[int]).
-    Limit(8).
-    Reduce(item.Multiply[int])
+inc := func(i int) int { return i + 1 }
+mul := func(a, b int) int { return a * b }
+
+fac8, _ := stream.Iterate(1, inc).
+  Limit(8).
+  Reduce(mul)
 fmt.Println("The factorial of 8 is", fac8)
 ```
 
@@ -217,18 +187,8 @@ The factorial of 8 is 40320
 
 ### Other examples: interact with Go's `iter` package
 
-Check out this blog post: [Go streams meet standard Go iterators!](https://macias.info/entry/202508160000_gostream_meets_goiter.md)
-
-## Limitations
-
-Due to the initial limitations of Go generics, the API has the following limitations.
-We will work on overcome them as long as new features are added to the Go type parameters
-specification.
-
-* You can use `Map` and `FlatMap` as method as long as the output element has the same type of the input.
-  If you need to map to a different type, you need to use `stream.Map` or `stream.FlatMap` as functions.
-* There is no `Distinct` method. There is only a `stream.Distinct` function.
-* There is no `ToMap` method. There is only a `stream.ToMap` function.
+Check out this blog post: [Go streams meet standard Go iterators!](https://macias.info/entry/202508160000_gostream_meets_goiter.md).
+(This blog post refers to v1 of this library so some examples might be slightly outdated).
 
 ## Performance
 
@@ -255,56 +215,6 @@ BenchmarkFunctional-4             293095              3653 ns/op            2440
 If you want a more performant, parallelizable alternative to create data processing pipelines (following
 a programming model focused on Extract-Transform-Load, ETL), you
 could give a try to my alternative project: [PIPES: Processing In Pipeline-Embedded Stages](https://github.com/mariomac/pipes).
-
-## Completion status
-
-* Stream instantiation functions
-  - [X] Comparable
-  - [X] Concat
-  - [X] Empty
-  - [X] Generate
-  - [X] Iterate
-  - [X] Of
-  - [X] OfMap
-  - [x] OfSlice
-  - [X] OfChannel
-* Stream transformers
-  - [X] Distinct
-  - [X] Filter
-  - [X] FlatMap
-  - [X] Limit
-  - [X] Map
-  - [X] Peek
-  - [X] Skip
-  - [X] Sorted
-* Collectors/Terminals
-  - [X] ToMap
-  - [X] ToSlice
-  - [X] AllMatch
-  - [X] AnyMatch
-  - [X] Count
-  - [X] FindFirst
-  - [X] ForEach
-  - [X] Max
-  - [X] Min
-  - [X] NoneMatch
-  - [X] Reduce
-  - [X] Iter
-* Auxiliary Functions
-  - [X] Add (for numbers)
-  - [X] Increment (for numbers)
-  - [X] IsZero
-  - [X] Multiply (for numbers)
-  - [X] Neg (for numbers)
-  - [X] Not (for bools)
-* Future
-  - [ ] Collectors for future standard generic data structures
-    - E.g. [ ] Join (for strings)
-  - [ ] Allow users implement their own Comparable or Ordered types
-  - [ ] More operations inspired in the Kafka Streams API
-  - [ ] Parallel streams 
-    - [ ] FindAny
-
 
 ## Extra credits
 

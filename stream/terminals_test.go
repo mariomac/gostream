@@ -2,13 +2,10 @@ package stream
 
 import (
 	cmp "cmp"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mariomac/gostream/item"
 )
 
 func TestToSlice(t *testing.T) {
@@ -23,71 +20,56 @@ func TestToSlice(t *testing.T) {
 		}).ToSlice())
 }
 
-func TestToMap(t *testing.T) {
-	processed := OfMap(map[string]int{
-		"Barcelona": 1,
-		"Madrid":    2,
-		"Paris":     3,
-	}).Map(func(p item.Pair[string, int]) item.Pair[string, int] {
-		p.Key = strings.ToLower(p.Key)
-		if strings.Contains(p.Key, "i") {
-			p.Val++
-		}
-		return p
-	})
-
-	assert.Equal(t, map[string]int{
-		"barcelona": 1,
-		"madrid":    3,
-		"paris":     4,
-	}, ToMap(processed))
-}
-
+func add(a, b int) int { return a + b }
 func TestReduce(t *testing.T) {
 	// test empty stream
-	_, ok := Empty[int]().Reduce(item.Add[int])
+	_, ok := Empty[int]().Reduce(add)
 	assert.False(t, ok)
 
 	// test one-element stream
-	red, ok := Of(8).Reduce(item.Add[int])
+	red, ok := Of(8).Reduce(add)
 	assert.True(t, ok)
 	assert.Equal(t, 8, red)
 
 	// test multi-element stream
-	red, ok = Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).Reduce(item.Add[int])
+	red, ok = Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).Reduce(add)
 	assert.True(t, ok)
 	assert.Equal(t, 55, red)
 }
 
-func TestIterableStream_AllMatch(t *testing.T) {
+func notZero(s string) bool { return s != "" }
+func isZero(s string) bool  { return s == "" }
+func TestStream_AllMatch(t *testing.T) {
 	// for empty streams, following Java behavior as reference
-	assert.True(t, Empty[string]().AllMatch(item.IsZero[string]))
-	assert.True(t, Of("hello", "world").AllMatch(item.Not(item.IsZero[string])))
-	assert.False(t, Of("", "world").AllMatch(item.Not(item.IsZero[string])))
+	assert.True(t, Empty[string]().AllMatch(isZero))
+	assert.True(t, Of("hello", "world").AllMatch(notZero))
+	assert.False(t, Of("", "world").AllMatch(notZero))
 }
 
-func TestIterableStream_AnyMatch(t *testing.T) {
+func TestStream_AnyMatch(t *testing.T) {
 	// for empty streams, following Java behavior as reference
-	assert.False(t, Empty[string]().AnyMatch(item.IsZero[string]))
-	assert.True(t, Of("hello", "world").AnyMatch(item.Not(item.IsZero[string])))
-	assert.True(t, Of("", "world").AnyMatch(item.Not(item.IsZero[string])))
-	assert.False(t, Of("", "").AnyMatch(item.Not(item.IsZero[string])))
+	assert.False(t, Empty[string]().AnyMatch(isZero))
+	assert.True(t, Of("hello", "world").AnyMatch(notZero))
+	assert.True(t, Of("", "world").AnyMatch(notZero))
+	assert.False(t, Of("", "").AnyMatch(notZero))
 }
 
-func TestIterableStream_NoneMatch(t *testing.T) {
+func TestStream_NoneMatch(t *testing.T) {
 	// for empty streams, following Java behavior as reference
-	assert.True(t, Empty[string]().NoneMatch(item.IsZero[string]))
-	assert.False(t, Of("hello", "world").NoneMatch(item.Not(item.IsZero[string])))
-	assert.False(t, Of("", "world").NoneMatch(item.Not(item.IsZero[string])))
-	assert.True(t, Of("", "").NoneMatch(item.Not(item.IsZero[string])))
+	assert.True(t, Empty[string]().NoneMatch(isZero))
+	assert.False(t, Of("hello", "world").NoneMatch(notZero))
+	assert.False(t, Of("", "world").NoneMatch(notZero))
+	assert.True(t, Of("", "").NoneMatch(notZero))
 }
+
+func testInc(a int) int { return a + 1 }
 
 func TestCount(t *testing.T) {
 	assert.Equal(t, 0, Empty[int]().Count())
 	assert.Equal(t, 0, Of(1, 2, 3).Skip(3).Count())
 	assert.Equal(t, 3, Of(1, 2, 3).Count())
 	assert.Equal(t, 3, Of(1, 2, 3, 4, 5, 6).Skip(3).Count())
-	assert.Equal(t, 8, Iterate[int](1, item.Increment[int]).Limit(8).Count())
+	assert.Equal(t, 8, Iterate[int](1, testInc).Limit(8).Count())
 }
 
 func TestFindFirst(t *testing.T) {
@@ -105,7 +87,7 @@ func TestFindFirst(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, 4, n)
 
-	n, ok = Iterate[int](1, item.Increment[int]).Limit(8).FindFirst()
+	n, ok = Iterate[int](1, testInc).Limit(8).FindFirst()
 	require.True(t, ok)
 	assert.Equal(t, 1, n)
 }
@@ -129,7 +111,7 @@ func TestMax(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, 6, n)
 
-	n, ok = Iterate[int](1, item.Increment[int]).Limit(8).Max(cmp.Compare[int])
+	n, ok = Iterate[int](1, testInc).Limit(8).Max(cmp.Compare[int])
 	require.True(t, ok)
 	assert.Equal(t, 8, n)
 }
@@ -153,7 +135,7 @@ func TestMin(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, 4, n)
 
-	n, ok = Iterate[int](1, item.Increment[int]).Limit(8).Min(cmp.Compare[int])
+	n, ok = Iterate[int](1, testInc).Limit(8).Min(cmp.Compare[int])
 	require.True(t, ok)
 	assert.Equal(t, 1, n)
 }

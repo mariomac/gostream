@@ -8,8 +8,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mariomac/gostream/item"
 )
 
 func TestMap(t *testing.T) {
@@ -19,7 +17,7 @@ func TestMap(t *testing.T) {
 	})
 	assert.Equal(t, []int{2, 4, 6, 8, 10}, double.ToSlice())
 
-	strings := Map(in, strconv.Itoa)
+	strings := in.Map(strconv.Itoa)
 	assert.Equal(t, []string{"1", "2", "3", "4", "5"}, strings.ToSlice())
 }
 
@@ -57,11 +55,16 @@ func TestLimit(t *testing.T) {
 	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7}, items)
 }
 
+func TestLimitBoundaries(t *testing.T) {
+	assert.Empty(t, Of(1, 2, 3).Limit(0).ToSlice())
+	assert.Equal(t, []int{1, 2, 3}, Of(1, 2, 3).Limit(15).ToSlice())
+}
+
 func TestDistinct(t *testing.T) {
 	assert.Equal(t,
 		[]int{1, 2, 3, 4, 5},
-		Distinct(Of(1, 1, 2, 3, 3, 3, 4, 5, 1, 2, 3, 4, 5)).
-			ToSlice(),
+		Of(1, 1, 2, 3, 3, 3, 4, 5, 1, 2, 3, 4, 5).
+			Distinct(Cmp).ToSlice(),
 	)
 }
 
@@ -73,36 +76,25 @@ func TestSort(t *testing.T) {
 }
 
 func TestFlapMap(t *testing.T) {
-	generateCharSequence := func(in string) Stream[byte] {
+	generateCharSequence := func(in string) *Stream[byte] {
 		return OfSlice([]byte(in))
 	}
-	generateNillableCharSequence := func(in string) Stream[byte] {
+	generateNillableCharSequence := func(in string) *Stream[byte] {
 		if len(in) == 0 {
 			return nil
 		}
 		return OfSlice([]byte(in))
 	}
 
-	assert.Empty(t, FlatMap(Of[string](), generateCharSequence).ToSlice())
+	assert.Empty(t, Of[string]().FlatMap(generateCharSequence).ToSlice())
 
-	chars := FlatMap(
-		Of[string]("", "hello", "my", "", "friends!", ""),
-		generateCharSequence).ToSlice()
+	chars := Of[string]("", "hello", "my", "", "friends!", "").
+		FlatMap(generateCharSequence).ToSlice()
 	assert.Equal(t, []byte("hellomyfriends!"), chars)
 
-	chars = FlatMap(
-		Of[string]("", "hello", "my", "", "friends!", ""),
-		generateNillableCharSequence).ToSlice()
+	chars = Of[string]("", "hello", "my", "", "friends!", "").
+		FlatMap(generateNillableCharSequence).ToSlice()
 	assert.Equal(t, []byte("hellomyfriends!"), chars)
-}
-
-func TestFlapMap_Method(t *testing.T) {
-	incrementalStream := func(length int) Stream[int] {
-		return Iterate(1, item.Increment[int]).Limit(length)
-	}
-
-	items := FlatMap(Of[int](3, 2, 1, 0, 4), incrementalStream).ToSlice()
-	assert.Equal(t, []int{1, 2, 3, 1, 2, 1, 1, 2, 3, 4}, items)
 }
 
 func TestPeek(t *testing.T) {

@@ -1,15 +1,10 @@
 package stream
 
 import (
-	"cmp"
-	"maps"
 	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/mariomac/gostream/item"
-	"github.com/mariomac/gostream/order"
 )
 
 func TestIterate(t *testing.T) {
@@ -36,56 +31,8 @@ func TestGenerate(t *testing.T) {
 		gen.Limit(5).ToSlice())
 }
 
-func TestConcat(t *testing.T) {
-	concat := Concat[int](
-		Of(1, 2, 3, 4, 5, 6),
-		Of(7, 8, 9, 10),
-	)
-	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
-	// test that iterating for the second time produces the same results
-	assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
-}
-
 func TestEmpty(t *testing.T) {
 	assert.Empty(t, Empty[int]().Map(rand.Intn).ToSlice())
-}
-
-func TestOfMap_SortedByKey(t *testing.T) {
-	months := OfMap(map[int]string{
-		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
-		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
-	}).Sorted(order.ByKey[int, string](cmp.Compare[int]))
-
-	monthNames := Map(months, func(p item.Pair[int, string]) string {
-		return p.Val
-	}).ToSlice()
-
-	assert.Equal(t,
-		[]string{
-			"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-		},
-		monthNames,
-	)
-}
-
-func TestOfMap_SortedByVal(t *testing.T) {
-	months := OfMap(map[int]string{
-		1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
-		7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec",
-	}).Sorted(order.ByVal[int, string](cmp.Compare[string]))
-
-	monthNames := Map(months, func(p item.Pair[int, string]) string {
-		return p.Val
-	}).ToSlice()
-
-	assert.Equal(t,
-		[]string{
-			"Apr", "Aug", "Dec", "Feb", "Jan", "Jul",
-			"Jun", "Mar", "May", "Nov", "Oct", "Sep",
-		},
-		monthNames,
-	)
 }
 
 func TestOfChannel(t *testing.T) {
@@ -122,26 +69,49 @@ func TestOfSeq(t *testing.T) {
 	assert.Equal(t, []int{1, 2, 3, 4, 5}, stream.ToSlice())
 }
 
-func TestOfSeq2(t *testing.T) {
-	// Create an iter.Seq2 from key-value pairs
-	seq2 := maps.All(map[string]int{"a": 1, "b": 2, "c": 3})
+func TestConcat(t *testing.T) {
+	type testCase struct {
+		title string
+		input []*Stream[int]
+	}
+	for _, tc := range []testCase{{
+		title: "single",
+		input: []*Stream[int]{Of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)},
+	}, {
+		title: "basic double",
+		input: []*Stream[int]{Of(1, 2, 3, 4, 5, 6), Of(7, 8, 9, 10)},
+	}, {
+		title: "multiple",
+		input: []*Stream[int]{Of(1, 2, 3), Of(4, 5, 6), Of(7, 8), Of(9, 10)},
+	}, {
+		title: "multiple with empties",
+		input: []*Stream[int]{Of(1, 2, 3, 4, 5, 6), Empty[int](), Empty[int](), Of(7, 8), Of(9, 10)},
+	}, {
+		title: "multiple with empties at start and end",
+		input: []*Stream[int]{Empty[int](), Of(1, 2, 3), Of(4, 5, 6), Of(7, 8), Of(9, 10), Empty[int]()},
+	}} {
+		t.Run(tc.title, func(t *testing.T) {
+			concat := Concat(tc.input...)
+			assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
+			// test that iterating for the second time produces the same results
+			assert.Equal(t, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, concat.ToSlice())
+		})
+	}
+}
 
-	stream := OfSeq2(seq2)
-	assert.Equal(t, 3, stream.Count())
-	assert.True(t, stream.AnyMatch(item.Equals(
-		item.Pair[string, int]{Key: "a", Val: 1})))
-	assert.True(t, stream.AnyMatch(item.Equals(
-		item.Pair[string, int]{Key: "b", Val: 2})))
-	assert.True(t, stream.AnyMatch(item.Equals(
-		item.Pair[string, int]{Key: "c", Val: 3})))
-
-	// test that iterating for the second time produces the same results
-	stream = OfSeq2(seq2)
-	assert.Equal(t, 3, stream.Count())
-	assert.True(t, stream.AnyMatch(item.Equals(
-		item.Pair[string, int]{Key: "a", Val: 1})))
-	assert.True(t, stream.AnyMatch(item.Equals(
-		item.Pair[string, int]{Key: "b", Val: 2})))
-	assert.True(t, stream.AnyMatch(item.Equals(
-		item.Pair[string, int]{Key: "c", Val: 3})))
+func TestConcat_Empty(t *testing.T) {
+	type testCase struct {
+		title string
+		input []*Stream[int]
+	}
+	for _, tc := range []testCase{
+		{title: "no arguments"},
+		{title: "empty", input: []*Stream[int]{Empty[int]()}},
+		{title: "multiple empty", input: []*Stream[int]{Empty[int](), Empty[int](), Empty[int]()}},
+	} {
+		t.Run(tc.title, func(t *testing.T) {
+			concat := Concat[int](tc.input...)
+			assert.Empty(t, concat.ToSlice())
+		})
+	}
 }
