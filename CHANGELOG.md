@@ -1,5 +1,17 @@
 # Go Streams API changelog
 
+## v1.0.0
+* Major **breaking change** to adopt Go 1.27 generic methods
+  * Removed all the transformation functions and replaced by methods. For example
+    `stream.Map(parent_stream, func)` is replaced by `parent_stream.Map(func)`
+  * `Stream[T]` was an interface. Now is a struct.
+    - Consequently, instantiator methods which returned `Stream[T]`, now return `*Stream[T]`.
+* Removed `item.Pair[K, V]` and created `Stream2[K, V]`
+* For simplicity, no more infinite check. Java Streams do neither.
+* Removed predicates in "item" package.
+* Removed "order" package.
+* New instantiation method: `Zip`
+
 ## v0.10.1
 * Fix: `.Item` and `.Seq` methods are not used as a function reference anymore, but directly invoked.
 
