@@ -210,3 +210,43 @@ func (is *Stream[T]) MapStream2[K comparable, V any](mapper func(i T) (K, V)) *S
 		},
 	}
 }
+
+func (is *Stream[T]) DropWhile(predicate func(T) bool) *Stream[T] {
+	 	return &Stream[T]{
+		supply: func() iterator[T] {
+			next := is.iterator()
+				var dropping = true
+				return func() (T, bool) {
+					for {
+					val, ok := next()
+					var sudo T
+					if !ok {
+						return sudo, false
+					}
+					if (dropping && !predicate(val)){
+						dropping = false
+					}
+					if !dropping{
+						return val, true
+					}
+				}
+			}
+		},
+	}
+}
+
+func (is *Stream[T]) TakeWhile(predicate func(T) bool) *Stream[T] {
+	 	return &Stream[T]{
+		supply: func() iterator[T] {
+			next := is.iterator()
+			return func() (T, bool) {
+				val, _ := next()
+				var sudo T
+				if !predicate(val){
+					return sudo, false
+				}
+				return val, true
+			}
+		},
+	}
+}
